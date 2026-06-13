@@ -8,10 +8,7 @@ The current implementation is intentionally local and deterministic. It answers 
 
 ```bash
 cd backend
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8787
+uv run uvicorn app.main:app --reload --port 8787
 ```
 
 Health check:
