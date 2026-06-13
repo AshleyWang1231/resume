@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "resume-agent-api",
+  "main": "src/worker.py",
+  "compatibility_date": "2026-06-13",
+  "compatibility_flags": ["python_workers", "python_dedicated_snapshot"],
+  "observability": {
+    "enabled": true
+  }
+}
+

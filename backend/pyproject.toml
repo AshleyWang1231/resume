@@ -1,0 +1,18 @@
+[project]
+name = "resume-agent-backend"
+version = "0.1.0"
+description = "FastAPI backend for Lu Wang's Resume Agent"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi==0.115.6",
+  "pydantic==2.10.4",
+]
+
+[dependency-groups]
+dev = [
+  "uvicorn[standard]==0.34.0",
+  "workers-py",
+  "workers-runtime-sdk",
+]
+
