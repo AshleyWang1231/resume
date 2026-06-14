@@ -41,6 +41,27 @@ cd backend
 uv run pywrangler deploy
 ```
 
+## GitHub Actions Deployment
+
+Backend deployment is automated by `.github/workflows/deploy-backend.yml`.
+The workflow runs when code is pushed to `main` and files under `backend/**` change.
+
+Add these repository secrets in GitHub before relying on automatic deployment:
+
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+
+Recommended Cloudflare API token permissions:
+
+- Account: `Cloudflare Workers Scripts:Edit`
+- Account: `Account Settings:Read`
+
+After the secrets are added, pushing backend changes to `main` will deploy the Worker and verify:
+
+```text
+https://resume-agent-api.wanglu-ashley.workers.dev/health
+```
+
 Ask a question:
 
 ```bash
