@@ -38,12 +38,12 @@ app.add_middleware(
 
 
 @app.get("/health")
-def health() -> dict[str, str]:
+async def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
 @app.post("/api/chat", response_model=ChatResponse)
-def chat(request: ChatRequest) -> ChatResponse:
+async def chat(request: ChatRequest) -> ChatResponse:
     matches = _find_matches(request.message)
     if not matches:
         matches = RESUME_FACTS[:2]

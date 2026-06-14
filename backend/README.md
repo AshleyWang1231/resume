@@ -8,7 +8,7 @@ The current implementation is intentionally local and deterministic. It answers 
 
 ```bash
 cd backend
-uv run uvicorn app.main:app --reload --port 8787
+uv run uvicorn app.main:app --app-dir src --reload --port 8787
 ```
 
 Health check:
@@ -21,7 +21,7 @@ curl http://localhost:8787/health
 
 Cloudflare supports FastAPI in Python Workers. This backend includes:
 
-- `app/main.py` - FastAPI app and API routes
+- `src/app/main.py` - FastAPI app and API routes
 - `src/worker.py` - Cloudflare Worker entrypoint that mounts the FastAPI ASGI app
 - `wrangler.jsonc` - Cloudflare Worker configuration
 - `pyproject.toml` - Python dependencies for Cloudflare Python Workers
