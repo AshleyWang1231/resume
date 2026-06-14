@@ -1,5 +1,6 @@
 const translations = {
   en: {
+    navAgent: "Resume Agent",
     navSystems: "AI Systems",
     navMethod: "Method",
     navExperience: "Experience",
@@ -12,6 +13,19 @@ const translations = {
       "AI Software Engineer focused on building LLM applications and AI Agent systems for real business scenarios. Experienced in Python/Java backend development, Agent Workflows, Tool Calling, Streaming, personalization, product decision support, Text2SQL, and observability-driven performance diagnostics.",
     phone: "+86 13122038365",
     downloadResume: "Download resume",
+    agentEyebrow: "Resume Agent",
+    agentTitle: "Ask my resume",
+    agentIntro:
+      "Ask about Lu's AI Agent, Streaming, personalization, Product Comparison, or Text2SQL experience.",
+    agentPlaceholder: "Ask about Lu's AI engineering experience...",
+    agentSend: "Ask",
+    agentSuggestionsTitle: "Try asking",
+    agentThinking: "Reading resume evidence...",
+    agentError: "The resume agent is temporarily unavailable. Please try again later.",
+    agentQ1: "What AI Agent systems has Lu built?",
+    agentQ2: "Show Lu's Streaming and Tool Calling experience.",
+    agentQ3: "What measurable impact does Lu have?",
+    agentQ4: "Explain Lu's Text2SQL experience.",
     heroVisual: "LLM applications built with product context, engineering controls, and measurable outcomes.",
     consoleLabel: "AI capability areas",
     consoleAgent: "Tool Calling · Streaming · Responses API",
@@ -125,6 +139,7 @@ const translations = {
     suesDegree: "BA in Marketing",
   },
   zh: {
+    navAgent: "简历 Agent",
     navSystems: "AI 系统",
     navMethod: "工程方法",
     navExperience: "工作经历",
@@ -137,6 +152,18 @@ const translations = {
       "专注于面向真实业务场景的 LLM 应用与 AI Agent 系统建设，具备 Python/Java 后端研发、Agent Workflow、Tool Calling、Streaming、个性化推荐、商品决策辅助、Text2SQL 和可观测性驱动性能诊断经验。",
     phone: "13122038365（微信同号）",
     downloadResume: "下载简历",
+    agentEyebrow: "简历 Agent",
+    agentTitle: "直接问我的简历",
+    agentIntro: "可以询问汪露的 AI Agent、Streaming、个性化、商品对比或 Text2SQL 经验。",
+    agentPlaceholder: "输入你想了解的 AI 工程经历...",
+    agentSend: "提问",
+    agentSuggestionsTitle: "可以这样问",
+    agentThinking: "正在读取简历证据...",
+    agentError: "简历 Agent 暂时不可用，请稍后再试。",
+    agentQ1: "汪露做过哪些 AI Agent 系统？",
+    agentQ2: "展示 Streaming 和 Tool Calling 经验。",
+    agentQ3: "有哪些可量化结果？",
+    agentQ4: "介绍 Text2SQL 项目经验。",
     heroVisual: "将业务上下文、工程控制和可量化结果结合起来的 LLM 应用建设经验。",
     consoleLabel: "AI 能力方向",
     consoleAgent: "Tool Calling · Streaming · Responses API",
@@ -244,9 +271,15 @@ const translations = {
 
 const toggle = document.querySelector("[data-lang-toggle]");
 const translatable = document.querySelectorAll("[data-i18n]");
+const placeholderTranslatable = document.querySelectorAll("[data-i18n-placeholder]");
 const year = document.getElementById("year");
 const workflowTabs = document.querySelectorAll("[data-workflow-tab]");
 const workflowPanels = document.querySelectorAll("[data-workflow-panel]");
+const agentForm = document.querySelector("[data-agent-form]");
+const agentInput = document.querySelector("[data-agent-input]");
+const agentMessages = document.querySelector("[data-agent-messages]");
+const agentQuestionButtons = document.querySelectorAll("[data-agent-question-en]");
+const API_BASE_URL = "https://resume-agent-api.wanglu-ashley.workers.dev";
 
 function setLanguage(lang) {
   const dictionary = translations[lang] || translations.en;
@@ -256,6 +289,13 @@ function setLanguage(lang) {
     const key = element.dataset.i18n;
     if (dictionary[key]) {
       element.textContent = dictionary[key];
+    }
+  });
+
+  placeholderTranslatable.forEach((element) => {
+    const key = element.dataset.i18nPlaceholder;
+    if (dictionary[key]) {
+      element.setAttribute("placeholder", dictionary[key]);
     }
   });
 
@@ -278,6 +318,108 @@ workflowTabs.forEach((tab) => {
     });
   });
 });
+
+agentForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const message = agentInput.value.trim();
+  if (!message) return;
+
+  agentInput.value = "";
+  appendMessage("user", message);
+  const loading = appendMessage("assistant", getText("agentThinking"));
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/chat`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        message,
+        language: getCurrentLanguage(),
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Resume agent request failed: ${response.status}`);
+    }
+
+    const payload = await response.json();
+    loading.remove();
+    appendAgentResponse(payload);
+  } catch (error) {
+    console.error(error);
+    loading.remove();
+    appendMessage("assistant", getText("agentError"));
+  }
+});
+
+agentQuestionButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    agentInput.value =
+      getCurrentLanguage() === "zh" ? button.dataset.agentQuestionZh : button.dataset.agentQuestionEn;
+    agentForm.requestSubmit();
+  });
+});
+
+function getCurrentLanguage() {
+  return document.documentElement.lang === "zh-CN" ? "zh" : "en";
+}
+
+function getText(key) {
+  return translations[getCurrentLanguage()][key] || translations.en[key] || key;
+}
+
+function appendMessage(role, text) {
+  const message = document.createElement("article");
+  message.className = `agent-message ${role}`;
+  const paragraph = document.createElement("p");
+  paragraph.textContent = text;
+  message.append(paragraph);
+  agentMessages.append(message);
+  agentMessages.scrollTop = agentMessages.scrollHeight;
+  return message;
+}
+
+function appendAgentResponse(payload) {
+  const message = document.createElement("article");
+  message.className = "agent-message assistant";
+
+  const answer = document.createElement("p");
+  answer.textContent = payload.answer;
+  message.append(answer);
+
+  if (Array.isArray(payload.evidence) && payload.evidence.length > 0) {
+    const evidenceList = document.createElement("div");
+    evidenceList.className = "evidence-list";
+
+    payload.evidence.forEach((item) => {
+      const card = document.createElement("section");
+      card.className = "evidence-card";
+
+      const title = document.createElement("strong");
+      title.textContent = item.title;
+      const meta = document.createElement("span");
+      meta.textContent = item.company;
+      const summary = document.createElement("p");
+      summary.textContent = item.summary;
+
+      const chips = document.createElement("div");
+      chips.className = "result-chips";
+      [...(item.evidence || []), ...(item.skills || []).slice(0, 3)].forEach((chipText) => {
+        const chip = document.createElement("span");
+        chip.textContent = chipText;
+        chips.append(chip);
+      });
+
+      card.append(title, meta, summary, chips);
+      evidenceList.append(card);
+    });
+
+    message.append(evidenceList);
+  }
+
+  agentMessages.append(message);
+  agentMessages.scrollTop = agentMessages.scrollHeight;
+}
 
 year.textContent = new Date().getFullYear();
 setLanguage(localStorage.getItem("resume-lang") || "en");

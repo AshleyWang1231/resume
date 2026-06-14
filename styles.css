@@ -327,6 +327,163 @@ h3 {
   margin-bottom: 28px;
 }
 
+.agent-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.agent-panel,
+.agent-suggestions {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.agent-panel {
+  display: grid;
+  grid-template-rows: minmax(280px, 48vh) auto;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.agent-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  padding: 18px;
+}
+
+.agent-message {
+  max-width: min(760px, 92%);
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-strong);
+}
+
+.agent-message p:last-child {
+  margin-bottom: 0;
+}
+
+.agent-message.user {
+  align-self: flex-end;
+  border-color: rgba(15, 118, 110, 0.32);
+  color: #ffffff;
+  background: var(--accent);
+}
+
+.agent-message.assistant {
+  align-self: flex-start;
+}
+
+.agent-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  padding: 14px;
+  border-top: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.agent-form input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--text);
+  background: #ffffff;
+  font: inherit;
+}
+
+.agent-form input:focus {
+  border-color: var(--accent);
+  outline: 3px solid rgba(15, 118, 110, 0.12);
+}
+
+.agent-form button,
+.agent-suggestions button {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font: inherit;
+  cursor: pointer;
+}
+
+.agent-form button {
+  min-width: 84px;
+  min-height: 44px;
+  padding: 10px 16px;
+  color: #ffffff;
+  background: var(--accent);
+  font-weight: 760;
+}
+
+.agent-form button:hover {
+  background: var(--accent-strong);
+}
+
+.agent-suggestions {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  padding: 16px;
+}
+
+.agent-suggestions p {
+  margin-bottom: 2px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 760;
+  text-transform: uppercase;
+}
+
+.agent-suggestions button {
+  min-height: 46px;
+  padding: 10px 12px;
+  color: #24323a;
+  background: var(--surface-strong);
+  text-align: left;
+}
+
+.agent-suggestions button:hover {
+  border-color: rgba(15, 118, 110, 0.44);
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+}
+
+.evidence-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.evidence-card {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #ffffff;
+}
+
+.evidence-card strong,
+.evidence-card span {
+  display: block;
+}
+
+.evidence-card > span {
+  margin: 2px 0 8px;
+  color: var(--accent-strong);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.evidence-card p {
+  margin-bottom: 0;
+  color: var(--muted);
+}
+
 .timeline {
   display: grid;
   gap: 16px;
@@ -687,6 +844,10 @@ li {
     grid-template-columns: 1fr;
   }
 
+  .agent-shell {
+    grid-template-columns: 1fr;
+  }
+
   .workflow-tabs {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -746,6 +907,18 @@ li {
   }
 
   .workflow-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .agent-panel {
+    grid-template-rows: minmax(260px, 58vh) auto;
+  }
+
+  .agent-message {
+    max-width: 100%;
+  }
+
+  .agent-form {
     grid-template-columns: 1fr;
   }
 

@@ -30,7 +30,7 @@ app = FastAPI(title="Lu Wang Resume Agent API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8000", "http://127.0.0.1:8000"],
+    allow_origins=["*"],
     allow_credentials=False,
     allow_methods=["POST", "GET"],
     allow_headers=["*"],

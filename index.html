@@ -21,6 +21,7 @@
         </span>
       </a>
       <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#agent" data-i18n="navAgent">Resume Agent</a>
         <a href="#systems" data-i18n="navSystems">AI Systems</a>
         <a href="#method" data-i18n="navMethod">Method</a>
         <a href="#skills" data-i18n="navSkills">Skills</a>
@@ -77,6 +78,71 @@
             </div>
           </div>
         </aside>
+      </section>
+
+      <section id="agent" class="section-block agent-section">
+        <div class="section-heading">
+          <p class="eyebrow" data-i18n="agentEyebrow">Resume Agent</p>
+          <h2 data-i18n="agentTitle">Ask my resume</h2>
+        </div>
+        <div class="agent-shell">
+          <div class="agent-panel">
+            <div class="agent-messages" data-agent-messages>
+              <article class="agent-message assistant">
+                <p data-i18n="agentIntro">
+                  Ask about Lu's AI Agent, Streaming, personalization, Product Comparison, or Text2SQL experience.
+                </p>
+              </article>
+            </div>
+            <form class="agent-form" data-agent-form>
+              <input
+                type="text"
+                name="message"
+                data-agent-input
+                data-i18n-placeholder="agentPlaceholder"
+                placeholder="Ask about Lu's AI engineering experience..."
+                maxlength="500"
+                autocomplete="off"
+              />
+              <button type="submit" data-i18n="agentSend">Ask</button>
+            </form>
+          </div>
+          <aside class="agent-suggestions" aria-label="Suggested questions">
+            <p data-i18n="agentSuggestionsTitle">Try asking</p>
+            <button
+              type="button"
+              data-agent-question-en="What AI Agent systems has Lu built?"
+              data-agent-question-zh="汪露做过哪些 AI Agent 系统？"
+              data-i18n="agentQ1"
+            >
+              What AI Agent systems has Lu built?
+            </button>
+            <button
+              type="button"
+              data-agent-question-en="Show Lu's Streaming and Tool Calling experience."
+              data-agent-question-zh="展示 Streaming 和 Tool Calling 经验。"
+              data-i18n="agentQ2"
+            >
+              Show Streaming and Tool Calling experience.
+            </button>
+            <button
+              type="button"
+              data-agent-question-en="What measurable impact does Lu have?"
+              data-agent-question-zh="有哪些可量化结果？"
+              data-i18n="agentQ3"
+            >
+              What measurable impact does Lu have?
+            </button>
+            <button
+              type="button"
+              data-agent-question-en="Explain Lu's Text2SQL experience."
+              data-agent-question-zh="介绍 Text2SQL 项目经验。"
+              data-i18n="agentQ4"
+            >
+              Explain Text2SQL experience.
+            </button>
+          </aside>
+        </div>
       </section>
 
       <section id="systems" class="section-block systems-section">
