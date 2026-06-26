@@ -279,7 +279,7 @@ const agentForm = document.querySelector("[data-agent-form]");
 const agentInput = document.querySelector("[data-agent-input]");
 const agentMessages = document.querySelector("[data-agent-messages]");
 const agentQuestionButtons = document.querySelectorAll("[data-agent-question-en]");
-const API_BASE_URL = "https://resume-agent-api.wanglu-ashley.workers.dev";
+const API_BASE_URL = "https://resume-gent-api-vtugquposb.cn-hangzhou.fcapp.run";
 
 function setLanguage(lang) {
   const dictionary = translations[lang] || translations.en;
