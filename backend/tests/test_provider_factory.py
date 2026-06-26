@@ -2,15 +2,14 @@ from __future__ import annotations
 
 from app.harness.chat_completions_client import ChatCompletionsClient
 from app.harness.provider_factory import build_llm_client
+from app.harness.workers_ai_client import WorkersAIClient
 
 
-def test_default_provider_uses_deepseek(monkeypatch):
+def test_default_provider_uses_workers_ai(monkeypatch):
     monkeypatch.delenv("AI_PROVIDER", raising=False)
-    client = build_llm_client()
-    assert isinstance(client, ChatCompletionsClient)
-    assert client.provider == "deepseek"
-    assert client._model() == "deepseek-v4-flash"
-    assert client._base_url() == "https://api.deepseek.com"
+    client = build_llm_client(ai_binding=object())
+    assert isinstance(client, WorkersAIClient)
+    assert client.provider == "workers_ai"
 
 
 def test_qwen_provider_uses_openai_compatible_chat_completions(monkeypatch):

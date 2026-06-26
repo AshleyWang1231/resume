@@ -15,8 +15,8 @@ class ResumeAgent:
     def __init__(self, llm_client: LLMClient | None = None) -> None:
         self.llm_client = llm_client
 
-    async def answer(self, request: ChatRequest) -> ChatResponse:
-        llm_client = self.llm_client or build_llm_client()
+    async def answer(self, request: ChatRequest, ai_binding=None) -> ChatResponse:
+        llm_client = self.llm_client or build_llm_client(ai_binding)
         context = AgentContext(
             request_id=str(uuid.uuid4()),
             message=request.message.strip(),

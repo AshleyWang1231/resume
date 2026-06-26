@@ -16,8 +16,11 @@ class LLMClient(Protocol):
     async def answer(self, message: str, language: Language, seed_evidence: list[EvidenceCard]) -> OpenAIResult | None: ...
 
 
-def build_llm_client() -> LLMClient:
-    provider = os.getenv("AI_PROVIDER", "deepseek").lower()
+def build_llm_client(ai_binding=None) -> LLMClient:
+    provider = os.getenv("AI_PROVIDER", "workers_ai").lower()
+    if provider == "workers_ai":
+        from app.harness.workers_ai_client import WorkersAIClient
+        return WorkersAIClient(ai_binding)
     if provider == "qwen":
         return ChatCompletionsClient(
             provider="qwen",

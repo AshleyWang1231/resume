@@ -13,6 +13,7 @@ from app.models import ChatRequest, ChatResponse
 
 load_local_env()
 app = FastAPI(title="Lu Wang Resume Agent API")
+app.state.ai_binding = None
 agent = ResumeAgent()
 
 app.add_middleware(
@@ -31,18 +32,20 @@ async def health() -> dict[str, str]:
 
 @app.post("/api/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest) -> ChatResponse:
+    ai = app.state.ai_binding
     return await with_request_logging(
         route="/api/chat",
-        handler=lambda: agent.answer(request),
+        handler=lambda: agent.answer(request, ai),
         base_fields={"language": request.language},
     )
 
 
 @app.post("/api/chat/stream")
 async def chat_stream(request: ChatRequest) -> StreamingResponse:
+    ai = app.state.ai_binding
     response = await with_request_logging(
         route="/api/chat/stream",
-        handler=lambda: agent.answer(request),
+        handler=lambda: agent.answer(request, ai),
         base_fields={"language": request.language},
     )
     return StreamingResponse(stream_chat_response(response), media_type="text/event-stream")

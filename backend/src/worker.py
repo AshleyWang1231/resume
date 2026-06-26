@@ -16,6 +16,7 @@ class Default(WorkerEntrypoint):
             return Response(None, headers=CORS_HEADERS, status=204)
 
         sync_worker_env(self.env)
+        app.state.ai_binding = getattr(self.env, "AI", None)
         try:
             import asgi
             return await asgi.fetch(app, request.js_object, self.env)
