@@ -17,7 +17,7 @@ class LLMClient(Protocol):
 
 
 def build_llm_client() -> LLMClient:
-    provider = os.getenv("AI_PROVIDER", "openai").lower()
+    provider = os.getenv("AI_PROVIDER", "deepseek").lower()
     if provider == "qwen":
         return ChatCompletionsClient(
             provider="qwen",
