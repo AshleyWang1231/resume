@@ -11,8 +11,8 @@ resources:
     props:
       region: ${vars.region}
       functionName: resume-agent-api
-      runtime: python3.10
-      handler: index.handler
+      runtime: custom
+      handler: not-used
       code: .
       environmentVariables:
         AI_PROVIDER: deepseek
