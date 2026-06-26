@@ -246,6 +246,80 @@ function renderArchitecture(arch) {
   summary.textContent = lang === "zh" ? arch.summary_zh : arch.summary_en;
 }
 
+// ── Warm-up: pre-fetch FC + pre-compute suggestion answers ──
+//
+// Pattern borrowed from the Personalized Conversation Starters project on this
+// very resume: async precompute while the user is reading, so the first
+// interaction feels instant. FC cold start + DeepSeek TTFT both disappear.
+const warmupCache = {};   // key: "en|question" or "zh|question" → ChatResponse
+let warmupSessionId = null;
+let warmupDone = false;
+
+async function warmup() {
+  // Step 1: wake the FC instance (health is cheap, returns in <200ms once warm)
+  try { await fetch(`${API}/health`); } catch { /* ignore */ }
+
+  // Step 2: pre-fetch all 4 suggestions in parallel for current lang
+  const questions = {
+    en: [
+      "What AI Agent systems has Lu built?",
+      "Show Streaming and Tool Calling experience.",
+      "What measurable impact does Lu have?",
+      "Explain Lu's Text2SQL experience.",
+    ],
+    zh: [
+      "汪露做过哪些 AI Agent 系统？",
+      "展示 Streaming 和 Tool Calling 经验。",
+      "有哪些可量化结果？",
+      "介绍 Text2SQL 项目经验。",
+    ],
+  };
+
+  const prefetch = async (q, l) => {
+    const key = `${l}|${q}`;
+    if (warmupCache[key]) return;
+    try {
+      const res = await fetch(`${API}/api/chat`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ message: q, language: l, session_id: warmupSessionId }),
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      warmupCache[key] = data;
+      if (!warmupSessionId && data.session_id) warmupSessionId = data.session_id;
+      markSuggestionReady(q, l);
+    } catch { /* ignore — graceful degradation */ }
+  };
+
+  // Fetch both langs so language switching also feels instant
+  const allQuestions = [...questions.en.map(q => [q, "en"]), ...questions.zh.map(q => [q, "zh"])];
+  await Promise.allSettled(allQuestions.map(([q, l]) => prefetch(q, l)));
+  warmupDone = true;
+}
+
+function markSuggestionReady(question, l) {
+  if (l !== lang) return;
+  document.querySelectorAll(".suggestion-btn").forEach(btn => {
+    const q = l === "zh" ? btn.dataset.qZh : btn.dataset.qEn;
+    if (q === question) btn.classList.add("warmed");
+  });
+}
+
+// Typewriter effect for cached answers — feels natural, shows streaming UX
+function typewriterReveal(textEl, text, onDone) {
+  let i = 0;
+  const CHUNK = 18; // characters per frame — fast but visible
+  function step() {
+    if (i >= text.length) { onDone?.(); return; }
+    textEl.textContent += text.slice(i, i + CHUNK);
+    i += CHUNK;
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
 // ── Agent chat ────────────────────────────────────────────
 const messagesEl = document.querySelector("[data-agent-messages]");
 const form = document.querySelector("[data-agent-form]");
@@ -295,12 +369,22 @@ function addEvidence(parent, evidence) {
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-form.addEventListener("submit", async e => {
-  e.preventDefault();
-  const msg = input.value.trim();
-  if (!msg) return;
+async function sendMessage(msg) {
   input.value = "";
   addMsg("user", msg);
+
+  // ── Cache hit: instant typewriter reveal ─────────────────
+  const cacheKey = `${lang}|${msg}`;
+  if (warmupCache[cacheKey]) {
+    const data = warmupCache[cacheKey];
+    if (data.session_id && !sessionId) sessionId = warmupSessionId || data.session_id;
+    const el = addMsg("assistant", "");
+    const textEl = el.querySelector("p");
+    typewriterReveal(textEl, data.answer, () => addEvidence(el, data.evidence));
+    return;
+  }
+
+  // ── Cache miss: real streaming ────────────────────────────
   const loading = addMsg("assistant", t("agentThinking"));
   const toolMsgs = [];
 
@@ -332,12 +416,8 @@ form.addEventListener("submit", async e => {
         const ev = evLine.replace("event:", "").trim();
         const payload = JSON.parse(dataLine.replace("data:", "").trim());
 
-        if (ev === "metadata") {
-          if (payload.request_id) sessionId = payload.session_id || sessionId;
-        }
-        if (ev === "tool_call") {
-          toolMsgs.push(addToolMsg(payload.name));
-        }
+        if (ev === "metadata") sessionId = payload.session_id || sessionId;
+        if (ev === "tool_call") toolMsgs.push(addToolMsg(payload.name));
         if (ev === "answer_delta") {
           textEl.textContent += payload.text || "";
           messagesEl.scrollTop = messagesEl.scrollHeight;
@@ -346,12 +426,8 @@ form.addEventListener("submit", async e => {
           toolMsgs.forEach(m => m.remove());
           addEvidence(answerEl, payload);
         }
-        if (ev === "done" && payload.session_id) {
-          sessionId = payload.session_id;
-        }
-        if (ev === "error") {
-          textEl.textContent = payload.message || t("agentError");
-        }
+        if (ev === "done" && payload.session_id) sessionId = payload.session_id;
+        if (ev === "error") textEl.textContent = payload.message || t("agentError");
       }
     }
   } catch {
@@ -371,12 +447,18 @@ form.addEventListener("submit", async e => {
       addMsg("assistant", t("agentError"));
     }
   }
+}
+
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  const msg = input.value.trim();
+  if (msg) sendMessage(msg);
 });
 
 document.querySelectorAll(".suggestion-btn").forEach(btn => {
   btn.addEventListener("click", () => {
-    input.value = lang === "zh" ? btn.dataset.qZh : btn.dataset.qEn;
-    form.requestSubmit();
+    const q = lang === "zh" ? btn.dataset.qZh : btn.dataset.qEn;
+    sendMessage(q);
   });
 });
 
@@ -385,3 +467,5 @@ document.getElementById("year").textContent = new Date().getFullYear();
 applyLang();
 loadProjects();
 loadArchitecture();
+// Start warm-up after a short delay so critical resources load first
+setTimeout(warmup, 800);
