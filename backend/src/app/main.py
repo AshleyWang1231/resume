@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.config import load_local_env
 from app.harness import ResumeAgent
@@ -49,3 +52,8 @@ async def chat_stream(request: ChatRequest) -> StreamingResponse:
         base_fields={"language": request.language},
     )
     return StreamingResponse(stream_chat_response(response), media_type="text/event-stream")
+
+
+_static_dir = os.path.join(os.path.dirname(__file__), "..", "..", "..", "static")
+if os.path.isdir(_static_dir):
+    app.mount("/", StaticFiles(directory=_static_dir, html=True), name="static")

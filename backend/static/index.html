@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Lu Wang, AI Software Engineer focused on LLM applications, AI Agent systems, personalization, Text2SQL, RAG, and backend engineering."
+    />
+    <title>Lu Wang | AI Software Engineer</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Lu Wang resume home">
+        <span class="brand-mark">LW</span>
+        <span>
+          <strong>Lu Wang</strong>
+          <small>AI Software Engineer</small>
+        </span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#agent" data-i18n="navAgent">Resume Agent</a>
+        <a href="#systems" data-i18n="navSystems">AI Systems</a>
+        <a href="#method" data-i18n="navMethod">Method</a>
+        <a href="#skills" data-i18n="navSkills">Skills</a>
+      </nav>
+      <div class="header-actions">
+        <button class="lang-toggle" type="button" data-lang-toggle aria-label="Switch language">
+          中文
+        </button>
+        <a class="icon-button" href="assets/lu-wang-resume-cn-en.pdf" download aria-label="Download PDF resume">
+          PDF
+        </a>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow" data-i18n="eyebrow">AI Software Engineer</p>
+          <h1 data-i18n="heroName">Lu Wang</h1>
+          <p class="hero-summary" data-i18n="summary">
+            AI Software Engineer focused on building LLM applications and AI Agent systems for real business
+            scenarios. Experienced in Python/Java backend development, Agent Workflows, Tool Calling, Streaming,
+            personalization, product decision support, Text2SQL, and observability-driven performance diagnostics.
+          </p>
+          <div class="contact-row" aria-label="Contact information">
+            <a href="mailto:wanglu_ashley@126.com">wanglu_ashley@126.com</a>
+            <span data-i18n="phone">+86 13122038365</span>
+            <a href="assets/lu-wang-resume-cn-en.pdf" download data-i18n="downloadResume">Download resume</a>
+          </div>
+        </div>
+        <aside class="hero-console" aria-label="AI systems portfolio summary">
+          <div class="console-bar">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="console-body">
+            <p class="console-label" data-i18n="consoleLabel">AI systems shipped</p>
+            <div class="console-line">
+              <strong>Agent Runtime</strong>
+              <span data-i18n="consoleAgent">Tool Calling · Streaming · Responses API</span>
+            </div>
+            <div class="console-line">
+              <strong>Personalization</strong>
+              <span data-i18n="consolePersonalization">Profiles · Context · Warm-Up · Cache</span>
+            </div>
+            <div class="console-line">
+              <strong>Decision Support</strong>
+              <span data-i18n="consoleDecision">Product Comparison · Structured Output</span>
+            </div>
+            <div class="console-line">
+              <strong>Enterprise AI</strong>
+              <span data-i18n="consoleEnterprise">Text2SQL · RAG · Evaluation</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section id="agent" class="section-block agent-section">
+        <div class="section-heading">
+          <p class="eyebrow" data-i18n="agentEyebrow">Resume Agent</p>
+          <h2 data-i18n="agentTitle">Ask my resume</h2>
+        </div>
+        <div class="agent-shell">
+          <div class="agent-panel">
+            <div class="agent-messages" data-agent-messages>
+              <article class="agent-message assistant">
+                <p data-i18n="agentIntro">
+                  Ask about Lu's AI Agent, Streaming, personalization, Product Comparison, or Text2SQL experience.
+                </p>
+              </article>
+            </div>
+            <form class="agent-form" data-agent-form>
+              <input
+                type="text"
+                name="message"
+                data-agent-input
+                data-i18n-placeholder="agentPlaceholder"
+                placeholder="Ask about Lu's AI engineering experience..."
+                maxlength="500"
+                autocomplete="off"
+              />
+              <button type="submit" data-i18n="agentSend">Ask</button>
+            </form>
+          </div>
+          <aside class="agent-suggestions" aria-label="Suggested questions">
+            <p data-i18n="agentSuggestionsTitle">Try asking</p>
+            <button
+              type="button"
+              data-agent-question-en="What AI Agent systems has Lu built?"
+              data-agent-question-zh="汪露做过哪些 AI Agent 系统？"
+              data-i18n="agentQ1"
+            >
+              What AI Agent systems has Lu built?
+            </button>
+            <button
+              type="button"
+              data-agent-question-en="Show Lu's Streaming and Tool Calling experience."
+              data-agent-question-zh="展示 Streaming 和 Tool Calling 经验。"
+              data-i18n="agentQ2"
+            >
+              Show Streaming and Tool Calling experience.
+            </button>
+            <button
+              type="button"
+              data-agent-question-en="What measurable impact does Lu have?"
+              data-agent-question-zh="有哪些可量化结果？"
+              data-i18n="agentQ3"
+            >
+              What measurable impact does Lu have?
+            </button>
+            <button
+              type="button"
+              data-agent-question-en="Explain Lu's Text2SQL experience."
+              data-agent-question-zh="介绍 Text2SQL 项目经验。"
+              data-i18n="agentQ4"
+            >
+              Explain Text2SQL experience.
+            </button>
+          </aside>
+        </div>
+      </section>
+
+      <section id="systems" class="section-block systems-section">
+        <div class="section-heading">
+          <p class="eyebrow" data-i18n="systemsEyebrow">AI Systems Portfolio</p>
+          <h2 data-i18n="systemsTitle">From LLM capability to reliable product systems</h2>
+        </div>
+        <div class="capability-map">
+          <article class="capability-core">
+            <p class="eyebrow" data-i18n="coreEyebrow">Core</p>
+            <h3>LLM Application Engineering</h3>
+            <p data-i18n="coreDesc">
+              Turning model capabilities into tool-integrated, observable, testable, and user-facing systems.
+            </p>
+          </article>
+          <article class="capability-card">
+            <h3>Agent Runtime</h3>
+            <p data-i18n="capAgent">Tool orchestration, Streaming, final-answer extraction, and real-time response reliability.</p>
+          </article>
+          <article class="capability-card">
+            <h3>RAG / Text2SQL</h3>
+            <p data-i18n="capRag">Retrieval, reranking, SQL validation, evaluation datasets, and enterprise Q&A workflows.</p>
+          </article>
+          <article class="capability-card">
+            <h3>Personalization</h3>
+            <p data-i18n="capPersonalization">User profile, behavior, conversation context, Warm-Up precompute, cache, and fallback paths.</p>
+          </article>
+          <article class="capability-card">
+            <h3>Structured Output</h3>
+            <p data-i18n="capStructured">Model reasoning separated from deterministic rendering contracts for stable product experiences.</p>
+          </article>
+          <article class="capability-card">
+            <h3>Evaluation</h3>
+            <p data-i18n="capEvaluation">Benchmarking latency, accuracy, coverage, fallback behavior, and regression quality.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section-block workflow-section">
+        <div class="section-heading">
+          <p class="eyebrow" data-i18n="workflowEyebrow">Workflow Showcase</p>
+          <h2 data-i18n="workflowTitle">How the AI systems work</h2>
+        </div>
+        <div class="workflow-shell">
+          <div class="workflow-tabs" role="tablist" aria-label="AI workflow examples">
+            <button class="workflow-tab active" type="button" data-workflow-tab="agent" data-i18n="tabAgent">Agent Runtime</button>
+            <button class="workflow-tab" type="button" data-workflow-tab="personalization" data-i18n="tabPersonalization">Personalization</button>
+            <button class="workflow-tab" type="button" data-workflow-tab="comparison" data-i18n="tabComparison">Product Comparison</button>
+            <button class="workflow-tab" type="button" data-workflow-tab="text2sql" data-i18n="tabText2sql">Text2SQL</button>
+          </div>
+          <div class="workflow-panels">
+            <article class="workflow-panel active" data-workflow-panel="agent">
+              <h3>Agent Runtime</h3>
+              <div class="flow-steps">
+                <span data-i18n="agentStep1">User Intent</span><span data-i18n="agentStep2">Tool Calling</span><span data-i18n="agentStep3">Event Stream</span><span data-i18n="agentStep4">Final Answer</span>
+              </div>
+              <p data-i18n="flowAgent">
+                Coordinated tool results, process states, business events, and final model output in one real-time flow to reduce duplicated display and latency.
+              </p>
+            </article>
+            <article class="workflow-panel" data-workflow-panel="personalization">
+              <h3>Personalized Conversation Starters</h3>
+              <div class="flow-steps">
+                <span data-i18n="personalStep1">Profile</span><span data-i18n="personalStep2">Context</span><span data-i18n="personalStep3">Warm-Up</span><span data-i18n="personalStep4">Starter Suggestions</span>
+              </div>
+              <p data-i18n="flowPersonalization">
+                Combined profile signals, historical behavior, and conversation context with asynchronous precomputation to improve first-screen relevance and speed.
+              </p>
+            </article>
+            <article class="workflow-panel" data-workflow-panel="comparison">
+              <h3>Product Comparison Skill</h3>
+              <div class="flow-steps">
+                <span data-i18n="comparisonStep1">Natural Language</span><span data-i18n="comparisonStep2">Reference Parsing</span><span data-i18n="comparisonStep3">Criteria Selection</span><span data-i18n="comparisonStep4">Structured Table</span>
+              </div>
+              <p data-i18n="flowComparison">
+                Let the model understand shopping intent while deterministic code handles fields, discounts, layout, and rendering markers.
+              </p>
+            </article>
+            <article class="workflow-panel" data-workflow-panel="text2sql">
+              <h3>Text2SQL AI Agent</h3>
+              <div class="flow-steps">
+                <span data-i18n="text2sqlStep1">Clarify</span><span data-i18n="text2sqlStep2">Schema Link</span><span data-i18n="text2sqlStep3">SQL Validate</span><span data-i18n="text2sqlStep4">Summarize</span>
+              </div>
+              <p data-i18n="flowText2sql">
+                Built a multi-stage Agent workflow with prompt optimization, field/value reranking, SQL validation, retry logic, and evaluation cases.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="method" class="section-block method-section">
+        <div class="section-heading">
+          <p class="eyebrow" data-i18n="methodEyebrow">Engineering Method</p>
+          <h2 data-i18n="methodTitle">How I build LLM applications</h2>
+        </div>
+        <div class="principle-grid">
+          <article>
+            <span>01</span>
+            <h3 data-i18n="principle1Title">Separate reasoning from execution</h3>
+            <p data-i18n="principle1Desc">Use the model for understanding and generation; keep validation, routing, rendering, and safety controls deterministic.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3 data-i18n="principle2Title">Measure before tuning</h3>
+            <p data-i18n="principle2Desc">Use latency benchmarks, evaluation sets, scenario replay, and regression checks before changing prompts or workflows.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3 data-i18n="principle3Title">Design for failure paths</h3>
+            <p data-i18n="principle3Desc">Handle missing context, tool timeouts, empty values, service errors, and fallback behavior as first-class product flows.</p>
+          </article>
+          <article>
+            <span>04</span>
+            <h3 data-i18n="principle4Title">Make output easy to consume</h3>
+            <p data-i18n="principle4Desc">Prefer structured contracts, stable schemas, and frontend-friendly events over free-form model output where reliability matters.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="experience" class="section-block">
+        <div class="section-heading">
+          <p class="eyebrow" data-i18n="sectionCurrent">Current Focus</p>
+          <h2 data-i18n="experienceTitle">Work Experience</h2>
+        </div>
+        <div class="timeline">
+          <article class="timeline-item">
+            <div class="timeline-date">2025.08 - <span data-i18n="present">Present</span></div>
+            <div>
+              <h3 data-i18n="zalandoRole">AI Software Engineer</h3>
+              <p class="company">Zalando Technology Development (Shenzhen) Co., Ltd.</p>
+              <p data-i18n="zalandoRoleDesc">
+                Building customer-facing AI Agent capabilities for personalized shopping assistance, product decision
+                support, real-time response optimization, and runtime reliability.
+              </p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <div class="timeline-date">2021.04 - 2025.08</div>
+            <div>
+              <h3 data-i18n="thoughtworksRole">AI Software Engineer</h3>
+              <p class="company">Thoughtworks Software Technologies (Shenzhen) Co., Ltd.</p>
+              <p data-i18n="thoughtworksRoleDesc">
+                Delivered AI and backend systems for enterprise clients, including Text2SQL Agents, RAG Q&amp;A systems,
+                pricing platforms, and after-sales management systems.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="projects" class="section-block">
+        <div class="section-heading">
+          <p class="eyebrow" data-i18n="sectionSelected">Selected Work</p>
+          <h2 data-i18n="projectsTitle">AI Projects</h2>
+        </div>
+        <div class="project-grid">
+          <article class="project-card featured">
+            <div class="project-meta">Zalando Assistant</div>
+            <h3 data-i18n="p1Title">Personalized Conversation Starters</h3>
+            <p data-i18n="p1Desc">
+              Built personalized starter suggestions using user profile, behavior, conversation context, and product signals.
+            </p>
+            <div class="result-chips">
+              <span data-i18n="p1c1">+15% engagement</span>
+              <span data-i18n="p1c2">-60% cold start</span>
+              <span data-i18n="p1c3">-70% profile calls</span>
+              <span data-i18n="p1c4">800+ scenarios</span>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-meta">Zalando Assistant</div>
+            <h3 data-i18n="p2Title">Agent Runtime Upgrade</h3>
+            <p data-i18n="p2Desc">
+              Upgraded Agent Runtime with product-detail Tool Calling, Streaming handling, and OpenAI Responses API migration.
+            </p>
+            <div class="result-chips">
+              <span data-i18n="p2c1">-25% avg TTFT</span>
+              <span data-i18n="p2c2">-25% P95 TTFT</span>
+              <span data-i18n="p2c3">Streaming stability</span>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-meta">Zalando Assistant</div>
+            <h3 data-i18n="p3Title">Product Comparison Skill</h3>
+            <p data-i18n="p3Desc">
+              Launched natural-language product comparison with context-aware reference parsing and stable table rendering.
+            </p>
+            <div class="result-chips">
+              <span data-i18n="p3c1">+20% engagement</span>
+              <span data-i18n="p3c2">Multi-turn references</span>
+              <span data-i18n="p3c3">Structured output</span>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-meta" data-i18n="p4Meta">Thoughtworks · Leading Domestic Bank</div>
+            <h3 data-i18n="p4Title">Text2SQL AI Agent</h3>
+            <p data-i18n="p4Desc">
+              Built an enterprise data-analysis Agent for natural-language query, SQL generation, validation, and visualization.
+            </p>
+            <div class="result-chips">
+              <span data-i18n="p4c1">+20% accuracy</span>
+              <span data-i18n="p4c2">1,000+ cases</span>
+              <span data-i18n="p4c3">Field + value rerank</span>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <section id="skills" class="section-block split-section">
+        <div class="section-heading">
+          <p class="eyebrow" data-i18n="sectionCapabilities">Capabilities</p>
+          <h2 data-i18n="skillsTitle">Skills &amp; Technologies</h2>
+        </div>
+        <div class="skill-groups">
+          <article>
+            <h3 data-i18n="skillAi">AI / LLM Application Development</h3>
+            <div class="tag-list">
+              <span>LLM Agent</span><span>Agent Workflow</span><span>Pydantic-AI</span><span>Tool Calling</span>
+              <span>OpenAI Responses API</span><span>Streaming</span><span>RAG</span><span>Text2SQL</span>
+              <span>Prompt Engineering</span><span>RAGAS</span>
+            </div>
+          </article>
+          <article>
+            <h3 data-i18n="skillRetrieval">Retrieval and Vector Technologies</h3>
+            <div class="tag-list">
+              <span>FAISS</span><span>LlamaIndex</span><span>Embedding</span><span>Reranking</span>
+              <span>BGE-Reranker</span><span>pgvector</span>
+            </div>
+          </article>
+          <article>
+            <h3 data-i18n="skillBackend">Programming and Backend</h3>
+            <div class="tag-list">
+              <span>Python</span><span>Java</span><span>FastAPI</span><span>Spring Cloud</span><span>Redis</span>
+            </div>
+          </article>
+          <article>
+            <h3 data-i18n="skillTools">Engineering Tools</h3>
+            <div class="tag-list">
+              <span>Docker</span><span>Git</span><span>Pytest</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="education" class="section-block education-block">
+        <div class="section-heading">
+          <p class="eyebrow" data-i18n="sectionEducation">Education</p>
+          <h2 data-i18n="educationTitle">Education</h2>
+        </div>
+        <div class="education-list">
+          <article>
+            <h3 data-i18n="cardiffDegree">MSc in Computing</h3>
+            <p>Cardiff University, UK · 2019 - 2021</p>
+          </article>
+          <article>
+            <h3 data-i18n="suesDegree">BA in Marketing</h3>
+            <p>Shanghai University of Engineering Science, China · 2015 - 2019</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>© <span id="year"></span> Lu Wang</span>
+      <a href="mailto:wanglu_ashley@126.com">wanglu_ashley@126.com</a>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
