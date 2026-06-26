@@ -55,5 +55,9 @@ async def chat_stream(request: ChatRequest) -> StreamingResponse:
 
 
 _static_dir = os.path.join(os.path.dirname(__file__), "..", "..", "..", "static")
+_static_dir = os.path.abspath(_static_dir)
+if not os.path.isdir(_static_dir):
+    # FC runtime: code is at /code/
+    _static_dir = "/code/static"
 if os.path.isdir(_static_dir):
     app.mount("/", StaticFiles(directory=_static_dir, html=True), name="static")
