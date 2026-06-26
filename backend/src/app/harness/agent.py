@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import uuid
 
 from app.harness.prompts import fallback_answer
@@ -24,11 +25,16 @@ class ResumeAgent:
         )
         seed_evidence = search_resume_facts(context.message, context.language)
 
-        try:
-            llm_result = await llm_client.answer(context.message, context.language, seed_evidence)
-        except Exception as exc:
-            print(f"resume_agent_llm_error provider={llm_client.provider} error={exc.__class__.__name__}")
+        if not llm_client.is_configured():
+            print(json.dumps({"event": "llm_not_configured", "provider": llm_client.provider, "request_id": context.request_id}))
             llm_result = None
+        else:
+            print(json.dumps({"event": "llm_call_start", "provider": llm_client.provider, "request_id": context.request_id}))
+            try:
+                llm_result = await llm_client.answer(context.message, context.language, seed_evidence)
+            except Exception as exc:
+                print(json.dumps({"event": "llm_call_error", "provider": llm_client.provider, "error_type": exc.__class__.__name__, "error_message": str(exc), "request_id": context.request_id}))
+                llm_result = None
         if llm_result:
             return ChatResponse(
                 answer=llm_result.answer,

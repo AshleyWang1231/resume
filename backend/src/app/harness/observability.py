@@ -29,6 +29,7 @@ async def with_request_logging(
                 "route": route,
                 "status": "error",
                 "error_type": exc.__class__.__name__,
+                "error_message": str(exc),
                 "latency_ms": round(now_ms() - start),
             }
         )
