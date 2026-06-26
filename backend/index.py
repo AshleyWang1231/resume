@@ -14,17 +14,35 @@ from app.main import app
 def handler(event, context):
     """Aliyun FC3 python3.10 HTTP trigger handler."""
     if isinstance(event, (bytes, bytearray)):
-        event = json.loads(event.decode("utf-8"))
+        raw = event.decode("utf-8")
+    else:
+        raw = event
 
-    method = event.get("httpMethod") or event.get("method", "GET")
-    path = event.get("path", "/")
-    query_string = event.get("queryString") or ""
-    if isinstance(query_string, dict):
-        query_string = "&".join(f"{k}={v}" for k, v in query_string.items())
+    print(f"RAW_EVENT: {raw[:500]}")
 
-    raw_headers = event.get("headers") or {}
-    body_str = event.get("body") or ""
-    is_base64 = event.get("isBase64Encoded", False)
+    try:
+        evt = json.loads(raw) if isinstance(raw, str) else raw
+    except Exception:
+        evt = {}
+
+    # FC HTTP trigger v2 format uses 'requestContext', 'rawPath', 'rawQueryString'
+    # FC HTTP trigger v1 format uses 'httpMethod', 'path', 'queryString'
+    if "requestContext" in evt:
+        method = evt.get("requestContext", {}).get("http", {}).get("method", "GET")
+        path = evt.get("rawPath", "/")
+        query_string = evt.get("rawQueryString", "")
+        raw_headers = evt.get("headers") or {}
+        body_str = evt.get("body") or ""
+        is_base64 = evt.get("isBase64Encoded", False)
+    else:
+        method = evt.get("httpMethod") or evt.get("method", "GET")
+        path = evt.get("path", "/")
+        query_string = evt.get("queryString") or ""
+        if isinstance(query_string, dict):
+            query_string = "&".join(f"{k}={v}" for k, v in query_string.items())
+        raw_headers = evt.get("headers") or {}
+        body_str = evt.get("body") or ""
+        is_base64 = evt.get("isBase64Encoded", False)
 
     if is_base64:
         import base64
