@@ -48,7 +48,7 @@ jobs:
           ALIYUN_ACCOUNT_ID: ${{ secrets.ALIYUN_ACCOUNT_ID }}
           ALIYUN_ACCESS_KEY_ID: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
           ALIYUN_ACCESS_KEY_SECRET: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
-        run: s config add --provider alibaba --access aliyun --AccountID "$ALIYUN_ACCOUNT_ID" --AccessKeyID "$ALIYUN_ACCESS_KEY_ID" --AccessKeySecret "$ALIYUN_ACCESS_KEY_SECRET" -f
+        run: s config add --AccountID "$ALIYUN_ACCOUNT_ID" --AccessKeyID "$ALIYUN_ACCESS_KEY_ID" --AccessKeySecret "$ALIYUN_ACCESS_KEY_SECRET" --aliasName aliyun -f
 
       - name: Deploy to Function Compute
         env:
