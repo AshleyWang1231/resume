@@ -1,0 +1,71 @@
+name: Deploy frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "script.js"
+      - "styles.css"
+      - "assets/**"
+      - ".github/workflows/deploy-frontend.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy static site to Aliyun OSS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ossutil
+        run: |
+          curl -o ossutil.zip https://gosspublic.alicdn.com/ossutil/1.7.19/ossutil-v1.7.19-linux-amd64.zip
+          unzip ossutil.zip
+          chmod +x ossutil-v1.7.19-linux-amd64/ossutil64
+          sudo mv ossutil-v1.7.19-linux-amd64/ossutil64 /usr/local/bin/ossutil
+
+      - name: Configure ossutil
+        env:
+          ALIYUN_ACCESS_KEY_ID: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
+          ALIYUN_ACCESS_KEY_SECRET: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
+        run: |
+          ossutil config -e oss-cn-hangzhou.aliyuncs.com \
+            -i "$ALIYUN_ACCESS_KEY_ID" \
+            -k "$ALIYUN_ACCESS_KEY_SECRET" \
+            -L CH
+
+      - name: Create bucket if not exists
+        run: ossutil mb oss://resume-wanglu-ashley -e oss-cn-hangzhou.aliyuncs.com || true
+
+      - name: Set bucket ACL to public-read
+        run: ossutil set-acl oss://resume-wanglu-ashley public-read
+
+      - name: Enable static website hosting
+        run: |
+          ossutil website --method put oss://resume-wanglu-ashley \
+            --index index.html \
+            --error index.html
+
+      - name: Sync static files to OSS
+        run: |
+          ossutil sync . oss://resume-wanglu-ashley/ \
+            --include "*.html" \
+            --include "*.js" \
+            --include "*.css" \
+            --include "assets/*" \
+            --delete \
+            --force \
+            --exclude "backend/*" \
+            --exclude ".github/*" \
+            --exclude ".git/*" \
+            --exclude "docs/*" \
+            --exclude "*.md" \
+            --exclude "*.json" \
+            --exclude "*.lock" \
+            --exclude "*.toml"
+
+      - name: Print website URL
+        run: echo "Website live at http://resume-wanglu-ashley.oss-cn-hangzhou.aliyuncs.com"
