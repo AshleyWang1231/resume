@@ -4,7 +4,7 @@ import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.config import load_local_env
@@ -26,6 +26,20 @@ app.add_middleware(
     allow_methods=["POST", "GET"],
     allow_headers=["*"],
 )
+
+_static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "static"))
+if not os.path.isdir(_static_dir):
+    _static_dir = "/code/static"
+_index_html = os.path.join(_static_dir, "index.html") if os.path.isdir(_static_dir) else None
+
+
+@app.get("/", response_class=HTMLResponse)
+@app.get("/index.html", response_class=HTMLResponse)
+async def index() -> HTMLResponse:
+    if _index_html and os.path.isfile(_index_html):
+        with open(_index_html, encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    return HTMLResponse(content="<h1>Not found</h1>", status_code=404)
 
 
 @app.get("/health")
@@ -54,10 +68,5 @@ async def chat_stream(request: ChatRequest) -> StreamingResponse:
     return StreamingResponse(stream_chat_response(response), media_type="text/event-stream")
 
 
-_static_dir = os.path.join(os.path.dirname(__file__), "..", "..", "..", "static")
-_static_dir = os.path.abspath(_static_dir)
-if not os.path.isdir(_static_dir):
-    # FC runtime: code is at /code/
-    _static_dir = "/code/static"
 if os.path.isdir(_static_dir):
     app.mount("/", StaticFiles(directory=_static_dir, html=True), name="static")
