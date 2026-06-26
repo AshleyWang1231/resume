@@ -8,7 +8,7 @@ from typing import Any
 
 from app.harness.openai_client import OpenAIResult
 from app.harness.pydantic_tools import chat_completion_tool_schemas, validate_tool_arguments
-from app.harness.prompts import system_prompt
+from app.harness.prompts import system_prompt, system_prompt_with_history
 from app.harness.tools import execute_tool, serialize_tool_result
 from app.models import EvidenceCard, Language
 
@@ -35,14 +35,15 @@ class ChatCompletionsClient:
     def is_configured(self) -> bool:
         return bool(self._api_key())
 
-    async def answer(self, message: str, language: Language, seed_evidence: list[EvidenceCard]) -> OpenAIResult | None:
+    async def answer(self, message: str, language: Language, seed_evidence: list[EvidenceCard], history: list[dict[str, str]] | None = None) -> OpenAIResult | None:
         if not self.is_configured():
             return None
 
-        messages: list[dict[str, Any]] = [
-            {"role": "system", "content": system_prompt(language)},
-            {"role": "user", "content": message},
-        ]
+        sys_prompt = system_prompt_with_history(language) if history else system_prompt(language)
+        messages: list[dict[str, Any]] = [{"role": "system", "content": sys_prompt}]
+        if history:
+            messages.extend({"role": h["role"], "content": h["content"]} for h in history[-6:])
+        messages.append({"role": "user", "content": message})
         first_response = await self._post_chat_completions(
             {"model": self._model(), "messages": messages, "tools": chat_completion_tool_schemas(), "tool_choice": "auto"}
         )
