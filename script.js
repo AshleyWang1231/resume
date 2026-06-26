@@ -329,26 +329,18 @@ agentForm.addEventListener("submit", async (event) => {
   const loading = appendMessage("assistant", getText("agentThinking"));
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/chat`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        message,
-        language: getCurrentLanguage(),
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Resume agent request failed: ${response.status}`);
-    }
-
-    const payload = await response.json();
     loading.remove();
-    appendAgentResponse(payload);
+    await streamAgentResponse(message);
   } catch (error) {
     console.error(error);
     loading.remove();
-    appendMessage("assistant", getText("agentError"));
+    try {
+      const payload = await fetchAgentResponse(message);
+      appendAgentResponse(payload);
+    } catch (fallbackError) {
+      console.error(fallbackError);
+      appendMessage("assistant", getText("agentError"));
+    }
   }
 });
 
@@ -366,6 +358,81 @@ function getCurrentLanguage() {
 
 function getText(key) {
   return translations[getCurrentLanguage()][key] || translations.en[key] || key;
+}
+
+async function fetchAgentResponse(message) {
+  const response = await fetch(`${API_BASE_URL}/api/chat`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      message,
+      language: getCurrentLanguage(),
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Resume agent request failed: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+async function streamAgentResponse(message) {
+  const response = await fetch(`${API_BASE_URL}/api/chat/stream`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      message,
+      language: getCurrentLanguage(),
+    }),
+  });
+
+  if (!response.ok || !response.body) {
+    throw new Error(`Resume agent stream failed: ${response.status}`);
+  }
+
+  const streamedMessage = appendMessage("assistant", "");
+  const streamedText = streamedMessage.querySelector("p");
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const events = buffer.split("\n\n");
+    buffer = events.pop() || "";
+    events.forEach((eventText) => handleStreamEvent(eventText, streamedMessage, streamedText));
+  }
+
+  if (buffer) {
+    handleStreamEvent(buffer, streamedMessage, streamedText);
+  }
+}
+
+function handleStreamEvent(eventText, message, textElement) {
+  const lines = eventText.split("\n");
+  const eventLine = lines.find((line) => line.startsWith("event:"));
+  const dataLine = lines.find((line) => line.startsWith("data:"));
+  if (!eventLine || !dataLine) return;
+
+  const eventName = eventLine.replace("event:", "").trim();
+  const rawData = dataLine.replace("data:", "").trim();
+  const payload = JSON.parse(rawData);
+
+  if (eventName === "answer_delta") {
+    textElement.textContent += payload.text || "";
+    agentMessages.scrollTop = agentMessages.scrollHeight;
+  }
+
+  if (eventName === "evidence" && Array.isArray(payload)) {
+    appendEvidence(message, payload);
+  }
+
+  if (eventName === "error") {
+    textElement.textContent = payload.message || getText("agentError");
+  }
 }
 
 function appendMessage(role, text) {
@@ -388,36 +455,46 @@ function appendAgentResponse(payload) {
   message.append(answer);
 
   if (Array.isArray(payload.evidence) && payload.evidence.length > 0) {
-    const evidenceList = document.createElement("div");
-    evidenceList.className = "evidence-list";
-
-    payload.evidence.forEach((item) => {
-      const card = document.createElement("section");
-      card.className = "evidence-card";
-
-      const title = document.createElement("strong");
-      title.textContent = item.title;
-      const meta = document.createElement("span");
-      meta.textContent = item.company;
-      const summary = document.createElement("p");
-      summary.textContent = item.summary;
-
-      const chips = document.createElement("div");
-      chips.className = "result-chips";
-      [...(item.evidence || []), ...(item.skills || []).slice(0, 3)].forEach((chipText) => {
-        const chip = document.createElement("span");
-        chip.textContent = chipText;
-        chips.append(chip);
-      });
-
-      card.append(title, meta, summary, chips);
-      evidenceList.append(card);
-    });
-
-    message.append(evidenceList);
+    appendEvidence(message, payload.evidence);
   }
 
   agentMessages.append(message);
+  agentMessages.scrollTop = agentMessages.scrollHeight;
+}
+
+function appendEvidence(message, evidence) {
+  const existing = message.querySelector(".evidence-list");
+  if (existing) {
+    existing.remove();
+  }
+
+  const evidenceList = document.createElement("div");
+  evidenceList.className = "evidence-list";
+
+  evidence.forEach((item) => {
+    const card = document.createElement("section");
+    card.className = "evidence-card";
+
+    const title = document.createElement("strong");
+    title.textContent = item.title;
+    const meta = document.createElement("span");
+    meta.textContent = item.company;
+    const summary = document.createElement("p");
+    summary.textContent = item.summary;
+
+    const chips = document.createElement("div");
+    chips.className = "result-chips";
+    [...(item.evidence || []), ...(item.skills || []).slice(0, 3)].forEach((chipText) => {
+      const chip = document.createElement("span");
+      chip.textContent = chipText;
+      chips.append(chip);
+    });
+
+    card.append(title, meta, summary, chips);
+    evidenceList.append(card);
+  });
+
+  message.append(evidenceList);
   agentMessages.scrollTop = agentMessages.scrollHeight;
 }
 

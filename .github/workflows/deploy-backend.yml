@@ -36,6 +36,9 @@ jobs:
       - name: Install Node dependencies
         run: npm ci
 
+      - name: Run backend eval tests
+        run: uv run pytest
+
       - name: Deploy to Cloudflare Workers
         run: uv run pywrangler deploy
         env:

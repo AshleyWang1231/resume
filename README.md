@@ -9,6 +9,7 @@ Static bilingual AI Engineer portfolio and resume website for GitHub Pages.
 - `script.js` - Chinese/English language switcher
 - `assets/lu-wang-resume-cn-en.pdf` - downloadable bilingual PDF resume
 - `backend/` - Python FastAPI skeleton for the future Resume Agent API
+- `docs/backend-ai-v1-design.md` - first-version design for the real AI Resume Agent backend
 
 ## Sections
 

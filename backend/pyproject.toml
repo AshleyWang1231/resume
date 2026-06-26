@@ -7,12 +7,16 @@ requires-python = ">=3.12"
 dependencies = [
   "fastapi==0.115.6",
   "pydantic==2.10.4",
+  "pydantic-ai-slim==1.60.0",
 ]
 
 [dependency-groups]
 dev = [
+  "pytest==8.4.1",
   "uvicorn[standard]==0.34.0",
   "workers-py",
   "workers-runtime-sdk",
 ]
 
+[tool.pytest.ini_options]
+pythonpath = ["src"]

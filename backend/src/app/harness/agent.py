@@ -1,0 +1,49 @@
+from __future__ import annotations
+
+import uuid
+
+from app.harness.prompts import fallback_answer
+from app.harness.provider_factory import LLMClient, build_llm_client
+from app.harness.router import route_intent
+from app.harness.tools import search_resume_facts
+from app.models import AgentContext, ChatRequest, ChatResponse
+from app.resume_data import SUGGESTED_QUESTIONS
+
+
+class ResumeAgent:
+    def __init__(self, llm_client: LLMClient | None = None) -> None:
+        self.llm_client = llm_client
+
+    async def answer(self, request: ChatRequest) -> ChatResponse:
+        llm_client = self.llm_client or build_llm_client()
+        context = AgentContext(
+            request_id=str(uuid.uuid4()),
+            message=request.message.strip(),
+            language=request.language,
+            intent=route_intent(request.message),
+        )
+        seed_evidence = search_resume_facts(context.message, context.language)
+
+        try:
+            llm_result = await llm_client.answer(context.message, context.language, seed_evidence)
+        except Exception as exc:
+            print(f"resume_agent_llm_error provider={llm_client.provider} error={exc.__class__.__name__}")
+            llm_result = None
+        if llm_result:
+            return ChatResponse(
+                answer=llm_result.answer,
+                evidence=llm_result.evidence,
+                suggested_questions=SUGGESTED_QUESTIONS[context.language],
+                request_id=context.request_id,
+                source=llm_result.provider,
+                tools_called=llm_result.tools_called,
+            )
+
+        return ChatResponse(
+            answer=fallback_answer(context.language, [item.title for item in seed_evidence]),
+            evidence=seed_evidence,
+            suggested_questions=SUGGESTED_QUESTIONS[context.language],
+            request_id=context.request_id,
+            source="fallback",
+            tools_called=["search_resume_facts"],
+        )

@@ -1,0 +1,30 @@
+[
+  {
+    "id": "streaming_tool_calling_en",
+    "message": "Show Lu's Streaming and Tool Calling experience.",
+    "language": "en",
+    "must_include": ["Agent Runtime Upgrade", "Tool Calling", "Streaming", "25%"],
+    "expected_project_ids": ["agent-runtime"]
+  },
+  {
+    "id": "personalization_zh",
+    "message": "介绍一下个性化推荐和 Conversation Starters",
+    "language": "zh",
+    "must_include": ["Personalized Conversation Starters", "15%", "60%"],
+    "expected_project_ids": ["personalization"]
+  },
+  {
+    "id": "product_comparison_en",
+    "message": "What Product Comparison Skill did Lu build?",
+    "language": "en",
+    "must_include": ["Product Comparison Skill", "20%", "Structured"],
+    "expected_project_ids": ["product-comparison"]
+  },
+  {
+    "id": "text2sql_zh",
+    "message": "介绍 Text2SQL 项目经验",
+    "language": "zh",
+    "must_include": ["Text2SQL AI Agent", "20%", "1,000"],
+    "expected_project_ids": ["text2sql"]
+  }
+]
