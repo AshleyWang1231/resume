@@ -38,7 +38,10 @@ _index_html = os.path.join(_static_dir, "index.html") if os.path.isdir(_static_d
 async def index() -> HTMLResponse:
     if _index_html and os.path.isfile(_index_html):
         with open(_index_html, encoding="utf-8") as f:
-            return HTMLResponse(content=f.read())
+            return HTMLResponse(
+                content=f.read(),
+                headers={"Content-Disposition": "inline"},
+            )
     return HTMLResponse(content="<h1>Not found</h1>", status_code=404)
 
 
