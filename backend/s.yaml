@@ -11,7 +11,7 @@ resources:
     props:
       region: ${vars.region}
       functionName: resume-agent-api
-      runtime: custom
+      runtime: custom.debian10
       handler: not-used
       code: .
       environmentVariables:
