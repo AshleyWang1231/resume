@@ -1,16 +1,16 @@
 from __future__ import annotations
 
 from app.harness.chat_completions_client import ChatCompletionsClient
-from app.harness.openai_client import OpenAIResponsesClient
 from app.harness.provider_factory import build_llm_client
 
 
-def test_default_provider_uses_openai_responses(monkeypatch):
+def test_default_provider_uses_deepseek(monkeypatch):
     monkeypatch.delenv("AI_PROVIDER", raising=False)
     client = build_llm_client()
-    assert isinstance(client, OpenAIResponsesClient)
-    assert client.provider == "openai"
-    assert client._model() == "gpt-4.1-mini"
+    assert isinstance(client, ChatCompletionsClient)
+    assert client.provider == "deepseek"
+    assert client._model() == "deepseek-v4-flash"
+    assert client._base_url() == "https://api.deepseek.com"
 
 
 def test_qwen_provider_uses_openai_compatible_chat_completions(monkeypatch):
