@@ -35,7 +35,7 @@ jobs:
         run: uv run pytest tests/ -x -q
 
       - name: Install dependencies into vendor/
-        run: pip install -r requirements.txt --target vendor --platform manylinux2014_x86_64 --python-version 3.12 --only-binary=:all: --upgrade
+        run: "pip install -r requirements.txt --target vendor --platform manylinux2014_x86_64 --python-version 3.12 --only-binary=:all: --upgrade"
 
       - name: Make bootstrap executable
         run: chmod +x bootstrap
@@ -44,19 +44,16 @@ jobs:
         run: npm install -g @serverless-devs/s
 
       - name: Configure Serverless Devs credentials
-        run: |
-          s config add \
-            --provider alibaba \
-            --access aliyun \
-            --AccountID ${{ secrets.ALIYUN_ACCOUNT_ID }} \
-            --AccessKeyID ${{ secrets.ALIYUN_ACCESS_KEY_ID }} \
-            --AccessKeySecret ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }} \
-            -f
+        env:
+          ALIYUN_ACCOUNT_ID: ${{ secrets.ALIYUN_ACCOUNT_ID }}
+          ALIYUN_ACCESS_KEY_ID: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
+          ALIYUN_ACCESS_KEY_SECRET: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
+        run: s config add --provider alibaba --access aliyun --AccountID "$ALIYUN_ACCOUNT_ID" --AccessKeyID "$ALIYUN_ACCESS_KEY_ID" --AccessKeySecret "$ALIYUN_ACCESS_KEY_SECRET" -f
 
       - name: Deploy to Function Compute
-        run: s deploy --assume-yes
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: s deploy --assume-yes
 
       - name: Get endpoint URL
         run: s info
