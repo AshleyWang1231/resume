@@ -41,7 +41,7 @@ jobs:
         run: ossutil mb oss://resume-wanglu-ashley -e oss-cn-hangzhou.aliyuncs.com || true
 
       - name: Set bucket ACL to public-read
-        run: ossutil set-acl oss://resume-wanglu-ashley public-read
+        run: ossutil set-acl oss://resume-wanglu-ashley public-read --bucket
 
       - name: Enable static website hosting
         run: |
