@@ -10,7 +10,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy FastAPI Worker
+    name: Deploy to Aliyun Function Compute
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -24,8 +24,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: backend/package-lock.json
 
       - name: Setup uv
         uses: astral-sh/setup-uv@v5
@@ -33,17 +31,32 @@ jobs:
           enable-cache: true
           cache-dependency-glob: backend/uv.lock
 
-      - name: Install Node dependencies
-        run: npm ci
+      - name: Run tests
+        run: uv run pytest tests/ -x -q
 
-      - name: Run backend eval tests
-        run: uv run pytest
+      - name: Install dependencies into vendor/
+        run: pip install -r requirements.txt --target vendor --platform manylinux2014_x86_64 --python-version 3.12 --only-binary=:all: --upgrade
 
-      - name: Deploy to Cloudflare Workers
-        run: uv run pywrangler deploy
+      - name: Make bootstrap executable
+        run: chmod +x bootstrap
+
+      - name: Install Serverless Devs
+        run: npm install -g @serverless-devs/s
+
+      - name: Configure Serverless Devs credentials
+        run: |
+          s config add \
+            --provider alibaba \
+            --access aliyun \
+            --AccountID ${{ secrets.ALIYUN_ACCOUNT_ID }} \
+            --AccessKeyID ${{ secrets.ALIYUN_ACCESS_KEY_ID }} \
+            --AccessKeySecret ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }} \
+            -f
+
+      - name: Deploy to Function Compute
+        run: s deploy --assume-yes
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
 
-      - name: Verify health endpoint
-        run: curl --fail --silent --show-error https://resume-agent-api.wanglu-ashley.workers.dev/health
+      - name: Get endpoint URL
+        run: s info

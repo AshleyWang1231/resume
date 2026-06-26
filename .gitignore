@@ -16,6 +16,6 @@ dist/
 build/
 node_modules/
 .wrangler/
-backend/python_modules/
+backend/vendor/
 backend/.venv-workers/
 backend/.wrangler/

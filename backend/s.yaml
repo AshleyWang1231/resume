@@ -1,0 +1,31 @@
+edition: 3.0.0
+name: resume-agent-backend
+access: aliyun
+
+vars:
+  region: cn-hangzhou
+
+resources:
+  resumeAgentApi:
+    component: fc3
+    props:
+      region: ${vars.region}
+      functionName: resume-agent-api
+      runtime: custom
+      handler: not-used
+      code: .
+      environmentVariables:
+        AI_PROVIDER: deepseek
+        DEEPSEEK_API_KEY: ${env(DEEPSEEK_API_KEY)}
+      triggers:
+        - triggerName: defaultHttpTrigger
+          triggerType: http
+          triggerConfig:
+            authType: anonymous
+            methods:
+              - GET
+              - POST
+              - OPTIONS
+      memorySize: 512
+      timeout: 60
+      instanceConcurrency: 10

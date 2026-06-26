@@ -1,0 +1,13 @@
+node_modules
+.env
+.env.*
+tests
+__pycache__
+*.pyc
+.pytest_cache
+pyproject.toml
+uv.lock
+wrangler.jsonc
+package.json
+package-lock.json
+README.md
