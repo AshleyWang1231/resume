@@ -36,6 +36,7 @@ jobs:
           cache-dependency-glob: backend/uv.lock
 
       - name: Copy frontend files into backend/static/
+        working-directory: .
         run: |
           mkdir -p backend/static/assets
           cp index.html script.js styles.css backend/static/
