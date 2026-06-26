@@ -88,11 +88,6 @@ def handler(event, context):
     resp_headers = {k.decode(): v.decode() for k, v in response_started.get("headers", [])}
     body_out = response_body.getvalue()
 
-    # Override FC trigger's forced Content-Disposition: attachment on HTML
-    resp_headers["x-fc-status"] = str(status_code)
-    if "content-disposition" not in resp_headers:
-        resp_headers["content-disposition"] = "inline"
-
     return {
         "statusCode": status_code,
         "headers": resp_headers,
