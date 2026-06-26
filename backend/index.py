@@ -88,6 +88,9 @@ def handler(event, context):
     resp_headers = {k.decode(): v.decode() for k, v in response_started.get("headers", [])}
     body_out = response_body.getvalue()
 
+    # FC HTTP trigger blocks text/html responses with 403 unless x-fc-status is set
+    resp_headers["x-fc-status"] = str(status_code)
+
     return {
         "statusCode": status_code,
         "headers": resp_headers,

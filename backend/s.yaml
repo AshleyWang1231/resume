@@ -11,8 +11,8 @@ resources:
     props:
       region: ${vars.region}
       functionName: resume-agent-api
-      runtime: custom.debian10
-      handler: not-used
+      runtime: python3.10
+      handler: index.handler
       code: .
       environmentVariables:
         AI_PROVIDER: deepseek
