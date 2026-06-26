@@ -4,6 +4,9 @@
   "main": "src/worker.py",
   "compatibility_date": "2026-06-13",
   "compatibility_flags": ["python_workers", "python_dedicated_snapshot"],
+  "limits": {
+    "cpu_ms": 30000
+  },
   "observability": {
     "enabled": true
   }

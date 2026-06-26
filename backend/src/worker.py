@@ -13,7 +13,7 @@ CORS_HEADERS = {
 class Default(WorkerEntrypoint):
     async def fetch(self, request):
         if request.method == "OPTIONS":
-            return Response("", headers=CORS_HEADERS, status=204)
+            return Response(None, headers=CORS_HEADERS, status=204)
 
         sync_worker_env(self.env)
         try:
