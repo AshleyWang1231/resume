@@ -187,6 +187,10 @@ function focusTerminal() {
 }
 
 function scrollToSection(id) {
+  if (id === "top") {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    return true;
+  }
   const target = document.getElementById(id);
   if (!target) return false;
   target.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -246,9 +250,7 @@ function bindCommandConsole() {
     el.addEventListener("click", (event) => {
       const command = el.dataset.runCommand || el.dataset.command;
       if (!command) return;
-      if (command.startsWith("/") && !command.startsWith("/agent") && !command.startsWith("/projects") && !command.startsWith("/capabilities") && !command.startsWith("/system")) {
-        event.preventDefault();
-      }
+      if (command.startsWith("/")) event.preventDefault();
       runCommand(command);
     });
   });
