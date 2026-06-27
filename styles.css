@@ -233,6 +233,7 @@ h3 { margin-bottom: 10px; font-size: 17px; }
   min-height: 520px;
   display: grid;
   grid-template-rows: auto 1fr auto auto;
+  scroll-margin-top: calc(var(--header-h) + 18px);
 }
 .window-bar {
   height: 46px;
@@ -615,7 +616,7 @@ h3 { margin-bottom: 10px; font-size: 17px; }
   .hero-lead { font-size: 17px; }
   .metric-card strong { font-size: 38px; }
   .hero-section { padding-top: 44px; }
-  .command-panel { min-height: 430px; }
+  .command-panel { min-height: 430px; scroll-margin-top: 142px; }
   .console-feed { min-height: 230px; padding: 16px; }
   .capability-grid,
   .agent-proof-grid,

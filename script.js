@@ -182,8 +182,13 @@ function addTerminalMessage(role, text) {
 }
 
 function focusTerminal() {
-  scrollToSection("top");
-  window.setTimeout(() => $("[data-command-input]")?.focus(), 350);
+  const panel = $(".command-panel");
+  if (panel) {
+    panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  } else {
+    scrollToSection("top");
+  }
+  window.setTimeout(() => $("[data-command-input]")?.focus({ preventScroll: true }), 350);
 }
 
 function scrollToSection(id) {
@@ -227,9 +232,12 @@ function runCommand(rawCommand) {
   }
 
   if (routes[lower]) {
-    scrollToSection(routes[lower]);
+    if (lower === "/agent") {
+      focusTerminal();
+    } else {
+      scrollToSection(routes[lower]);
+    }
     addConsoleLine(command, `${t("cmdScrolled")}: ${routes[lower]}`);
-    if (lower === "/agent") window.setTimeout(() => $("[data-command-input]")?.focus(), 350);
     return;
   }
 
