@@ -3,180 +3,167 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Lu Wang — Senior AI Software Engineer. LLM applications, AI Agent systems, Streaming, Tool Calling, Text2SQL, personalization at Zalando and Thoughtworks." />
-    <title>Lu Wang | Senior AI Engineer</title>
+    <meta name="description" content="Lu Wang, AI Software Engineer building LLM agents, Streaming systems, Tool Calling workflows, personalization, and Text2SQL products." />
+    <title>Lu Wang | AI Software Engineer</title>
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <div class="scene" aria-hidden="true">
+      <div class="scene-grid"></div>
+      <div class="scene-orbit orbit-a"></div>
+      <div class="scene-orbit orbit-b"></div>
+      <div class="scene-glow" data-cursor-glow></div>
+      <div class="scene-noise"></div>
+    </div>
 
-    <!-- ── HEADER ─────────────────────────────────────────── -->
     <header class="site-header">
       <a class="brand" href="#top" aria-label="Lu Wang home">
         <span class="brand-mark">LW</span>
-        <span class="brand-text">
+        <span class="brand-copy">
           <strong>Lu Wang</strong>
-          <small data-i18n="eyebrow">Senior AI Engineer</small>
+          <small data-i18n="eyebrow">AI Software Engineer</small>
         </span>
       </a>
       <nav class="nav-links" aria-label="Primary navigation">
-        <a href="#agent" data-i18n="navAgent">Resume Agent</a>
-        <a href="#impact" data-i18n="navImpact">Impact</a>
-        <a href="#projects" data-i18n="navProjects">Projects</a>
-        <a href="#architecture" data-i18n="navArchitecture">Architecture</a>
-        <a href="#skills" data-i18n="navSkills">Skills</a>
+        <a href="#capabilities" data-command="/capabilities" data-i18n="navCapabilities">Capabilities</a>
+        <a href="#agent" data-command="/agent" data-i18n="navAgent">Agent</a>
+        <a href="#projects" data-command="/projects" data-i18n="navProjects">Projects</a>
+        <a href="#system" data-command="/system" data-i18n="navSystem">System</a>
       </nav>
       <div class="header-actions">
-        <button class="btn-ghost" type="button" data-lang-toggle aria-label="Switch language">中文</button>
-        <a class="btn-ghost" href="assets/lu-wang-resume-cn-en.pdf" download data-i18n="downloadResume">PDF</a>
+        <button class="btn btn-secondary" type="button" data-lang-toggle aria-label="Switch language">中文</button>
+        <a class="btn btn-secondary" href="assets/lu-wang-resume-cn-en.pdf" download data-i18n="downloadResume">PDF</a>
       </div>
     </header>
 
     <main id="top">
-
-      <!-- ── HERO ──────────────────────────────────────────── -->
-      <section class="hero">
+      <section class="hero-section" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <p class="label" data-i18n="heroLabel">AI Software Engineer · Zalando</p>
-          <h1 data-i18n="heroName">Lu Wang</h1>
+          <p class="kicker" data-i18n="heroKicker">AI Software Engineer · Zalando</p>
+          <h1 id="hero-title" data-i18n="heroTitle">I build LLM agents that make product decisions easier.</h1>
           <p class="hero-lead" data-i18n="heroLead">
-            Builds LLM applications that ship to millions of users. Specialises in Agent Runtime, Tool Calling, Streaming, and evaluation-driven delivery.
+            Focused on Agent Runtime, Tool Calling, Streaming UX, personalization, and Text2SQL systems that can be measured, tested, and shipped.
           </p>
-          <div class="hero-contact">
-            <a href="mailto:wanglu_ashley@126.com">wanglu_ashley@126.com</a>
-            <span data-i18n="phone">+86 13122038365</span>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#agent" data-command="/agent" data-i18n="heroAsk">Ask the resume agent</a>
+            <a class="btn btn-secondary" href="#projects" data-command="/projects" data-i18n="heroWork">View selected work</a>
           </div>
-          <div class="hero-badges">
-            <span class="badge badge-green" data-i18n="badge1">4+ yrs AI engineering</span>
-            <span class="badge badge-blue" data-i18n="badge2">Zalando · Thoughtworks</span>
-            <span class="badge badge-purple" data-i18n="badge3">Cardiff MSc Computing</span>
+          <div class="signal-row" aria-label="Selected outcomes">
+            <span><strong>-25%</strong> TTFT</span>
+            <span><strong>+20%</strong> comparison engagement</span>
+            <span><strong>1,000+</strong> eval cases</span>
           </div>
         </div>
-        <aside class="hero-terminal" aria-label="System overview">
-          <div class="terminal-bar">
-            <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-            <span class="terminal-title">resume-agent-api</span>
+
+        <aside class="command-panel" aria-label="Command console">
+          <div class="window-bar">
+            <span></span><span></span><span></span>
+            <small>resume.command</small>
           </div>
-          <div class="terminal-body">
-            <div class="terminal-line"><span class="t-dim">$</span> <span class="t-cmd">GET</span> /health</div>
-            <div class="terminal-line t-json">{</div>
-            <div class="terminal-line t-json">  <span class="t-key">"status"</span>: <span class="t-str">"ok"</span>,</div>
-            <div class="terminal-line t-json">  <span class="t-key">"version"</span>: <span class="t-str">"2.0.0"</span>,</div>
-            <div class="terminal-line t-json">  <span class="t-key">"capabilities"</span>: [</div>
-            <div class="terminal-line t-json">    <span class="t-str">"multi-turn"</span>,</div>
-            <div class="terminal-line t-json">    <span class="t-str">"streaming"</span>,</div>
-            <div class="terminal-line t-json">    <span class="t-str">"tool-calling"</span>,</div>
-            <div class="terminal-line t-json">    <span class="t-str">"evidence-cards"</span></div>
-            <div class="terminal-line t-json">  ]</div>
-            <div class="terminal-line t-json">}</div>
-            <div class="terminal-line"><span class="t-dim">$</span> <span class="t-cmd">POST</span> /api/chat/stream</div>
-            <div class="terminal-line t-muted">event: tool_call  → search_resume_facts</div>
-            <div class="terminal-line t-muted">event: answer_delta → <span class="t-cursor">▋</span></div>
+          <div class="console-feed" data-command-feed>
+            <p><span class="prompt">lu@resume</span> boot --profile ai-engineer</p>
+            <p class="console-muted" data-i18n="consoleLine1">Profile loaded: Agent Runtime, Streaming, Tool Calling, Personalization, Text2SQL.</p>
+            <p><span class="prompt">lu@resume</span> status</p>
+            <p class="console-muted" data-i18n="consoleLine2">Ready. Use commands or scroll normally.</p>
+          </div>
+          <form class="command-form" data-command-form>
+            <label for="command-input" class="sr-only">Command input</label>
+            <span class="prompt">$</span>
+            <input id="command-input" type="text" name="command" data-command-input autocomplete="off" spellcheck="false" placeholder="/ask Show Lu's Streaming work" data-i18n-placeholder="commandPlaceholder" />
+            <button type="submit" aria-label="Run command">Run</button>
+          </form>
+          <div class="command-pills" aria-label="Suggested commands">
+            <button type="button" data-run-command="/capabilities">/capabilities</button>
+            <button type="button" data-run-command="/agent">/agent</button>
+            <button type="button" data-run-command="/projects">/projects</button>
+            <button type="button" data-run-command="/ask What AI Agent systems has Lu built?">/ask</button>
           </div>
         </aside>
       </section>
 
-      <!-- ── IMPACT METRICS ─────────────────────────────────── -->
-      <section id="impact" class="section-block">
+      <section id="capabilities" class="section-block">
         <div class="section-head">
-          <p class="label" data-i18n="impactLabel">Delivered outcomes</p>
-          <h2 data-i18n="impactTitle">Impact at scale</h2>
+          <p class="kicker" data-i18n="capKicker">Core capabilities</p>
+          <h2 data-i18n="capTitle">AI engineering, kept close to product outcomes.</h2>
         </div>
-        <div class="metrics-grid">
-          <article class="metric-card">
-            <div class="metric-num" data-count="25" data-suffix="%" data-prefix="-">0%</div>
-            <div class="metric-desc" data-i18n="metric1">TTFT reduction — Agent Runtime latency improvement (avg + P95)</div>
+        <div class="capability-grid">
+          <article class="capability-card">
+            <span>01</span>
+            <h3>Agent Runtime</h3>
+            <p data-i18n="cap1">Tool orchestration, state handling, and grounded responses for shopping and enterprise workflows.</p>
           </article>
-          <article class="metric-card">
-            <div class="metric-num" data-count="15" data-suffix="%" data-prefix="+">0%</div>
-            <div class="metric-desc" data-i18n="metric2">Engagement lift — Personalized Conversation Starters</div>
+          <article class="capability-card">
+            <span>02</span>
+            <h3>Streaming UX</h3>
+            <p data-i18n="cap2">Typed event streams that separate process state, business actions, and final user-facing text.</p>
           </article>
-          <article class="metric-card">
-            <div class="metric-num" data-count="60" data-suffix="%" data-prefix="-">0%</div>
-            <div class="metric-desc" data-i18n="metric3">Cold-start reduction via async Warm-Up cache</div>
+          <article class="capability-card">
+            <span>03</span>
+            <h3>Personalization</h3>
+            <p data-i18n="cap3">Context-aware recommendations driven by user profile, history, conversation context, and product signals.</p>
           </article>
-          <article class="metric-card">
-            <div class="metric-num" data-count="20" data-suffix="%" data-prefix="+">0%</div>
-            <div class="metric-desc" data-i18n="metric4">SQL accuracy — Text2SQL Agent at leading domestic bank</div>
-          </article>
-          <article class="metric-card">
-            <div class="metric-num" data-count="1000" data-suffix="+" data-prefix="">0+</div>
-            <div class="metric-desc" data-i18n="metric5">Evaluation cases built for Text2SQL regression testing</div>
-          </article>
-          <article class="metric-card">
-            <div class="metric-num" data-count="800" data-suffix="+" data-prefix="">0+</div>
-            <div class="metric-desc" data-i18n="metric6">Personalization scenarios covered end-to-end</div>
+          <article class="capability-card">
+            <span>04</span>
+            <h3>Evaluation</h3>
+            <p data-i18n="cap4">Scenario replay, latency baselines, SQL validation, and regression checks before prompt or workflow changes.</p>
           </article>
         </div>
       </section>
 
-      <!-- ── RESUME AGENT ───────────────────────────────────── -->
       <section id="agent" class="section-block agent-section">
-        <div class="section-head">
+        <div class="section-head split-head">
           <div>
-            <p class="label" data-i18n="agentLabel">Live demo · powered by this repo's backend</p>
-            <h2 data-i18n="agentTitle">Ask my resume</h2>
+            <p class="kicker" data-i18n="agentKicker">Live resume agent</p>
+            <h2 data-i18n="agentTitle">Ask for evidence, not a static bio.</h2>
           </div>
-          <div class="agent-meta">
+          <div class="agent-status">
             <span class="status-dot"></span>
-            <span class="agent-status-text" data-i18n="agentStatusLive">DeepSeek · Aliyun FC</span>
+            <span data-i18n="agentStatusLive">Backend live</span>
           </div>
         </div>
         <div class="agent-shell">
           <div class="agent-panel">
             <div class="agent-messages" data-agent-messages>
               <article class="msg msg-assistant">
-                <p data-i18n="agentIntro">Ask anything about Lu's AI engineering experience — Agent systems, Streaming, personalization, Text2SQL, or measurable outcomes. I'll cite evidence from the resume.</p>
+                <p data-i18n="agentIntro">Ask about Lu's Agent systems, Streaming work, personalization, Text2SQL, or measurable impact. Answers cite resume evidence.</p>
               </article>
             </div>
             <form class="agent-form" data-agent-form>
-              <input type="text" name="message" data-agent-input
-                placeholder="Ask about Lu's AI engineering experience..."
-                data-i18n-placeholder="agentPlaceholder"
-                maxlength="500" autocomplete="off" />
+              <label for="agent-input" class="sr-only">Ask resume agent</label>
+              <input id="agent-input" type="text" name="message" data-agent-input maxlength="500" autocomplete="off" placeholder="Ask about Lu's AI engineering work..." data-i18n-placeholder="agentPlaceholder" />
               <button type="submit" data-i18n="agentSend">Ask</button>
             </form>
           </div>
-          <aside class="agent-sidebar">
-            <div class="suggestions-block">
-              <p class="label" data-i18n="agentSuggestionsTitle">Try asking</p>
-              <button type="button" class="suggestion-btn"
-                data-q-en="What AI Agent systems has Lu built?" data-q-zh="汪露做过哪些 AI Agent 系统？"
-                data-i18n="agentQ1">What AI Agent systems has Lu built?</button>
-              <button type="button" class="suggestion-btn"
-                data-q-en="Show Lu's Streaming and Tool Calling experience." data-q-zh="展示 Streaming 和 Tool Calling 经验。"
-                data-i18n="agentQ2">Show Streaming and Tool Calling experience.</button>
-              <button type="button" class="suggestion-btn"
-                data-q-en="What measurable impact does Lu have?" data-q-zh="有哪些可量化结果？"
-                data-i18n="agentQ3">What measurable impact?</button>
-              <button type="button" class="suggestion-btn"
-                data-q-en="Explain Lu's Text2SQL experience." data-q-zh="介绍 Text2SQL 项目经验。"
-                data-i18n="agentQ4">Explain Text2SQL experience.</button>
-            </div>
-            <div class="agent-info-block">
-              <p class="label" data-i18n="agentArchLabel">How this agent works</p>
-              <ul class="agent-info-list">
-                <li data-i18n="agentInfo1">Multi-turn session memory</li>
-                <li data-i18n="agentInfo2">Tool calling: search, detail, capabilities</li>
-                <li data-i18n="agentInfo3">SSE streaming with typed events</li>
-                <li data-i18n="agentInfo4">Pydantic-validated tool schemas</li>
-                <li data-i18n="agentInfo5">Evidence cards from resume data</li>
-              </ul>
-            </div>
+          <aside class="agent-aside">
+            <p class="aside-title" data-i18n="agentSuggestionsTitle">Useful prompts</p>
+            <button type="button" class="suggestion-btn" data-q-en="What AI Agent systems has Lu built?" data-q-zh="汪露做过哪些 AI Agent 系统？" data-i18n="agentQ1">What AI Agent systems has Lu built?</button>
+            <button type="button" class="suggestion-btn" data-q-en="Show Lu's Streaming and Tool Calling experience." data-q-zh="展示 Streaming 和 Tool Calling 经验。" data-i18n="agentQ2">Show Streaming and Tool Calling experience.</button>
+            <button type="button" class="suggestion-btn" data-q-en="What measurable impact does Lu have?" data-q-zh="有哪些可量化结果？" data-i18n="agentQ3">What measurable impact?</button>
+            <button type="button" class="suggestion-btn" data-q-en="Explain Lu's Text2SQL experience." data-q-zh="介绍 Text2SQL 项目经验。" data-i18n="agentQ4">Explain Text2SQL experience.</button>
           </aside>
         </div>
       </section>
 
-      <!-- ── PROJECTS ───────────────────────────────────────── -->
+      <section id="impact" class="section-block">
+        <div class="section-head">
+          <p class="kicker" data-i18n="impactKicker">Selected metrics</p>
+          <h2 data-i18n="impactTitle">Measured improvements across latency, engagement, and reliability.</h2>
+        </div>
+        <div class="metrics-grid">
+          <article class="metric-card"><strong data-count="25" data-prefix="-" data-suffix="%">-25%</strong><span data-i18n="metric1">average TTFT reduction in Suggestions API benchmark</span></article>
+          <article class="metric-card"><strong data-count="60" data-prefix="-" data-suffix="%">-60%</strong><span data-i18n="metric2">first-screen cold-start reduction via Warm-Up</span></article>
+          <article class="metric-card"><strong data-count="70" data-prefix="-" data-suffix="%">-70%</strong><span data-i18n="metric3">profile-service calls after cache layer</span></article>
+          <article class="metric-card"><strong data-count="20" data-prefix="+" data-suffix="%">+20%</strong><span data-i18n="metric4">product-comparison engagement lift</span></article>
+        </div>
+      </section>
+
       <section id="projects" class="section-block">
         <div class="section-head">
-          <div>
-            <p class="label" data-i18n="projectsLabel">Selected work</p>
-            <h2 data-i18n="projectsTitle">AI Projects</h2>
-          </div>
+          <p class="kicker" data-i18n="projectsKicker">Selected AI work</p>
+          <h2 data-i18n="projectsTitle">Project cases with concrete outcomes.</h2>
         </div>
         <div class="projects-grid" data-projects-grid>
-          <!-- filled by JS from /api/projects -->
           <article class="project-skeleton"></article>
           <article class="project-skeleton"></article>
           <article class="project-skeleton"></article>
@@ -184,150 +171,59 @@
         </div>
       </section>
 
-      <!-- ── ARCHITECTURE ───────────────────────────────────── -->
-      <section id="architecture" class="section-block">
+      <section id="system" class="section-block system-section">
         <div class="section-head">
-          <div>
-            <p class="label" data-i18n="archLabel">This site's own backend</p>
-            <h2 data-i18n="archTitle">System architecture</h2>
-          </div>
+          <p class="kicker" data-i18n="systemKicker">This site's backend</p>
+          <h2 data-i18n="systemTitle">A small agent stack behind the portfolio.</h2>
         </div>
-        <div class="arch-shell">
+        <div class="system-grid">
           <div class="arch-diagram" data-arch-diagram>
-            <!-- filled by JS from /api/architecture -->
-            <div class="arch-loading" data-i18n="archLoading">Loading architecture…</div>
+            <div class="arch-loading" data-i18n="archLoading">Loading architecture...</div>
           </div>
-          <div class="arch-summary" data-arch-summary></div>
-        </div>
-      </section>
-
-      <!-- ── ENGINEERING METHOD ─────────────────────────────── -->
-      <section class="section-block">
-        <div class="section-head">
-          <div>
-            <p class="label" data-i18n="methodLabel">How I build LLM applications</p>
-            <h2 data-i18n="methodTitle">Engineering principles</h2>
-          </div>
-        </div>
-        <div class="principles-grid">
-          <article class="principle-card">
-            <span class="principle-num">01</span>
-            <h3 data-i18n="p1Title">Separate reasoning from execution</h3>
-            <p data-i18n="p1Desc">Model handles understanding and generation. Validation, routing, rendering, and safety controls stay deterministic.</p>
-          </article>
-          <article class="principle-card">
-            <span class="principle-num">02</span>
-            <h3 data-i18n="p2Title">Measure before tuning</h3>
-            <p data-i18n="p2Desc">Latency benchmarks, eval sets, scenario replay, and regression checks before changing any prompt or workflow.</p>
-          </article>
-          <article class="principle-card">
-            <span class="principle-num">03</span>
-            <h3 data-i18n="p3Title">Design for failure paths</h3>
-            <p data-i18n="p3Desc">Missing context, tool timeouts, empty values, service errors, and fallback behavior are first-class product flows.</p>
-          </article>
-          <article class="principle-card">
-            <span class="principle-num">04</span>
-            <h3 data-i18n="p4Title">Make output easy to consume</h3>
-            <p data-i18n="p4Desc">Structured contracts, stable schemas, and frontend-friendly events over free-form output where reliability matters.</p>
-          </article>
-        </div>
-      </section>
-
-      <!-- ── EXPERIENCE ─────────────────────────────────────── -->
-      <section class="section-block">
-        <div class="section-head">
-          <div>
-            <p class="label" data-i18n="expLabel">Career</p>
-            <h2 data-i18n="expTitle">Work Experience</h2>
-          </div>
-        </div>
-        <div class="timeline">
-          <article class="timeline-item">
-            <div class="tl-date">2025.08 – <span data-i18n="present">Present</span></div>
-            <div class="tl-content">
-              <h3 data-i18n="zalandoRole">AI Software Engineer</h3>
-              <p class="tl-company">Zalando Technology Development (Shenzhen) Co., Ltd.</p>
-              <p data-i18n="zalandoDesc">Building customer-facing AI Agent capabilities: personalized shopping assistance, product decision support, real-time Streaming, and runtime reliability at scale.</p>
+          <div class="system-copy">
+            <p data-arch-summary></p>
+            <div class="stack-list">
+              <span>FastAPI</span><span>SSE</span><span>Tool Calling</span><span>Pydantic schemas</span><span>Multi-provider LLM</span>
             </div>
-          </article>
-          <article class="timeline-item">
-            <div class="tl-date">2021.04 – 2025.08</div>
-            <div class="tl-content">
-              <h3 data-i18n="twRole">AI Software Engineer</h3>
-              <p class="tl-company">Thoughtworks Software Technologies (Shenzhen) Co., Ltd.</p>
-              <p data-i18n="twDesc">Delivered AI and backend systems for enterprise clients: Text2SQL Agents, RAG Q&A, pricing platforms, and after-sales management.</p>
-            </div>
-          </article>
+          </div>
         </div>
       </section>
 
-      <!-- ── SKILLS ─────────────────────────────────────────── -->
-      <section id="skills" class="section-block">
+      <section id="skills" class="section-block compact-section">
         <div class="section-head">
-          <div>
-            <p class="label" data-i18n="skillsLabel">Capabilities</p>
-            <h2 data-i18n="skillsTitle">Skills</h2>
-          </div>
+          <p class="kicker" data-i18n="skillsKicker">Stack</p>
+          <h2 data-i18n="skillsTitle">Tools I use to ship AI systems.</h2>
         </div>
         <div class="skills-grid">
-          <article class="skill-group">
-            <h3 data-i18n="skillAi">AI / LLM Engineering</h3>
-            <div class="tags">
-              <span>LLM Agent</span><span>Tool Calling</span><span>Streaming</span><span>OpenAI Responses API</span>
-              <span>Pydantic-AI</span><span>RAG</span><span>Text2SQL</span><span>Prompt Engineering</span>
-              <span>Evaluation / RAGAS</span><span>Structured Output</span>
-            </div>
+          <article>
+            <h3 data-i18n="skillAi">AI / LLM</h3>
+            <p>LLM Agent, Tool Calling, Streaming, OpenAI Responses API, Pydantic AI, RAG, Text2SQL, Prompt Engineering, RAGAS</p>
           </article>
-          <article class="skill-group">
-            <h3 data-i18n="skillRetrieval">Retrieval &amp; Vectors</h3>
-            <div class="tags">
-              <span>FAISS</span><span>LlamaIndex</span><span>Embedding</span><span>Reranking</span>
-              <span>BGE-Reranker</span><span>pgvector</span>
-            </div>
+          <article>
+            <h3 data-i18n="skillBackend">Backend</h3>
+            <p>Python, FastAPI, Java, Spring Cloud, Redis, Docker, Pytest, Serverless</p>
           </article>
-          <article class="skill-group">
-            <h3 data-i18n="skillBackend">Backend &amp; Infrastructure</h3>
-            <div class="tags">
-              <span>Python</span><span>FastAPI</span><span>Java</span><span>Spring Cloud</span>
-              <span>Redis</span><span>Docker</span><span>Pytest</span>
-            </div>
-          </article>
-          <article class="skill-group">
-            <h3 data-i18n="skillDeploy">Deploy &amp; Observability</h3>
-            <div class="tags">
-              <span>Aliyun FC</span><span>GitHub Pages</span><span>Serverless</span>
-              <span>Structured Logging</span><span>Latency Benchmarking</span>
-            </div>
+          <article>
+            <h3 data-i18n="skillRetrieval">Retrieval</h3>
+            <p>FAISS, LlamaIndex, Embedding, Reranking, BGE-Reranker, pgvector</p>
           </article>
         </div>
       </section>
 
-      <!-- ── EDUCATION ──────────────────────────────────────── -->
-      <section class="section-block">
-        <div class="section-head">
-          <div>
-            <p class="label" data-i18n="eduLabel">Education</p>
-            <h2 data-i18n="eduTitle">Degrees</h2>
-          </div>
-        </div>
-        <div class="edu-grid">
-          <article class="edu-card">
-            <h3 data-i18n="cardiffDegree">MSc in Computing</h3>
-            <p>Cardiff University · UK · 2019–2021</p>
-          </article>
-          <article class="edu-card">
-            <h3 data-i18n="suesDegree">BA in Marketing</h3>
-            <p>Shanghai University of Engineering Science · 2015–2019</p>
-          </article>
+      <section id="contact" class="section-block final-section">
+        <p class="kicker" data-i18n="contactKicker">Contact</p>
+        <h2 data-i18n="contactTitle">Available for AI software engineering roles.</h2>
+        <div class="contact-row">
+          <a href="mailto:wanglu_ashley@126.com">wanglu_ashley@126.com</a>
+          <span data-i18n="phone">+86 13122038365</span>
+          <a href="assets/lu-wang-resume-cn-en.pdf" download data-i18n="downloadResume">Download PDF</a>
         </div>
       </section>
-
     </main>
 
     <footer class="site-footer">
       <span>© <span id="year"></span> Lu Wang</span>
-      <span class="footer-stack" data-i18n="footerStack">Frontend: GitHub Pages · Backend: Aliyun FC · AI: DeepSeek</span>
-      <a href="mailto:wanglu_ashley@126.com">wanglu_ashley@126.com</a>
+      <span data-i18n="footerStack">Static frontend · Resume Agent API · Streaming responses</span>
     </footer>
 
     <script src="script.js"></script>

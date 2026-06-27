@@ -1,367 +1,371 @@
 const API = "https://resume-gent-api-vtugquposb.cn-hangzhou.fcapp.run";
+const STREAM_TIMEOUT_MS = 4000;
 
-// ── i18n ─────────────────────────────────────────────────
 const T = {
   en: {
-    eyebrow: "Senior AI Engineer", heroLabel: "AI Software Engineer · Zalando",
-    heroName: "Lu Wang",
-    heroLead: "Builds LLM applications that ship to millions of users. Specialises in Agent Runtime, Tool Calling, Streaming, and evaluation-driven delivery.",
-    phone: "+86 13122038365", downloadResume: "PDF",
-    badge1: "4+ yrs AI engineering", badge2: "Zalando · Thoughtworks", badge3: "Cardiff MSc Computing",
-    navAgent: "Resume Agent", navImpact: "Impact", navProjects: "Projects",
-    navArchitecture: "Architecture", navSkills: "Skills",
-    impactLabel: "Delivered outcomes", impactTitle: "Impact at scale",
-    metric1: "TTFT reduction — Agent Runtime latency improvement (avg + P95)",
-    metric2: "Engagement lift — Personalized Conversation Starters",
-    metric3: "Cold-start reduction via async Warm-Up cache",
-    metric4: "SQL accuracy — Text2SQL Agent at leading domestic bank",
-    metric5: "Evaluation cases built for Text2SQL regression testing",
-    metric6: "Personalization scenarios covered end-to-end",
-    agentLabel: "Live demo · powered by this repo's backend",
-    agentTitle: "Ask my resume", agentStatusLive: "DeepSeek · Aliyun FC",
-    agentPlaceholder: "Ask about Lu's AI engineering experience…",
-    agentSend: "Ask", agentSuggestionsTitle: "Try asking",
-    agentIntro: "Ask anything about Lu's AI engineering experience — Agent systems, Streaming, personalization, Text2SQL, or measurable outcomes. I'll cite evidence from the resume.",
+    eyebrow: "AI Software Engineer",
+    navCapabilities: "Capabilities",
+    navAgent: "Agent",
+    navProjects: "Projects",
+    navSystem: "System",
+    downloadResume: "PDF",
+    heroKicker: "AI Software Engineer · Zalando",
+    heroTitle: "I build LLM agents that make product decisions easier.",
+    heroLead: "Focused on Agent Runtime, Tool Calling, Streaming UX, personalization, and Text2SQL systems that can be measured, tested, and shipped.",
+    heroAsk: "Ask the resume agent",
+    heroWork: "View selected work",
+    consoleLine1: "Profile loaded: Agent Runtime, Streaming, Tool Calling, Personalization, Text2SQL.",
+    consoleLine2: "Ready. Use commands or scroll normally.",
+    commandPlaceholder: "/ask Show Lu's Streaming work",
+    capKicker: "Core capabilities",
+    capTitle: "AI engineering, kept close to product outcomes.",
+    cap1: "Tool orchestration, state handling, and grounded responses for shopping and enterprise workflows.",
+    cap2: "Typed event streams that separate process state, business actions, and final user-facing text.",
+    cap3: "Context-aware recommendations driven by user profile, history, conversation context, and product signals.",
+    cap4: "Scenario replay, latency baselines, SQL validation, and regression checks before prompt or workflow changes.",
+    agentKicker: "Live resume agent",
+    agentTitle: "Ask for evidence, not a static bio.",
+    agentStatusLive: "Backend live",
+    agentIntro: "Ask about Lu's Agent systems, Streaming work, personalization, Text2SQL, or measurable impact. Answers cite resume evidence.",
+    agentPlaceholder: "Ask about Lu's AI engineering work...",
+    agentSend: "Ask",
+    agentSuggestionsTitle: "Useful prompts",
     agentQ1: "What AI Agent systems has Lu built?",
     agentQ2: "Show Streaming and Tool Calling experience.",
     agentQ3: "What measurable impact?",
     agentQ4: "Explain Text2SQL experience.",
-    agentThinking: "Calling tools…",
+    agentThinking: "Calling tools...",
     agentError: "The resume agent is temporarily unavailable. Please try again later.",
-    agentArchLabel: "How this agent works",
-    agentInfo1: "Multi-turn session memory",
-    agentInfo2: "Tool calling: search, detail, capabilities",
-    agentInfo3: "SSE streaming with typed events",
-    agentInfo4: "Pydantic-validated tool schemas",
-    agentInfo5: "Evidence cards from resume data",
-    projectsLabel: "Selected work", projectsTitle: "AI Projects",
-    archLabel: "This site's own backend", archTitle: "System architecture",
-    archLoading: "Loading architecture…",
-    methodLabel: "How I build LLM applications", methodTitle: "Engineering principles",
-    p1Title: "Separate reasoning from execution",
-    p1Desc: "Model handles understanding and generation. Validation, routing, rendering, and safety controls stay deterministic.",
-    p2Title: "Measure before tuning",
-    p2Desc: "Latency benchmarks, eval sets, scenario replay, and regression checks before changing any prompt or workflow.",
-    p3Title: "Design for failure paths",
-    p3Desc: "Missing context, tool timeouts, empty values, service errors, and fallback behavior are first-class product flows.",
-    p4Title: "Make output easy to consume",
-    p4Desc: "Structured contracts, stable schemas, and frontend-friendly events over free-form output where reliability matters.",
-    expLabel: "Career", expTitle: "Work Experience",
-    zalandoRole: "AI Software Engineer",
-    zalandoDesc: "Building customer-facing AI Agent capabilities: personalized shopping assistance, product decision support, real-time Streaming, and runtime reliability at scale.",
-    twRole: "AI Software Engineer",
-    twDesc: "Delivered AI and backend systems for enterprise clients: Text2SQL Agents, RAG Q&A, pricing platforms, and after-sales management.",
-    present: "Present",
-    skillsLabel: "Capabilities", skillsTitle: "Skills",
-    skillAi: "AI / LLM Engineering", skillRetrieval: "Retrieval & Vectors",
-    skillBackend: "Backend & Infrastructure", skillDeploy: "Deploy & Observability",
-    eduLabel: "Education", eduTitle: "Degrees",
-    cardiffDegree: "MSc in Computing", suesDegree: "BA in Marketing",
-    footerStack: "Frontend: GitHub Pages · Backend: Aliyun FC · AI: DeepSeek",
+    impactKicker: "Selected metrics",
+    impactTitle: "Measured improvements across latency, engagement, and reliability.",
+    metric1: "average TTFT reduction in Suggestions API benchmark",
+    metric2: "first-screen cold-start reduction via Warm-Up",
+    metric3: "profile-service calls after cache layer",
+    metric4: "product-comparison engagement lift",
+    projectsKicker: "Selected AI work",
+    projectsTitle: "Project cases with concrete outcomes.",
+    systemKicker: "This site's backend",
+    systemTitle: "A small agent stack behind the portfolio.",
+    archLoading: "Loading architecture...",
+    skillsKicker: "Stack",
+    skillsTitle: "Tools I use to ship AI systems.",
+    skillAi: "AI / LLM",
+    skillBackend: "Backend",
+    skillRetrieval: "Retrieval",
+    contactKicker: "Contact",
+    contactTitle: "Available for AI software engineering roles.",
+    phone: "+86 13122038365",
+    footerStack: "Static frontend · Resume Agent API · Streaming responses",
+    cmdUnknown: "Unknown command. Try /capabilities, /agent, /projects, /system, or /ask ...",
+    cmdScrolled: "Navigated to",
+    cmdAsking: "Forwarding question to Resume Agent",
   },
   zh: {
-    eyebrow: "AI 软件工程师", heroLabel: "AI 软件工程师 · Zalando",
-    heroName: "汪露",
-    heroLead: "负责面向数百万用户的 LLM 应用建设，专注 Agent Runtime、Tool Calling、Streaming 和评估驱动的交付。",
-    phone: "13122038365（微信同号）", downloadResume: "简历 PDF",
-    badge1: "4 年以上 AI 工程经验", badge2: "Zalando · Thoughtworks", badge3: "英国卡迪夫大学 硕士",
-    navAgent: "简历 Agent", navImpact: "量化成果", navProjects: "AI 项目",
-    navArchitecture: "系统架构", navSkills: "技能",
-    impactLabel: "可量化交付成果", impactTitle: "规模化影响",
-    metric1: "TTFT 降低 — Agent Runtime 延迟优化（平均 + P95）",
-    metric2: "互动率提升 — 个性化 Conversation Starters",
-    metric3: "冷启动降低 — 异步 Warm-Up 缓存",
-    metric4: "SQL 准确率提升 — Text2SQL Agent（国内知名银行）",
-    metric5: "Text2SQL 回归测试评估用例",
-    metric6: "个性化场景端到端覆盖",
-    agentLabel: "实时演示 · 由本仓库后端驱动",
-    agentTitle: "直接问我的简历", agentStatusLive: "DeepSeek · 阿里云 FC",
-    agentPlaceholder: "输入你想了解的 AI 工程经历…",
-    agentSend: "提问", agentSuggestionsTitle: "可以这样问",
-    agentIntro: "可以询问汪露的 AI Agent 系统、Streaming、个性化、Text2SQL 或可量化成果，我会引用简历中的证据。",
+    eyebrow: "AI 软件工程师",
+    navCapabilities: "核心能力",
+    navAgent: "简历 Agent",
+    navProjects: "项目",
+    navSystem: "系统",
+    downloadResume: "简历 PDF",
+    heroKicker: "AI 软件工程师 · Zalando",
+    heroTitle: "我构建能辅助真实业务决策的 LLM Agent。",
+    heroLead: "专注 Agent Runtime、Tool Calling、Streaming 体验、个性化推荐和 Text2SQL 系统，强调可度量、可测试、可上线。",
+    heroAsk: "询问简历 Agent",
+    heroWork: "查看项目",
+    consoleLine1: "Profile loaded: Agent Runtime, Streaming, Tool Calling, Personalization, Text2SQL.",
+    consoleLine2: "Ready. 可以使用命令，也可以直接向下浏览。",
+    commandPlaceholder: "/ask 展示 Streaming 和 Tool Calling 经验",
+    capKicker: "核心能力",
+    capTitle: "围绕产品结果构建 AI 工程能力。",
+    cap1: "为导购和企业工作流设计工具编排、状态处理和基于证据的回答链路。",
+    cap2: "用类型化事件流拆分过程状态、业务动作和最终用户可见文本。",
+    cap3: "基于用户画像、历史行为、对话上下文和商品信号生成个性化推荐。",
+    cap4: "在修改 Prompt 或工作流前建立场景回放、延迟基线、SQL 校验和回归检查。",
+    agentKicker: "实时简历 Agent",
+    agentTitle: "不用读静态简介，直接问证据。",
+    agentStatusLive: "后端在线",
+    agentIntro: "可以询问 Agent 系统、Streaming、个性化、Text2SQL 或可量化成果。回答会引用简历证据。",
+    agentPlaceholder: "输入你想了解的 AI 工程经历...",
+    agentSend: "提问",
+    agentSuggestionsTitle: "可以这样问",
     agentQ1: "汪露做过哪些 AI Agent 系统？",
     agentQ2: "展示 Streaming 和 Tool Calling 经验。",
     agentQ3: "有哪些可量化结果？",
     agentQ4: "介绍 Text2SQL 项目经验。",
-    agentThinking: "正在调用工具…",
+    agentThinking: "正在调用工具...",
     agentError: "简历 Agent 暂时不可用，请稍后再试。",
-    agentArchLabel: "Agent 工作原理",
-    agentInfo1: "多轮对话会话记忆",
-    agentInfo2: "工具调用：搜索、详情、能力列表",
-    agentInfo3: "类型化 SSE 流式响应",
-    agentInfo4: "Pydantic 工具 Schema 校验",
-    agentInfo5: "简历结构化证据卡片",
-    projectsLabel: "代表项目", projectsTitle: "AI 项目经验",
-    archLabel: "本站后端架构", archTitle: "系统架构",
-    archLoading: "加载架构图…",
-    methodLabel: "我如何建设 LLM 应用", methodTitle: "工程原则",
-    p1Title: "拆分推理与执行",
-    p1Desc: "模型负责理解和生成，校验、路由、渲染和安全控制尽量由确定性逻辑承担。",
-    p2Title: "先度量，再调优",
-    p2Desc: "在修改 Prompt 或工作流前，先建立延迟基准、评估集、场景回放和回归检查。",
-    p3Title: "把失败路径当成产品流程",
-    p3Desc: "显式处理上下文缺失、工具超时、空值、服务异常和降级策略。",
-    p4Title: "让输出易于消费",
-    p4Desc: "在可靠性要求高的场景中，优先使用结构化契约、稳定 Schema 和前端友好的事件。",
-    expLabel: "职业经历", expTitle: "工作经历",
-    zalandoRole: "AI 软件工程师",
-    zalandoDesc: "负责面向用户的 AI Agent 能力建设：个性化导购、商品决策辅助、实时 Streaming 优化和运行时稳定性。",
-    twRole: "AI 软件工程师",
-    twDesc: "为企业客户交付 AI 与后端系统：Text2SQL Agent、RAG 智能问答、定价平台和售后管理系统。",
-    present: "至今",
-    skillsLabel: "能力栈", skillsTitle: "技能",
-    skillAi: "AI / LLM 应用开发", skillRetrieval: "检索与向量技术",
-    skillBackend: "后端与基础设施", skillDeploy: "部署与可观测性",
-    eduLabel: "教育背景", eduTitle: "学历",
-    cardiffDegree: "英国卡迪夫大学 · Computing 硕士",
-    suesDegree: "上海工程技术大学 · 市场营销 本科",
-    footerStack: "前端：GitHub Pages · 后端：阿里云 FC · AI：DeepSeek",
+    impactKicker: "关键指标",
+    impactTitle: "围绕延迟、互动率和稳定性的可量化改进。",
+    metric1: "Suggestions API 基准测试平均 TTFT 降低",
+    metric2: "Warm-Up 架构降低首屏冷启动",
+    metric3: "缓存层减少画像服务调用",
+    metric4: "商品对比场景互动率提升",
+    projectsKicker: "AI 项目",
+    projectsTitle: "有明确结果支撑的项目案例。",
+    systemKicker: "本站后端",
+    systemTitle: "支撑这个作品集的小型 Agent 系统。",
+    archLoading: "加载架构图...",
+    skillsKicker: "技术栈",
+    skillsTitle: "用于交付 AI 系统的工具。",
+    skillAi: "AI / LLM",
+    skillBackend: "后端",
+    skillRetrieval: "检索",
+    contactKicker: "联系",
+    contactTitle: "正在寻找 AI 软件工程相关机会。",
+    phone: "13122038365（微信同号）",
+    footerStack: "静态前端 · 简历 Agent API · 流式响应",
+    cmdUnknown: "未知命令。可以试试 /capabilities、/agent、/projects、/system 或 /ask ...",
+    cmdScrolled: "已跳转到",
+    cmdAsking: "正在转交给简历 Agent",
   },
 };
 
-// ── Language ──────────────────────────────────────────────
 let lang = localStorage.getItem("resume-lang") || "en";
+let cachedProjects = null;
+let cachedArch = null;
+let sessionId = null;
+const warmupCache = {};
+
+const $ = (selector) => document.querySelector(selector);
+const $$ = (selector) => [...document.querySelectorAll(selector)];
+const t = (key) => T[lang][key] || T.en[key] || key;
+
+function escapeHtml(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
 function applyLang() {
-  const d = T[lang];
+  const dictionary = T[lang];
   document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
-  document.querySelectorAll("[data-i18n]").forEach(el => {
-    const k = el.dataset.i18n;
-    if (d[k]) el.textContent = d[k];
+  $$("[data-i18n]").forEach((el) => {
+    const key = el.dataset.i18n;
+    if (dictionary[key]) el.textContent = dictionary[key];
   });
-  document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
-    const k = el.dataset.i18nPlaceholder;
-    if (d[k]) el.placeholder = d[k];
+  $$("[data-i18n-placeholder]").forEach((el) => {
+    const key = el.dataset.i18nPlaceholder;
+    if (dictionary[key]) el.placeholder = dictionary[key];
   });
-  const toggle = document.querySelector("[data-lang-toggle]");
-  toggle.textContent = lang === "zh" ? "EN" : "中文";
+  const toggle = $("[data-lang-toggle]");
+  if (toggle) toggle.textContent = lang === "zh" ? "EN" : "中文";
   localStorage.setItem("resume-lang", lang);
-}
-
-document.querySelector("[data-lang-toggle]").addEventListener("click", () => {
-  lang = lang === "zh" ? "en" : "zh";
-  applyLang();
   renderProjects(cachedProjects);
   renderArchitecture(cachedArch);
-});
-
-function t(k) { return T[lang][k] || T.en[k] || k; }
-
-// ── Counter animation ─────────────────────────────────────
-function animateCounter(el) {
-  const target = parseInt(el.dataset.count, 10);
-  const prefix = el.dataset.prefix || "";
-  const suffix = el.dataset.suffix || "";
-  const duration = 1400;
-  const start = performance.now();
-  const ease = x => 1 - Math.pow(1 - x, 3);
-
-  function step(now) {
-    const p = Math.min((now - start) / duration, 1);
-    const value = Math.round(ease(p) * target);
-    el.textContent = prefix + value.toLocaleString() + suffix;
-    if (p < 1) requestAnimationFrame(step);
-  }
-  requestAnimationFrame(step);
 }
 
-const metricObserver = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting && !e.target.dataset.animated) {
-      e.target.dataset.animated = "1";
-      animateCounter(e.target);
+function addConsoleLine(command, result) {
+  const feed = $("[data-command-feed]");
+  if (!feed) return;
+  const cmd = document.createElement("p");
+  cmd.innerHTML = `<span class="prompt">lu@resume</span> ${escapeHtml(command)}`;
+  const out = document.createElement("span");
+  out.className = "console-result";
+  out.textContent = result;
+  feed.append(cmd, out);
+  feed.scrollTop = feed.scrollHeight;
+}
+
+function scrollToSection(id) {
+  const target = document.getElementById(id);
+  if (!target) return false;
+  target.scrollIntoView({ behavior: "smooth", block: "start" });
+  return true;
+}
+
+function runCommand(rawCommand) {
+  const raw = rawCommand.trim();
+  if (!raw) return;
+  const command = raw.startsWith("/") ? raw : `/ask ${raw}`;
+  const lower = command.toLowerCase();
+  const routes = {
+    "/capabilities": "capabilities",
+    "/agent": "agent",
+    "/projects": "projects",
+    "/impact": "impact",
+    "/system": "system",
+    "/skills": "skills",
+    "/contact": "contact",
+  };
+
+  if (lower.startsWith("/ask ")) {
+    const question = command.slice(5).trim();
+    if (question) {
+      addConsoleLine(command, `${t("cmdAsking")}: ${question}`);
+      scrollToSection("agent");
+      sendMessage(question);
     }
+    return;
+  }
+
+  if (routes[lower]) {
+    scrollToSection(routes[lower]);
+    addConsoleLine(command, `${t("cmdScrolled")}: ${routes[lower]}`);
+    return;
+  }
+
+  addConsoleLine(command, t("cmdUnknown"));
+}
+
+function bindCommandConsole() {
+  const form = $("[data-command-form]");
+  const input = $("[data-command-input]");
+  if (input) input.value = "";
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const command = input.value;
+    input.value = "";
+    runCommand(command);
   });
-}, { threshold: 0.5 });
+  $$("[data-run-command], [data-command]").forEach((el) => {
+    el.addEventListener("click", (event) => {
+      const command = el.dataset.runCommand || el.dataset.command;
+      if (!command) return;
+      if (command.startsWith("/") && !command.startsWith("/agent") && !command.startsWith("/projects") && !command.startsWith("/capabilities") && !command.startsWith("/system")) {
+        event.preventDefault();
+      }
+      runCommand(command);
+    });
+  });
+}
 
-document.querySelectorAll(".metric-num").forEach(el => metricObserver.observe(el));
+function bindBackground() {
+  const root = document.documentElement;
+  window.addEventListener("pointermove", (event) => {
+    root.style.setProperty("--mouse-x", `${event.clientX}px`);
+    root.style.setProperty("--mouse-y", `${event.clientY}px`);
+  }, { passive: true });
+}
 
-// ── Projects from API ─────────────────────────────────────
-let cachedProjects = null;
+function animateCounter(el) {
+  const target = Number.parseInt(el.dataset.count, 10);
+  const prefix = el.dataset.prefix || "";
+  const suffix = el.dataset.suffix || "";
+  const duration = 1200;
+  const start = performance.now();
+  const ease = (x) => 1 - Math.pow(1 - x, 3);
+  function frame(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const value = Math.round(ease(progress) * target);
+    el.textContent = `${prefix}${value.toLocaleString()}${suffix}`;
+    if (progress < 1) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+function bindMetricObserver() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting && !entry.target.dataset.animated) {
+        entry.target.dataset.animated = "1";
+        animateCounter(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  $$("[data-count]").forEach((el) => observer.observe(el));
+}
 
 async function loadProjects() {
   try {
     const res = await fetch(`${API}/api/projects`);
-    if (!res.ok) throw new Error("failed");
+    if (!res.ok) throw new Error("projects failed");
     cachedProjects = await res.json();
     renderProjects(cachedProjects);
   } catch {
-    document.querySelector("[data-projects-grid]").innerHTML =
-      `<p style="color:var(--muted);grid-column:1/-1">${t("agentError")}</p>`;
+    const grid = $("[data-projects-grid]");
+    if (grid) grid.innerHTML = `<p class="console-muted">${escapeHtml(t("agentError"))}</p>`;
   }
 }
 
 function renderProjects(projects) {
   if (!projects) return;
-  const grid = document.querySelector("[data-projects-grid]");
-  grid.innerHTML = projects.map(p => `
-    <article class="project-card ${p.highlight ? "highlight" : ""}">
+  const grid = $("[data-projects-grid]");
+  if (!grid) return;
+  grid.innerHTML = projects.map((project) => `
+    <article class="project-card ${project.highlight ? "highlight" : ""}">
       <div class="project-header">
         <div>
-          <div class="project-company">${p.company}</div>
-          <h3>${p.title}</h3>
+          <div class="project-company">${escapeHtml(project.company)}</div>
+          <h3>${escapeHtml(project.title)}</h3>
         </div>
-        <div class="project-period">${p.period}</div>
+        <div class="project-period">${escapeHtml(project.period)}</div>
       </div>
-      <p>${lang === "zh" ? p.summary_zh : p.summary_en}</p>
-      <div class="impact-chips">
-        ${p.impact.map(i => `<span>${i}</span>`).join("")}
-      </div>
-      <div class="skill-chips">
-        ${p.skills.map(s => `<span>${s}</span>`).join("")}
-      </div>
+      <p>${escapeHtml(lang === "zh" ? project.summary_zh : project.summary_en)}</p>
+      <div class="impact-chips">${project.impact.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div>
+      <div class="skill-chips">${project.skills.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div>
     </article>
   `).join("");
 }
 
-// ── Architecture from API ─────────────────────────────────
-let cachedArch = null;
-
 async function loadArchitecture() {
   try {
     const res = await fetch(`${API}/api/architecture`);
-    if (!res.ok) throw new Error("failed");
+    if (!res.ok) throw new Error("architecture failed");
     cachedArch = await res.json();
     renderArchitecture(cachedArch);
   } catch {
-    document.querySelector("[data-arch-diagram]").innerHTML =
-      `<p style="color:var(--muted)">${t("agentError")}</p>`;
+    const diagram = $("[data-arch-diagram]");
+    if (diagram) diagram.innerHTML = `<p class="console-muted">${escapeHtml(t("agentError"))}</p>`;
   }
 }
 
 function renderArchitecture(arch) {
   if (!arch) return;
-  const diag = document.querySelector("[data-arch-diagram]");
-  diag.innerHTML = `
-    <div class="arch-nodes">
-      ${arch.nodes.map(n => `
-        <div class="arch-node type-${n.type}">
-          <div class="arch-node-label">${n.label}</div>
-          <div class="arch-node-desc">${n.description}</div>
-          <span class="arch-node-type">${n.type}</span>
-        </div>
-      `).join("")}
-    </div>`;
-  const summary = document.querySelector("[data-arch-summary]");
-  summary.textContent = lang === "zh" ? arch.summary_zh : arch.summary_en;
-}
-
-// ── Warm-up: pre-fetch FC + pre-compute suggestion answers ──
-//
-// Pattern borrowed from the Personalized Conversation Starters project on this
-// very resume: async precompute while the user is reading, so the first
-// interaction feels instant. FC cold start + DeepSeek TTFT both disappear.
-const warmupCache = {};   // key: "en|question" or "zh|question" → ChatResponse
-let warmupSessionId = null;
-let warmupDone = false;
-
-async function warmup() {
-  // Step 1: wake the FC instance (health is cheap, returns in <200ms once warm)
-  try { await fetch(`${API}/health`); } catch { /* ignore */ }
-
-  // Step 2: pre-fetch all 4 suggestions in parallel for current lang
-  const questions = {
-    en: [
-      "What AI Agent systems has Lu built?",
-      "Show Streaming and Tool Calling experience.",
-      "What measurable impact does Lu have?",
-      "Explain Lu's Text2SQL experience.",
-    ],
-    zh: [
-      "汪露做过哪些 AI Agent 系统？",
-      "展示 Streaming 和 Tool Calling 经验。",
-      "有哪些可量化结果？",
-      "介绍 Text2SQL 项目经验。",
-    ],
-  };
-
-  const prefetch = async (q, l) => {
-    const key = `${l}|${q}`;
-    if (warmupCache[key]) return;
-    try {
-      const res = await fetch(`${API}/api/chat`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ message: q, language: l, session_id: warmupSessionId }),
-      });
-      if (!res.ok) return;
-      const data = await res.json();
-      warmupCache[key] = data;
-      if (!warmupSessionId && data.session_id) warmupSessionId = data.session_id;
-      markSuggestionReady(q, l);
-    } catch { /* ignore — graceful degradation */ }
-  };
-
-  // Fetch both langs so language switching also feels instant
-  const allQuestions = [...questions.en.map(q => [q, "en"]), ...questions.zh.map(q => [q, "zh"])];
-  await Promise.allSettled(allQuestions.map(([q, l]) => prefetch(q, l)));
-  warmupDone = true;
-}
-
-function markSuggestionReady(question, l) {
-  if (l !== lang) return;
-  document.querySelectorAll(".suggestion-btn").forEach(btn => {
-    const q = l === "zh" ? btn.dataset.qZh : btn.dataset.qEn;
-    if (q === question) btn.classList.add("warmed");
-  });
-}
-
-// Typewriter effect for cached answers — feels natural, shows streaming UX
-function typewriterReveal(textEl, text, onDone) {
-  let i = 0;
-  const CHUNK = 18; // characters per frame — fast but visible
-  function step() {
-    if (i >= text.length) { onDone?.(); return; }
-    textEl.textContent += text.slice(i, i + CHUNK);
-    i += CHUNK;
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-    requestAnimationFrame(step);
+  const diagram = $("[data-arch-diagram]");
+  const summary = $("[data-arch-summary]");
+  if (diagram) {
+    diagram.innerHTML = `<div class="arch-nodes">${arch.nodes.map((node) => `
+      <div class="arch-node type-${escapeHtml(node.type)}">
+        <div class="arch-node-label">${escapeHtml(node.label)}</div>
+        <div class="arch-node-desc">${escapeHtml(node.description)}</div>
+        <span class="arch-node-type">${escapeHtml(node.type)}</span>
+      </div>
+    `).join("")}</div>`;
   }
-  requestAnimationFrame(step);
+  if (summary) summary.textContent = lang === "zh" ? arch.summary_zh : arch.summary_en;
 }
 
-// ── Agent chat ────────────────────────────────────────────
-const messagesEl = document.querySelector("[data-agent-messages]");
-const form = document.querySelector("[data-agent-form]");
-const input = document.querySelector("[data-agent-input]");
-
-let sessionId = null;
+const messagesEl = $("[data-agent-messages]");
+const agentForm = $("[data-agent-form]");
+const agentInput = $("[data-agent-input]");
 
 function addMsg(role, text) {
-  const el = document.createElement("article");
-  el.className = `msg msg-${role}`;
+  const article = document.createElement("article");
+  article.className = `msg msg-${role}`;
   const p = document.createElement("p");
   p.textContent = text;
-  el.append(p);
-  messagesEl.append(el);
+  article.append(p);
+  messagesEl.append(article);
   messagesEl.scrollTop = messagesEl.scrollHeight;
-  return el;
+  return article;
 }
 
 function addToolMsg(toolName) {
-  const el = document.createElement("article");
-  el.className = "msg msg-tool";
-  el.innerHTML = `→ <span class="tool-name">${toolName}</span>`;
-  messagesEl.append(el);
+  const article = document.createElement("article");
+  article.className = "msg msg-tool";
+  article.textContent = `tool_call: ${toolName}`;
+  messagesEl.append(article);
   messagesEl.scrollTop = messagesEl.scrollHeight;
-  return el;
+  return article;
 }
 
 function addEvidence(parent, evidence) {
-  const existing = parent.querySelector(".evidence-list");
-  if (existing) existing.remove();
+  parent.querySelector(".evidence-list")?.remove();
   if (!evidence?.length) return;
   const list = document.createElement("div");
   list.className = "evidence-list";
-  evidence.forEach(item => {
+  evidence.forEach((item) => {
     const card = document.createElement("div");
     card.className = "evidence-card";
     card.innerHTML = `
-      <strong>${item.title}</strong>
-      <span class="ev-company">${item.company}</span>
-      <p>${item.summary}</p>
+      <strong>${escapeHtml(item.title)}</strong>
+      <span class="ev-company">${escapeHtml(item.company)}</span>
+      <p>${escapeHtml(item.summary)}</p>
       <div class="ev-chips">
-        ${[...(item.evidence || []), ...(item.skills || []).slice(0, 3)].map(c => `<span>${c}</span>`).join("")}
+        ${[...(item.evidence || []), ...(item.skills || []).slice(0, 3)].map((chip) => `<span>${escapeHtml(chip)}</span>`).join("")}
       </div>`;
     list.append(card);
   });
@@ -369,65 +373,78 @@ function addEvidence(parent, evidence) {
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-async function sendMessage(msg) {
-  input.value = "";
-  addMsg("user", msg);
+function revealText(el, text, done) {
+  let index = 0;
+  function frame() {
+    if (index >= text.length) {
+      done?.();
+      return;
+    }
+    el.textContent += text.slice(index, index + 16);
+    index += 16;
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
 
-  // ── Cache hit: instant typewriter reveal ─────────────────
-  const cacheKey = `${lang}|${msg}`;
+async function sendMessage(message) {
+  if (!message || !messagesEl) return;
+  if (agentInput) agentInput.value = "";
+  addMsg("user", message);
+
+  const cacheKey = `${lang}|${message}`;
   if (warmupCache[cacheKey]) {
     const data = warmupCache[cacheKey];
-    if (data.session_id && !sessionId) sessionId = warmupSessionId || data.session_id;
-    const el = addMsg("assistant", "");
-    const textEl = el.querySelector("p");
-    typewriterReveal(textEl, data.answer, () => addEvidence(el, data.evidence));
+    if (data.session_id && !sessionId) sessionId = data.session_id;
+    const answer = addMsg("assistant", "");
+    revealText(answer.querySelector("p"), data.answer, () => addEvidence(answer, data.evidence));
     return;
   }
 
-  // ── Cache miss: real streaming ────────────────────────────
   const loading = addMsg("assistant", t("agentThinking"));
-  const toolMsgs = [];
-
+  const toolMessages = [];
   try {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), STREAM_TIMEOUT_MS);
     const res = await fetch(`${API}/api/chat/stream`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ message: msg, language: lang, session_id: sessionId }),
+      signal: controller.signal,
+      body: JSON.stringify({ message, language: lang, session_id: sessionId }),
     });
-    if (!res.ok || !res.body) throw new Error(res.status);
-
+    window.clearTimeout(timeout);
+    if (!res.ok || !res.body) throw new Error("stream failed");
     loading.remove();
-    const answerEl = addMsg("assistant", "");
-    const textEl = answerEl.querySelector("p");
+    const answer = addMsg("assistant", "");
+    const textEl = answer.querySelector("p");
     const reader = res.body.getReader();
-    const dec = new TextDecoder();
-    let buf = "";
-
+    const decoder = new TextDecoder();
+    let buffer = "";
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
-      buf += dec.decode(value, { stream: true });
-      const parts = buf.split("\n\n");
-      buf = parts.pop() || "";
+      buffer += decoder.decode(value, { stream: true });
+      const parts = buffer.split("\n\n");
+      buffer = parts.pop() || "";
       for (const part of parts) {
-        const evLine = part.split("\n").find(l => l.startsWith("event:"));
-        const dataLine = part.split("\n").find(l => l.startsWith("data:"));
-        if (!evLine || !dataLine) continue;
-        const ev = evLine.replace("event:", "").trim();
+        const eventLine = part.split("\n").find((line) => line.startsWith("event:"));
+        const dataLine = part.split("\n").find((line) => line.startsWith("data:"));
+        if (!eventLine || !dataLine) continue;
+        const event = eventLine.replace("event:", "").trim();
         const payload = JSON.parse(dataLine.replace("data:", "").trim());
-
-        if (ev === "metadata") sessionId = payload.session_id || sessionId;
-        if (ev === "tool_call") toolMsgs.push(addToolMsg(payload.name));
-        if (ev === "answer_delta") {
+        if (event === "metadata" && payload.session_id) sessionId = payload.session_id;
+        if (event === "tool_call") toolMessages.push(addToolMsg(payload.name));
+        if (event === "answer_delta") {
           textEl.textContent += payload.text || "";
           messagesEl.scrollTop = messagesEl.scrollHeight;
         }
-        if (ev === "evidence") {
-          toolMsgs.forEach(m => m.remove());
-          addEvidence(answerEl, payload);
+        if (event === "evidence") {
+          toolMessages.forEach((msg) => msg.remove());
+          addEvidence(answer, payload);
         }
-        if (ev === "done" && payload.session_id) sessionId = payload.session_id;
-        if (ev === "error") textEl.textContent = payload.message || t("agentError");
+        if (event === "done" && payload.session_id) sessionId = payload.session_id;
+        if (event === "error") textEl.textContent = payload.message || t("agentError");
       }
     }
   } catch {
@@ -436,36 +453,82 @@ async function sendMessage(msg) {
       const res = await fetch(`${API}/api/chat`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ message: msg, language: lang, session_id: sessionId }),
+        body: JSON.stringify({ message, language: lang, session_id: sessionId }),
       });
-      if (!res.ok) throw new Error(res.status);
+      if (!res.ok) throw new Error("chat failed");
       const data = await res.json();
       if (data.session_id) sessionId = data.session_id;
-      const el = addMsg("assistant", data.answer);
-      addEvidence(el, data.evidence);
+      const answer = addMsg("assistant", data.answer);
+      addEvidence(answer, data.evidence);
     } catch {
       addMsg("assistant", t("agentError"));
     }
   }
 }
 
-form.addEventListener("submit", e => {
-  e.preventDefault();
-  const msg = input.value.trim();
-  if (msg) sendMessage(msg);
-});
-
-document.querySelectorAll(".suggestion-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const q = lang === "zh" ? btn.dataset.qZh : btn.dataset.qEn;
-    sendMessage(q);
+function bindAgent() {
+  if (agentInput) agentInput.value = "";
+  agentForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const message = agentInput.value.trim();
+    if (message) sendMessage(message);
   });
-});
+  $$(".suggestion-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const question = lang === "zh" ? btn.dataset.qZh : btn.dataset.qEn;
+      if (question) sendMessage(question);
+    });
+  });
+}
 
-// ── Init ──────────────────────────────────────────────────
-document.getElementById("year").textContent = new Date().getFullYear();
-applyLang();
-loadProjects();
-loadArchitecture();
-// Start warm-up after a short delay so critical resources load first
-setTimeout(warmup, 800);
+async function warmup() {
+  try { await fetch(`${API}/health`); } catch {}
+  const questions = [
+    ["What AI Agent systems has Lu built?", "en"],
+    ["Show Lu's Streaming and Tool Calling experience.", "en"],
+    ["What measurable impact does Lu have?", "en"],
+    ["Explain Lu's Text2SQL experience.", "en"],
+    ["汪露做过哪些 AI Agent 系统？", "zh"],
+    ["展示 Streaming 和 Tool Calling 经验。", "zh"],
+    ["有哪些可量化结果？", "zh"],
+    ["介绍 Text2SQL 项目经验。", "zh"],
+  ];
+  await Promise.allSettled(questions.map(async ([message, language]) => {
+    const key = `${language}|${message}`;
+    if (warmupCache[key]) return;
+    const res = await fetch(`${API}/api/chat`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ message, language, session_id: sessionId }),
+    });
+    if (!res.ok) return;
+    warmupCache[key] = await res.json();
+    markSuggestionReady(message, language);
+  }));
+}
+
+function markSuggestionReady(question, language) {
+  if (language !== lang) return;
+  $$(".suggestion-btn").forEach((btn) => {
+    const value = language === "zh" ? btn.dataset.qZh : btn.dataset.qEn;
+    if (value === question) btn.classList.add("warmed");
+  });
+}
+
+function init() {
+  $("#year").textContent = new Date().getFullYear();
+  $("[data-lang-toggle]")?.addEventListener("click", () => {
+    lang = lang === "zh" ? "en" : "zh";
+    applyLang();
+  });
+  bindBackground();
+  bindCommandConsole();
+  bindMetricObserver();
+  bindAgent();
+  applyLang();
+  loadProjects();
+  loadArchitecture();
+  setTimeout(warmup, 900);
+}
+
+init();
