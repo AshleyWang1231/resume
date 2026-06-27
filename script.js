@@ -15,20 +15,20 @@ const T = {
     heroAsk: "Ask the resume agent",
     heroWork: "View selected work",
     consoleLine1: "Profile loaded: Agent Runtime, Streaming, Tool Calling, Personalization, Text2SQL.",
-    consoleLine2: "Ready. Use commands or scroll normally.",
-    commandPlaceholder: "/ask Show Lu's Streaming work",
+    consoleLine2: "Ready. Ask naturally, or use commands like /projects.",
+    commandPlaceholder: "Ask about Streaming, or type /projects",
     capKicker: "Core capabilities",
     capTitle: "AI engineering, kept close to product outcomes.",
     cap1: "Tool orchestration, state handling, and grounded responses for shopping and enterprise workflows.",
     cap2: "Typed event streams that separate process state, business actions, and final user-facing text.",
     cap3: "Context-aware recommendations driven by user profile, history, conversation context, and product signals.",
     cap4: "Scenario replay, latency baselines, SQL validation, and regression checks before prompt or workflow changes.",
-    agentKicker: "Live resume agent",
-    agentTitle: "Ask for evidence, not a static bio.",
-    agentStatusLive: "Backend live",
-    agentIntro: "Ask about Lu's Agent systems, Streaming work, personalization, Text2SQL, or measurable impact. Answers cite resume evidence.",
-    agentPlaceholder: "Ask about Lu's AI engineering work...",
-    agentSend: "Ask",
+    agentKicker: "Resume agent",
+    agentTitle: "One terminal for navigation, questions, and evidence.",
+    agentProof1Title: "Live backend",
+    agentProof1: "The hero terminal calls the Resume Agent API and falls back gracefully when streaming is unavailable.",
+    agentProof2Title: "Evidence first",
+    agentProof2: "Answers cite project evidence instead of repeating generic profile copy.",
     agentSuggestionsTitle: "Useful prompts",
     agentQ1: "What AI Agent systems has Lu built?",
     agentQ2: "Show Streaming and Tool Calling experience.",
@@ -73,20 +73,20 @@ const T = {
     heroAsk: "询问简历 Agent",
     heroWork: "查看项目",
     consoleLine1: "Profile loaded: Agent Runtime, Streaming, Tool Calling, Personalization, Text2SQL.",
-    consoleLine2: "Ready. 可以使用命令，也可以直接向下浏览。",
-    commandPlaceholder: "/ask 展示 Streaming 和 Tool Calling 经验",
+    consoleLine2: "Ready. 可以直接提问，也可以使用 /projects 这类命令。",
+    commandPlaceholder: "询问 Streaming，或输入 /projects",
     capKicker: "核心能力",
     capTitle: "围绕产品结果构建 AI 工程能力。",
     cap1: "为导购和企业工作流设计工具编排、状态处理和基于证据的回答链路。",
     cap2: "用类型化事件流拆分过程状态、业务动作和最终用户可见文本。",
     cap3: "基于用户画像、历史行为、对话上下文和商品信号生成个性化推荐。",
     cap4: "在修改 Prompt 或工作流前建立场景回放、延迟基线、SQL 校验和回归检查。",
-    agentKicker: "实时简历 Agent",
-    agentTitle: "不用读静态简介，直接问证据。",
-    agentStatusLive: "后端在线",
-    agentIntro: "可以询问 Agent 系统、Streaming、个性化、Text2SQL 或可量化成果。回答会引用简历证据。",
-    agentPlaceholder: "输入你想了解的 AI 工程经历...",
-    agentSend: "提问",
+    agentKicker: "简历 Agent",
+    agentTitle: "一个终端完成导航、提问和证据展示。",
+    agentProof1Title: "真实后端",
+    agentProof1: "首屏 terminal 会调用 Resume Agent API；当流式接口不可用时自动降级。",
+    agentProof2Title: "证据优先",
+    agentProof2: "回答引用项目证据，而不是重复泛泛的个人简介。",
     agentSuggestionsTitle: "可以这样问",
     agentQ1: "汪露做过哪些 AI Agent 系统？",
     agentQ2: "展示 Streaming 和 Tool Calling 经验。",
@@ -169,6 +169,23 @@ function addConsoleLine(command, result) {
   feed.scrollTop = feed.scrollHeight;
 }
 
+function addTerminalMessage(role, text) {
+  const feed = $("[data-command-feed]");
+  if (!feed) return null;
+  const article = document.createElement("article");
+  article.className = `console-message console-${role}`;
+  const label = role === "user" ? "you" : role === "tool" ? "tool" : "agent";
+  article.innerHTML = `<span class="console-label">${label}</span><p>${escapeHtml(text)}</p>`;
+  feed.append(article);
+  feed.scrollTop = feed.scrollHeight;
+  return article;
+}
+
+function focusTerminal() {
+  scrollToSection("top");
+  window.setTimeout(() => $("[data-command-input]")?.focus(), 350);
+}
+
 function scrollToSection(id) {
   const target = document.getElementById(id);
   if (!target) return false;
@@ -179,11 +196,11 @@ function scrollToSection(id) {
 function runCommand(rawCommand) {
   const raw = rawCommand.trim();
   if (!raw) return;
-  const command = raw.startsWith("/") ? raw : `/ask ${raw}`;
+  const command = raw.startsWith("/") ? raw : raw;
   const lower = command.toLowerCase();
   const routes = {
     "/capabilities": "capabilities",
-    "/agent": "agent",
+    "/agent": "top",
     "/projects": "projects",
     "/impact": "impact",
     "/system": "system",
@@ -194,16 +211,21 @@ function runCommand(rawCommand) {
   if (lower.startsWith("/ask ")) {
     const question = command.slice(5).trim();
     if (question) {
-      addConsoleLine(command, `${t("cmdAsking")}: ${question}`);
-      scrollToSection("agent");
+      addConsoleLine(command, t("cmdAsking"));
       sendMessage(question);
     }
+    return;
+  }
+
+  if (!raw.startsWith("/")) {
+    sendMessage(raw);
     return;
   }
 
   if (routes[lower]) {
     scrollToSection(routes[lower]);
     addConsoleLine(command, `${t("cmdScrolled")}: ${routes[lower]}`);
+    if (lower === "/agent") window.setTimeout(() => $("[data-command-input]")?.focus(), 350);
     return;
   }
 
@@ -328,28 +350,8 @@ function renderArchitecture(arch) {
   if (summary) summary.textContent = lang === "zh" ? arch.summary_zh : arch.summary_en;
 }
 
-const messagesEl = $("[data-agent-messages]");
-const agentForm = $("[data-agent-form]");
-const agentInput = $("[data-agent-input]");
-
-function addMsg(role, text) {
-  const article = document.createElement("article");
-  article.className = `msg msg-${role}`;
-  const p = document.createElement("p");
-  p.textContent = text;
-  article.append(p);
-  messagesEl.append(article);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-  return article;
-}
-
 function addToolMsg(toolName) {
-  const article = document.createElement("article");
-  article.className = "msg msg-tool";
-  article.textContent = `tool_call: ${toolName}`;
-  messagesEl.append(article);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-  return article;
+  return addTerminalMessage("tool", `tool_call: ${toolName}`);
 }
 
 function addEvidence(parent, evidence) {
@@ -370,7 +372,8 @@ function addEvidence(parent, evidence) {
     list.append(card);
   });
   parent.append(list);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
+  const feed = $("[data-command-feed]");
+  if (feed) feed.scrollTop = feed.scrollHeight;
 }
 
 function revealText(el, text, done) {
@@ -382,27 +385,27 @@ function revealText(el, text, done) {
     }
     el.textContent += text.slice(index, index + 16);
     index += 16;
-    messagesEl.scrollTop = messagesEl.scrollHeight;
+    const feed = $("[data-command-feed]");
+    if (feed) feed.scrollTop = feed.scrollHeight;
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
 }
 
 async function sendMessage(message) {
-  if (!message || !messagesEl) return;
-  if (agentInput) agentInput.value = "";
-  addMsg("user", message);
+  if (!message) return;
+  addTerminalMessage("user", message);
 
   const cacheKey = `${lang}|${message}`;
   if (warmupCache[cacheKey]) {
     const data = warmupCache[cacheKey];
     if (data.session_id && !sessionId) sessionId = data.session_id;
-    const answer = addMsg("assistant", "");
+    const answer = addTerminalMessage("assistant", "");
     revealText(answer.querySelector("p"), data.answer, () => addEvidence(answer, data.evidence));
     return;
   }
 
-  const loading = addMsg("assistant", t("agentThinking"));
+  const loading = addTerminalMessage("assistant", t("agentThinking"));
   const toolMessages = [];
   try {
     const controller = new AbortController();
@@ -416,7 +419,7 @@ async function sendMessage(message) {
     window.clearTimeout(timeout);
     if (!res.ok || !res.body) throw new Error("stream failed");
     loading.remove();
-    const answer = addMsg("assistant", "");
+    const answer = addTerminalMessage("assistant", "");
     const textEl = answer.querySelector("p");
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
@@ -437,7 +440,8 @@ async function sendMessage(message) {
         if (event === "tool_call") toolMessages.push(addToolMsg(payload.name));
         if (event === "answer_delta") {
           textEl.textContent += payload.text || "";
-          messagesEl.scrollTop = messagesEl.scrollHeight;
+          const feed = $("[data-command-feed]");
+          if (feed) feed.scrollTop = feed.scrollHeight;
         }
         if (event === "evidence") {
           toolMessages.forEach((msg) => msg.remove());
@@ -458,25 +462,22 @@ async function sendMessage(message) {
       if (!res.ok) throw new Error("chat failed");
       const data = await res.json();
       if (data.session_id) sessionId = data.session_id;
-      const answer = addMsg("assistant", data.answer);
+      const answer = addTerminalMessage("assistant", data.answer);
       addEvidence(answer, data.evidence);
     } catch {
-      addMsg("assistant", t("agentError"));
+      addTerminalMessage("assistant", t("agentError"));
     }
   }
 }
 
 function bindAgent() {
-  if (agentInput) agentInput.value = "";
-  agentForm?.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const message = agentInput.value.trim();
-    if (message) sendMessage(message);
-  });
   $$(".suggestion-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const question = lang === "zh" ? btn.dataset.qZh : btn.dataset.qEn;
-      if (question) sendMessage(question);
+      if (question) {
+        focusTerminal();
+        sendMessage(question);
+      }
     });
   });
 }

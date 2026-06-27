@@ -215,9 +215,8 @@ h3 { margin-bottom: 10px; font-size: 17px; }
 .signal-row strong { color: var(--text); }
 
 .command-panel,
-.agent-panel,
-.agent-aside,
 .capability-card,
+.agent-proof-card,
 .metric-card,
 .project-card,
 .system-grid,
@@ -268,6 +267,37 @@ h3 { margin-bottom: 10px; font-size: 17px; }
   margin: 4px 0 14px 18px;
   color: var(--cyan);
 }
+.console-message {
+  margin: 14px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255,255,255,.045);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+.console-message p {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.62;
+}
+.console-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--cyan);
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+}
+.console-user {
+  color: #041014;
+  background: linear-gradient(135deg, rgba(103, 232, 249, .9), rgba(125, 211, 169, .9));
+}
+.console-user p,
+.console-user .console-label { color: #041014; }
+.console-tool {
+  border-style: dashed;
+  background: rgba(255,255,255,.025);
+}
+.console-tool p { color: var(--muted); font-family: ui-monospace, monospace; font-size: 12px; }
 .command-form {
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -326,6 +356,7 @@ h3 { margin-bottom: 10px; font-size: 17px; }
   gap: 24px;
 }
 .capability-grid,
+.agent-proof-grid,
 .metrics-grid,
 .skills-grid {
   display: grid;
@@ -333,6 +364,7 @@ h3 { margin-bottom: 10px; font-size: 17px; }
   gap: 14px;
 }
 .capability-card,
+.agent-proof-card,
 .metric-card,
 .skills-grid article {
   min-height: 220px;
@@ -359,96 +391,18 @@ h3 { margin-bottom: 10px; font-size: 17px; }
   margin-bottom: 0;
 }
 
-.agent-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--muted);
-  font-size: 13px;
-}
 .status-dot {
+  display: inline-block;
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: var(--green);
   box-shadow: 0 0 0 5px rgba(125, 211, 169, .12);
 }
-.agent-shell {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 310px;
-  gap: 16px;
-}
-.agent-panel {
-  border-radius: var(--radius);
-  overflow: hidden;
-  display: grid;
-  grid-template-rows: minmax(360px, 56vh) auto;
-}
-.agent-messages {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 20px;
-  overflow-y: auto;
-}
-.msg {
-  max-width: 82%;
-  padding: 13px 15px;
-  border-radius: 16px;
-}
-.msg p:last-child { margin-bottom: 0; }
-.msg-assistant {
-  align-self: flex-start;
-  color: var(--text);
-  border: 1px solid var(--line);
-  background: rgba(255,255,255,.055);
-}
-.msg-user {
-  align-self: flex-end;
-  color: #041014;
-  background: linear-gradient(135deg, var(--cyan), var(--green));
-}
-.msg-tool {
-  align-self: flex-start;
-  border: 1px dashed var(--line);
-  color: var(--muted);
-  font-family: ui-monospace, monospace;
-  font-size: 12px;
-}
-.agent-form {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 10px;
-  padding: 14px;
-  border-top: 1px solid var(--line);
-}
-.agent-form input {
-  width: 100%;
-  min-width: 0;
-  min-height: 46px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  color: var(--text);
-  background: rgba(255,255,255,.045);
-  outline: none;
-  padding: 0 16px;
-}
-.agent-form input:focus { border-color: var(--line-strong); }
-.agent-form button {
-  min-height: 46px;
-  border: 0;
-  border-radius: 999px;
-  color: #041014;
-  background: linear-gradient(135deg, var(--cyan), var(--green));
-  font-weight: 780;
-  padding: 0 18px;
-  cursor: pointer;
-}
-.agent-aside {
-  border-radius: var(--radius);
-  padding: 18px;
-  align-self: start;
-}
+.agent-proof-grid { grid-template-columns: .8fr .8fr 1.4fr; }
+.agent-proof-card p { color: var(--muted); margin-bottom: 0; }
+.agent-proof-card .status-dot { margin-bottom: 18px; }
+.prompt-card { min-height: 0; }
 .aside-title {
   margin-bottom: 12px;
   color: var(--cyan);
@@ -632,14 +586,13 @@ h3 { margin-bottom: 10px; font-size: 17px; }
 
 @media (max-width: 1000px) {
   .hero-section,
-  .agent-shell,
   .system-grid { grid-template-columns: 1fr; }
   h1 { font-size: 64px; }
   h2 { font-size: 42px; }
   .command-panel { min-height: 480px; }
   .capability-grid,
+  .agent-proof-grid,
   .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-  .agent-aside { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .aside-title { grid-column: 1 / -1; }
 }
 
@@ -665,14 +618,10 @@ h3 { margin-bottom: 10px; font-size: 17px; }
   .command-panel { min-height: 430px; }
   .console-feed { min-height: 230px; padding: 16px; }
   .capability-grid,
+  .agent-proof-grid,
   .metrics-grid,
   .projects-grid,
-  .skills-grid,
-  .agent-aside { grid-template-columns: 1fr; }
+  .skills-grid { grid-template-columns: 1fr; }
   .split-head { display: block; }
-  .agent-status { margin-top: 14px; }
-  .agent-panel { grid-template-rows: minmax(310px, 58vh) auto; }
-  .agent-form { grid-template-columns: 1fr; }
-  .msg { max-width: 94%; }
   .site-footer { flex-direction: column; }
 }

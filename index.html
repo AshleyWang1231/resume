@@ -27,7 +27,7 @@
       </a>
       <nav class="nav-links" aria-label="Primary navigation">
         <a href="#capabilities" data-command="/capabilities" data-i18n="navCapabilities">Capabilities</a>
-        <a href="#agent" data-command="/agent" data-i18n="navAgent">Agent</a>
+        <a href="#top" data-command="/agent" data-i18n="navAgent">Agent</a>
         <a href="#projects" data-command="/projects" data-i18n="navProjects">Projects</a>
         <a href="#system" data-command="/system" data-i18n="navSystem">System</a>
       </nav>
@@ -46,7 +46,7 @@
             Focused on Agent Runtime, Tool Calling, Streaming UX, personalization, and Text2SQL systems that can be measured, tested, and shipped.
           </p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="#agent" data-command="/agent" data-i18n="heroAsk">Ask the resume agent</a>
+            <a class="btn btn-primary" href="#top" data-command="/agent" data-i18n="heroAsk">Ask the resume agent</a>
             <a class="btn btn-secondary" href="#projects" data-command="/projects" data-i18n="heroWork">View selected work</a>
           </div>
           <div class="signal-row" aria-label="Selected outcomes">
@@ -56,28 +56,28 @@
           </div>
         </div>
 
-        <aside class="command-panel" aria-label="Command console">
+        <aside class="command-panel" aria-label="Resume agent terminal">
           <div class="window-bar">
             <span></span><span></span><span></span>
-            <small>resume.command</small>
+            <small>resume.agent</small>
           </div>
           <div class="console-feed" data-command-feed>
             <p><span class="prompt">lu@resume</span> boot --profile ai-engineer</p>
             <p class="console-muted" data-i18n="consoleLine1">Profile loaded: Agent Runtime, Streaming, Tool Calling, Personalization, Text2SQL.</p>
             <p><span class="prompt">lu@resume</span> status</p>
-            <p class="console-muted" data-i18n="consoleLine2">Ready. Use commands or scroll normally.</p>
+            <p class="console-muted" data-i18n="consoleLine2">Ready. Ask naturally, or use commands like /projects.</p>
           </div>
           <form class="command-form" data-command-form>
             <label for="command-input" class="sr-only">Command input</label>
             <span class="prompt">$</span>
-            <input id="command-input" type="text" name="command" data-command-input autocomplete="off" spellcheck="false" placeholder="/ask Show Lu's Streaming work" data-i18n-placeholder="commandPlaceholder" />
+            <input id="command-input" type="text" name="command" data-command-input autocomplete="off" spellcheck="false" placeholder="Ask about Streaming, or type /projects" data-i18n-placeholder="commandPlaceholder" />
             <button type="submit" aria-label="Run command">Run</button>
           </form>
           <div class="command-pills" aria-label="Suggested commands">
             <button type="button" data-run-command="/capabilities">/capabilities</button>
-            <button type="button" data-run-command="/agent">/agent</button>
             <button type="button" data-run-command="/projects">/projects</button>
-            <button type="button" data-run-command="/ask What AI Agent systems has Lu built?">/ask</button>
+            <button type="button" data-run-command="Show Lu's Streaming and Tool Calling work">Streaming work</button>
+            <button type="button" data-run-command="What measurable impact does Lu have?">Impact</button>
           </div>
         </aside>
       </section>
@@ -112,36 +112,27 @@
       </section>
 
       <section id="agent" class="section-block agent-section">
-        <div class="section-head split-head">
-          <div>
-            <p class="kicker" data-i18n="agentKicker">Live resume agent</p>
-            <h2 data-i18n="agentTitle">Ask for evidence, not a static bio.</h2>
-          </div>
-          <div class="agent-status">
-            <span class="status-dot"></span>
-            <span data-i18n="agentStatusLive">Backend live</span>
-          </div>
+        <div class="section-head">
+          <p class="kicker" data-i18n="agentKicker">Resume agent</p>
+          <h2 data-i18n="agentTitle">One terminal for navigation, questions, and evidence.</h2>
         </div>
-        <div class="agent-shell">
-          <div class="agent-panel">
-            <div class="agent-messages" data-agent-messages>
-              <article class="msg msg-assistant">
-                <p data-i18n="agentIntro">Ask about Lu's Agent systems, Streaming work, personalization, Text2SQL, or measurable impact. Answers cite resume evidence.</p>
-              </article>
-            </div>
-            <form class="agent-form" data-agent-form>
-              <label for="agent-input" class="sr-only">Ask resume agent</label>
-              <input id="agent-input" type="text" name="message" data-agent-input maxlength="500" autocomplete="off" placeholder="Ask about Lu's AI engineering work..." data-i18n-placeholder="agentPlaceholder" />
-              <button type="submit" data-i18n="agentSend">Ask</button>
-            </form>
-          </div>
-          <aside class="agent-aside">
+        <div class="agent-proof-grid">
+          <article class="agent-proof-card">
+            <span class="status-dot"></span>
+            <h3 data-i18n="agentProof1Title">Live backend</h3>
+            <p data-i18n="agentProof1">The hero terminal calls the Resume Agent API and falls back gracefully when streaming is unavailable.</p>
+          </article>
+          <article class="agent-proof-card">
+            <h3 data-i18n="agentProof2Title">Evidence first</h3>
+            <p data-i18n="agentProof2">Answers cite project evidence instead of repeating generic profile copy.</p>
+          </article>
+          <article class="agent-proof-card prompt-card">
             <p class="aside-title" data-i18n="agentSuggestionsTitle">Useful prompts</p>
             <button type="button" class="suggestion-btn" data-q-en="What AI Agent systems has Lu built?" data-q-zh="汪露做过哪些 AI Agent 系统？" data-i18n="agentQ1">What AI Agent systems has Lu built?</button>
             <button type="button" class="suggestion-btn" data-q-en="Show Lu's Streaming and Tool Calling experience." data-q-zh="展示 Streaming 和 Tool Calling 经验。" data-i18n="agentQ2">Show Streaming and Tool Calling experience.</button>
             <button type="button" class="suggestion-btn" data-q-en="What measurable impact does Lu have?" data-q-zh="有哪些可量化结果？" data-i18n="agentQ3">What measurable impact?</button>
             <button type="button" class="suggestion-btn" data-q-en="Explain Lu's Text2SQL experience." data-q-zh="介绍 Text2SQL 项目经验。" data-i18n="agentQ4">Explain Text2SQL experience.</button>
-          </aside>
+          </article>
         </div>
       </section>
 
