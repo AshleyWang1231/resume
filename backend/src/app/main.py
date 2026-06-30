@@ -6,7 +6,6 @@ from fastapi.responses import StreamingResponse
 
 from app.config import load_local_env
 from app.harness import ResumeAgent
-from app.harness.events import stream_chat_response
 from app.harness.observability import with_request_logging
 from app.models import (
     ArchitectureEdge,
@@ -140,9 +139,4 @@ async def chat(request: ChatRequest) -> ChatResponse:
 @app.post("/api/chat/stream")
 async def chat_stream(request: ChatRequest) -> StreamingResponse:
     ai = app.state.ai_binding
-    response = await with_request_logging(
-        route="/api/chat/stream",
-        handler=lambda: agent.answer(request, ai),
-        base_fields={"language": request.language, "session_id": request.session_id},
-    )
-    return StreamingResponse(stream_chat_response(response), media_type="text/event-stream")
+    return StreamingResponse(agent.stream(request, ai), media_type="text/event-stream")
