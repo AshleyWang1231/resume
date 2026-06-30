@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import json
 import os
-import urllib.error
-import urllib.request
 from typing import Any
+
+import httpx
 
 from app.harness.pydantic_tools import responses_tool_schemas, validate_tool_arguments
 from app.harness.prompts import system_prompt
@@ -99,28 +99,18 @@ class OpenAIResponsesClient:
         return OpenAIResult(answer=answer, evidence=_dedupe_evidence(evidence), tools_called=tools_called)
 
     async def _post_json(self, payload: dict[str, Any]) -> dict[str, Any]:
-        body = json.dumps(payload).encode("utf-8")
         headers = {
             "authorization": f"Bearer {self._api_key()}",
             "content-type": "application/json",
         }
-
-        try:
-            from pyodide.http import pyfetch  # type: ignore
-
-            response = await pyfetch(OPENAI_RESPONSES_URL, method="POST", headers=headers, body=body)
-            text = await response.string()
-            if response.status >= 400:
-                raise RuntimeError(f"OpenAI request failed: {response.status} {text[:240]}")
-            return json.loads(text)
-        except ImportError:
-            request = urllib.request.Request(OPENAI_RESPONSES_URL, data=body, headers=headers, method="POST")
+        async with httpx.AsyncClient(timeout=20) as client:
             try:
-                with urllib.request.urlopen(request, timeout=20) as response:
-                    return json.loads(response.read().decode("utf-8"))
-            except urllib.error.HTTPError as exc:
-                detail = exc.read().decode("utf-8", errors="replace")
-                raise RuntimeError(f"OpenAI request failed: {exc.code} {detail[:240]}") from exc
+                resp = await client.post(OPENAI_RESPONSES_URL, headers=headers, content=json.dumps(payload).encode())
+                resp.raise_for_status()
+                return resp.json()
+            except httpx.HTTPStatusError as exc:
+                detail = exc.response.text[:240]
+                raise RuntimeError(f"OpenAI request failed: {exc.response.status_code} {detail}") from exc
 
     def _api_key(self) -> str | None:
         return self.api_key or os.getenv("OPENAI_API_KEY")

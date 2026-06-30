@@ -30,7 +30,11 @@ async def stream_chat_response(response: ChatResponse) -> AsyncIterator[str]:
         yield sse_event("answer_delta", {"text": chunk})
 
     yield sse_event("evidence", [item.model_dump() for item in response.evidence])
-    yield sse_event("done", {"request_id": response.request_id})
+    yield sse_event("done", {
+        "request_id": response.request_id,
+        "session_id": response.session_id,
+        "suggested_questions": response.suggested_questions,
+    })
 
 
 def _chunk_text(text: str, chunk_size: int = 28) -> list[str]:

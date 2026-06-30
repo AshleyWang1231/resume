@@ -11,8 +11,12 @@ resources:
     props:
       region: ${vars.region}
       functionName: resume-agent-api
-      runtime: python3.10
-      handler: index.handler
+      runtime: custom
+      handler: not-used
+      customRuntimeConfig:
+        command:
+          - bash
+          - bootstrap
       code: .
       environmentVariables:
         AI_PROVIDER: qwen
@@ -30,5 +34,5 @@ resources:
               - POST
               - OPTIONS
       memorySize: 512
-      timeout: 120
+      timeout: 60
       instanceConcurrency: 10

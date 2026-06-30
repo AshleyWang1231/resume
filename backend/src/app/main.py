@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-from fastapi import FastAPI
+import json
+import time
+
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import Response, StreamingResponse
+from fastapi.responses import StreamingResponse
 
 from app.config import load_local_env
 from app.harness import ResumeAgent
-from app.harness.events import stream_chat_response
 from app.harness.observability import with_request_logging
 from app.models import (
     ArchitectureEdge,
@@ -30,6 +32,21 @@ app.add_middleware(
     allow_methods=["POST", "GET"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def request_log_middleware(request: Request, call_next):
+    start = time.monotonic()
+    response = await call_next(request)
+    elapsed_ms = round((time.monotonic() - start) * 1000)
+    print(json.dumps({
+        "event": "http_request",
+        "method": request.method,
+        "path": request.url.path,
+        "status": response.status_code,
+        "elapsed_ms": elapsed_ms,
+    }))
+    return response
 
 
 @app.get("/health")
@@ -108,15 +125,15 @@ async def architecture() -> ArchitectureResponse:
         ArchitectureNode(id="github-pages", label="GitHub Pages", type="frontend",
                          description="Static HTML/CSS/JS served from GitHub CDN. Zero build step, instant global deploy."),
         ArchitectureNode(id="aliyun-fc", label="Aliyun FC (cn-hangzhou)", type="backend",
-                         description="Python FastAPI on Function Compute. Serverless, scales to zero, <1s cold start."),
+                         description="Python FastAPI on Aliyun Function Compute custom runtime. Uvicorn ASGI, fully async, scales to zero."),
         ArchitectureNode(id="agent", label="ResumeAgent", type="backend",
                          description="Multi-turn stateful agent. Session store with LRU + TTL eviction. Tool calling orchestration."),
         ArchitectureNode(id="session", label="Session Store", type="data",
                          description="In-process LRU session store. Bounded at 500 sessions, 30min TTL. No Redis needed at this scale."),
         ArchitectureNode(id="tools", label="Tool Dispatcher", type="backend",
                          description="Pydantic-validated tool schema. Three tools: search_resume_facts, get_project_detail, list_capabilities."),
-        ArchitectureNode(id="deepseek", label="Qwen3 API", type="llm",
-                         description="Qwen3.6-27B via OpenAI-compatible Chat Completions. Multi-provider fallback: Qwen → DeepSeek → OpenAI. Embedding via text-embedding-v3 for FAISS hybrid retrieval."),
+        ArchitectureNode(id="qwen", label="Qwen-Turbo API", type="llm",
+                         description="Qwen-Turbo via OpenAI-compatible Chat Completions. Multi-provider fallback: Qwen → DeepSeek → OpenAI. BM25 hybrid retrieval."),
         ArchitectureNode(id="sse", label="SSE Stream", type="infra",
                          description="Server-Sent Events with typed event names: metadata, tool_call, tool_result, answer_delta, evidence, done."),
     ]
@@ -125,16 +142,16 @@ async def architecture() -> ArchitectureResponse:
         ArchitectureEdge(from_id="aliyun-fc", to_id="agent", label="routes request"),
         ArchitectureEdge(from_id="agent", to_id="session", label="read/write history"),
         ArchitectureEdge(from_id="agent", to_id="tools", label="tool call dispatch"),
-        ArchitectureEdge(from_id="agent", to_id="deepseek", label="chat completions (Qwen3.6-27B)"),
+        ArchitectureEdge(from_id="agent", to_id="qwen", label="chat completions (httpx async)"),
         ArchitectureEdge(from_id="aliyun-fc", to_id="github-pages", label="SSE events"),
-        ArchitectureEdge(from_id="deepseek", to_id="tools", label="function_call"),
-        ArchitectureEdge(from_id="tools", to_id="deepseek", label="tool_result"),
+        ArchitectureEdge(from_id="qwen", to_id="tools", label="function_call"),
+        ArchitectureEdge(from_id="tools", to_id="qwen", label="tool_result"),
     ]
     return ArchitectureResponse(
         nodes=nodes,
         edges=edges,
-        summary_en="Serverless Python FastAPI on Aliyun Function Compute. Multi-turn agent with in-process session store, Pydantic tool schemas, multi-provider LLM fallback, and typed SSE streaming.",
-        summary_zh="基于阿里云函数计算的 Serverless Python FastAPI，支持多轮对话、进程内会话存储、Pydantic 工具 Schema、多 Provider LLM 降级和类型化 SSE 流式响应。",
+        summary_en="Serverless Python FastAPI on Aliyun Function Compute custom runtime (uvicorn). Multi-turn agent with in-process session store, Pydantic tool schemas, multi-provider LLM fallback, and typed SSE streaming.",
+        summary_zh="基于阿里云函数计算 Custom Runtime 的 Serverless FastAPI (uvicorn)，支持多轮对话、进程内会话存储、Pydantic 工具 Schema、多 Provider LLM 降级和类型化 SSE 流式响应。",
     )
 
 
@@ -149,12 +166,6 @@ async def chat(request: ChatRequest) -> ChatResponse:
 
 
 @app.post("/api/chat/stream")
-async def chat_stream(request: ChatRequest) -> Response:
+async def chat_stream(request: ChatRequest) -> StreamingResponse:
     ai = app.state.ai_binding
-    response = await with_request_logging(
-        route="/api/chat/stream",
-        handler=lambda: agent.answer(request, ai),
-        base_fields={"language": request.language, "session_id": request.session_id},
-    )
-    body = "".join([chunk async for chunk in stream_chat_response(response)])
-    return Response(content=body, media_type="text/event-stream")
+    return StreamingResponse(agent.stream(request, ai), media_type="text/event-stream")
