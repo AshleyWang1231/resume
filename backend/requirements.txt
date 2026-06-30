@@ -1,4 +1,6 @@
 rank-bm25==0.2.2
+faiss-cpu==1.9.0.post1
+numpy==2.2.6
 fastapi==0.115.6
 pydantic==2.10.4
 pydantic-ai-slim==1.60.0

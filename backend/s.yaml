@@ -17,6 +17,8 @@ resources:
       environmentVariables:
         AI_PROVIDER: deepseek
         DEEPSEEK_API_KEY: ${env(DEEPSEEK_API_KEY)}
+        QWEN_API_KEY: ${env(QWEN_API_KEY)}
+        QWEN_BASE_URL: https://llm-9j3205gouw7wl2p6.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
       triggers:
         - triggerName: defaultHttpTrigger
           triggerType: http

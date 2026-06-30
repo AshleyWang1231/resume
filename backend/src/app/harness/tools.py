@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import os
 import re
 from typing import Any
 
+import numpy as np
 from rank_bm25 import BM25Okapi
 
 from app.models import EvidenceCard, Language
@@ -13,33 +15,88 @@ def _tokenize(text: str) -> list[str]:
     return re.findall(r"[a-z0-9]+|[一-鿿]", text.lower())
 
 
-def _build_corpus() -> list[list[str]]:
-    return [
-        _tokenize(
-            " ".join([
-                item["id"],
-                item["title"],
-                item["summary_en"],
-                item["summary_zh"],
-                " ".join(item["skills"]),
-            ])
-        )
-        for item in RESUME_FACTS
-    ]
+def _doc_text(item: dict[str, object]) -> str:
+    return " ".join([
+        str(item["id"]),
+        str(item["title"]),
+        str(item["summary_en"]),
+        str(item["summary_zh"]),
+        " ".join(item["skills"]),  # type: ignore[arg-type]
+    ])
 
 
-_CORPUS = _build_corpus()
+_CORPUS = [_tokenize(_doc_text(item)) for item in RESUME_FACTS]
 _BM25 = BM25Okapi(_CORPUS)
+
+# FAISS index — built lazily on first use to avoid import cost at startup
+_faiss_index = None
+_faiss_ready = False
+
+
+def _get_faiss_index():
+    global _faiss_index, _faiss_ready
+    if _faiss_ready:
+        return _faiss_index
+
+    embedding_key = os.getenv("QWEN_API_KEY") or os.getenv("DASHSCOPE_API_KEY") or os.getenv("EMBEDDING_API_KEY")
+    if not embedding_key:
+        _faiss_ready = True
+        return None
+
+    try:
+        import faiss
+        from app.harness.embedding import embed
+
+        texts = [_doc_text(item) for item in RESUME_FACTS]
+        vecs = embed(texts)
+        mat = np.array(vecs, dtype="float32")
+        faiss.normalize_L2(mat)
+        index = faiss.IndexFlatIP(mat.shape[1])
+        index.add(mat)
+        _faiss_index = index
+    except Exception:
+        _faiss_index = None
+
+    _faiss_ready = True
+    return _faiss_index
+
+
+def _rrf(rankings: list[list[int]], k: int = 60) -> list[int]:
+    scores: dict[int, float] = {}
+    for ranking in rankings:
+        for rank, idx in enumerate(ranking):
+            scores[idx] = scores.get(idx, 0.0) + 1.0 / (k + rank + 1)
+    return sorted(scores, key=lambda i: scores[i], reverse=True)
 
 
 def search_resume_facts(query: str, language: Language, limit: int = 3) -> list[EvidenceCard]:
+    # BM25 ranking
     tokens = _tokenize(query)
-    scores = _BM25.get_scores(tokens)
-    ranked = sorted(range(len(RESUME_FACTS)), key=lambda i: scores[i], reverse=True)
-    top = [RESUME_FACTS[i] for i in ranked if scores[i] > 0][:limit]
-    if not top:
-        top = RESUME_FACTS[:2]
-    return [_to_evidence_card(item, language) for item in top]
+    bm25_scores = _BM25.get_scores(tokens)
+    bm25_ranked = [i for i in sorted(range(len(RESUME_FACTS)), key=lambda i: bm25_scores[i], reverse=True) if bm25_scores[i] > 0]
+
+    # FAISS ranking (skip if not configured)
+    faiss_index = _get_faiss_index()
+    faiss_ranked: list[int] = []
+    if faiss_index is not None:
+        try:
+            import faiss
+            from app.harness.embedding import embed
+            qvec = np.array(embed([query]), dtype="float32")
+            faiss.normalize_L2(qvec)
+            _, ids = faiss_index.search(qvec, len(RESUME_FACTS))
+            faiss_ranked = [int(i) for i in ids[0] if i >= 0]
+        except Exception:
+            pass
+
+    if faiss_ranked:
+        fused = _rrf([bm25_ranked, faiss_ranked])
+    elif bm25_ranked:
+        fused = bm25_ranked
+    else:
+        fused = list(range(min(2, len(RESUME_FACTS))))
+
+    return [_to_evidence_card(RESUME_FACTS[i], language) for i in fused[:limit]]
 
 
 def get_project_detail(project_id: str, language: Language) -> EvidenceCard | None:
@@ -82,7 +139,6 @@ def _to_evidence_card(item: dict[str, object], language: Language) -> EvidenceCa
         title=str(item["title"]),
         company=str(item["company"]),
         summary=str(item[summary_key]),
-        evidence=list(item["evidence"]),
-        skills=list(item["skills"]),
+        evidence=list(item["evidence"]),  # type: ignore[arg-type]
+        skills=list(item["skills"]),  # type: ignore[arg-type]
     )
-
