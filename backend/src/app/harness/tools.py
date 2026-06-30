@@ -4,7 +4,11 @@ import os
 import re
 from typing import Any
 
-from rank_bm25 import BM25Okapi
+try:
+    from rank_bm25 import BM25Okapi as _BM25Okapi
+    _HAS_BM25 = True
+except ImportError:
+    _HAS_BM25 = False
 
 from app.models import EvidenceCard, Language
 from app.resume_data import RESUME_FACTS
@@ -25,7 +29,7 @@ def _doc_text(item: dict[str, object]) -> str:
 
 
 _CORPUS = [_tokenize(_doc_text(item)) for item in RESUME_FACTS]
-_BM25 = BM25Okapi(_CORPUS)
+_BM25 = _BM25Okapi(_CORPUS) if _HAS_BM25 else None
 
 # FAISS index — built lazily on first use to avoid import cost at startup
 _faiss_index = None
@@ -71,9 +75,11 @@ def _rrf(rankings: list[list[int]], k: int = 60) -> list[int]:
 
 def search_resume_facts(query: str, language: Language, limit: int = 3) -> list[EvidenceCard]:
     # BM25 ranking
-    tokens = _tokenize(query)
-    bm25_scores = _BM25.get_scores(tokens)
-    bm25_ranked = [i for i in sorted(range(len(RESUME_FACTS)), key=lambda i: bm25_scores[i], reverse=True) if bm25_scores[i] > 0]
+    bm25_ranked: list[int] = []
+    if _BM25 is not None:
+        tokens = _tokenize(query)
+        bm25_scores = _BM25.get_scores(tokens)
+        bm25_ranked = [i for i in sorted(range(len(RESUME_FACTS)), key=lambda i: bm25_scores[i], reverse=True) if bm25_scores[i] > 0]
 
     # FAISS ranking (skip if not configured)
     faiss_index = _get_faiss_index()
