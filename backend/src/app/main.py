@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response, StreamingResponse
 
 from app.config import load_local_env
 from app.harness import ResumeAgent
@@ -149,11 +149,12 @@ async def chat(request: ChatRequest) -> ChatResponse:
 
 
 @app.post("/api/chat/stream")
-async def chat_stream(request: ChatRequest) -> StreamingResponse:
+async def chat_stream(request: ChatRequest) -> Response:
     ai = app.state.ai_binding
     response = await with_request_logging(
         route="/api/chat/stream",
         handler=lambda: agent.answer(request, ai),
         base_fields={"language": request.language, "session_id": request.session_id},
     )
-    return StreamingResponse(stream_chat_response(response), media_type="text/event-stream")
+    body = "".join([chunk async for chunk in stream_chat_response(response)])
+    return Response(content=body, media_type="text/event-stream")
