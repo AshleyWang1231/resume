@@ -198,7 +198,12 @@ function closeTerminal() {
 }
 
 function focusTerminal() {
-  openTerminal();
+  // On desktop sidebar is always visible — just focus the input.
+  // On mobile (<800px) also open the bottom sheet.
+  if (window.innerWidth <= 800) {
+    openTerminal();
+  }
+  window.setTimeout(() => $("[data-command-input]")?.focus({ preventScroll: true }), 80);
 }
 
 function scrollToSection(id) {
