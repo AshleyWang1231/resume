@@ -172,7 +172,11 @@ class ChatCompletionsClient:
             {"model": self._model(), "messages": messages},
             headers,
         ):
-            text = _extract_delta_text(chunk)
+            choices = chunk.get("choices") or []
+            if not choices:
+                continue
+            delta = choices[0].get("delta") or {}
+            text = delta.get("content")
             if not text:
                 continue
             content_parts.append(text)
