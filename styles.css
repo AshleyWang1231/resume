@@ -253,10 +253,6 @@ h3 { margin-bottom: 10px; font-size: 17px; }
   pointer-events: none;
   transform: scale(0.9);
 }
-.terminal-float.open ~ .fab {
-  opacity: 0;
-  pointer-events: none;
-}
 
 .terminal-float {
   position: fixed;
@@ -703,35 +699,17 @@ h3 { margin-bottom: 10px; font-size: 17px; }
   border-top: 1px solid var(--line);
 }
 
-/* ─── Corner badge: email ─── */
-.fab {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 45;
-  display: flex;
+/* ─── Footer email ─── */
+.footer-email {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 14px 0 12px;
-  height: 40px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
+  gap: 7px;
   color: var(--muted);
-  background: rgba(9, 14, 22, 0.88);
-  backdrop-filter: blur(12px);
-  font-size: 12px;
-  font-weight: 500;
   text-decoration: none;
-  transition: border-color 0.16s, color 0.16s, box-shadow 0.16s, transform 0.16s;
-  box-shadow: 0 4px 20px rgba(0,0,0,.4);
+  transition: color 0.16s;
 }
-/* on mobile, terminal sidebar uses the same space → email badge stays */
-.fab:hover {
-  color: var(--cyan);
-  border-color: var(--line-strong);
-  box-shadow: 0 8px 28px rgba(103, 232, 249, .18);
-  transform: translateY(-2px);
-}
+.footer-email:hover { color: var(--cyan); }
+.footer-email svg { opacity: 0.8; }
 
 /* ─── Reduced motion ─── */
 @media (prefers-reduced-motion: reduce) {
@@ -789,9 +767,6 @@ h3 { margin-bottom: 10px; font-size: 17px; }
     height: min(62vh, 520px);
     flex: none;
   }
-  .fab { bottom: 16px; right: 16px; }
-  .terminal-float.open ~ .fab { opacity: 0; pointer-events: none; }
-
   .site-header { padding: 0 16px; }
   h1 { font-size: 40px; }
   h2 { font-size: 32px; }
