@@ -1,5 +1,7 @@
 const API = "https://resume-gent-api-vtugquposb.cn-hangzhou.fcapp.run";
 const STREAM_TIMEOUT_MS = 4000;
+const TERMINAL_RENDER_DELAY_MS = 35;
+const TERMINAL_RENDER_CHARS = 5;
 
 const T = {
   en: {
@@ -412,20 +414,58 @@ function addEvidence(parent, evidence) {
   if (feed) feed.scrollTop = feed.scrollHeight;
 }
 
-function revealText(el, text, done) {
-  let index = 0;
-  function frame() {
-    if (index >= text.length) {
-      done?.();
+function scrollTerminalToBottom() {
+  const feed = $("[data-command-feed]");
+  if (feed) feed.scrollTop = feed.scrollHeight;
+}
+
+function createTerminalTextStreamer(el, done) {
+  let queue = "";
+  let timer = null;
+  let closed = false;
+  let finished = false;
+
+  function finish() {
+    if (finished) return;
+    finished = true;
+    done?.();
+  }
+
+  function flush() {
+    if (!queue) {
+      timer = null;
+      if (closed) finish();
       return;
     }
-    el.textContent += text.slice(index, index + 16);
-    index += 16;
-    const feed = $("[data-command-feed]");
-    if (feed) feed.scrollTop = feed.scrollHeight;
-    requestAnimationFrame(frame);
+    el.textContent += queue.slice(0, TERMINAL_RENDER_CHARS);
+    queue = queue.slice(TERMINAL_RENDER_CHARS);
+    scrollTerminalToBottom();
+    timer = window.setTimeout(flush, TERMINAL_RENDER_DELAY_MS);
   }
-  requestAnimationFrame(frame);
+
+  return {
+    push(text = "") {
+      queue += text;
+      if (!timer) flush();
+    },
+    close() {
+      closed = true;
+      if (!timer && !queue) finish();
+    },
+    cancel() {
+      if (timer) window.clearTimeout(timer);
+      timer = null;
+      queue = "";
+      closed = true;
+      finished = true;
+    },
+  };
+}
+
+function revealText(el, text, done) {
+  const streamer = createTerminalTextStreamer(el, done);
+  streamer.push(text);
+  streamer.close();
 }
 
 async function sendMessage(message) {
@@ -457,6 +497,10 @@ async function sendMessage(message) {
     loading.remove();
     const answer = addTerminalMessage("assistant", "");
     const textEl = answer.querySelector("p");
+    let pendingEvidence = null;
+    const streamer = createTerminalTextStreamer(textEl, () => {
+      if (pendingEvidence) addEvidence(answer, pendingEvidence);
+    });
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let buffer = "";
@@ -475,18 +519,21 @@ async function sendMessage(message) {
         if (event === "metadata" && payload.session_id) sessionId = payload.session_id;
         if (event === "tool_call") toolMessages.push(addToolMsg(payload.name));
         if (event === "answer_delta") {
-          textEl.textContent += payload.text || "";
-          const feed = $("[data-command-feed]");
-          if (feed) feed.scrollTop = feed.scrollHeight;
+          streamer.push(payload.text || "");
         }
         if (event === "evidence") {
           toolMessages.forEach((msg) => msg.remove());
-          addEvidence(answer, payload);
+          pendingEvidence = payload;
+          streamer.close();
         }
         if (event === "done" && payload.session_id) sessionId = payload.session_id;
-        if (event === "error") textEl.textContent = payload.message || t("agentError");
+        if (event === "error") {
+          streamer.cancel();
+          textEl.textContent = payload.message || t("agentError");
+        }
       }
     }
+    streamer.close();
   } catch {
     loading.remove();
     try {
@@ -498,8 +545,8 @@ async function sendMessage(message) {
       if (!res.ok) throw new Error("chat failed");
       const data = await res.json();
       if (data.session_id) sessionId = data.session_id;
-      const answer = addTerminalMessage("assistant", data.answer);
-      addEvidence(answer, data.evidence);
+      const answer = addTerminalMessage("assistant", "");
+      revealText(answer.querySelector("p"), data.answer, () => addEvidence(answer, data.evidence));
     } catch {
       addTerminalMessage("assistant", t("agentError"));
     }
