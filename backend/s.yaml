@@ -11,12 +11,8 @@ resources:
     props:
       region: ${vars.region}
       functionName: resume-agent-api
-      runtime: custom
-      handler: not-used
-      customRuntimeConfig:
-        command:
-          - bash
-          - bootstrap
+      runtime: python3.10
+      handler: index.handler
       code: .
       environmentVariables:
         AI_PROVIDER: qwen

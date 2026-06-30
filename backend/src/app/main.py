@@ -5,10 +5,11 @@ import time
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response, StreamingResponse
 
 from app.config import load_local_env
 from app.harness import ResumeAgent
+from app.harness.events import stream_chat_response
 from app.harness.observability import with_request_logging
 from app.models import (
     ArchitectureEdge,
@@ -166,6 +167,9 @@ async def chat(request: ChatRequest) -> ChatResponse:
 
 
 @app.post("/api/chat/stream")
-async def chat_stream(request: ChatRequest) -> StreamingResponse:
+async def chat_stream(request: ChatRequest) -> Response:
     ai = app.state.ai_binding
-    return StreamingResponse(agent.stream(request, ai), media_type="text/event-stream")
+    chunks = []
+    async for chunk in agent.stream(request, ai):
+        chunks.append(chunk)
+    return Response(content="".join(chunks), media_type="text/event-stream")
