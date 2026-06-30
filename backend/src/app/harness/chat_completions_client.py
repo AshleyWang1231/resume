@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 import urllib.error
@@ -106,8 +107,12 @@ class ChatCompletionsClient:
         except ImportError:
             request = urllib.request.Request(url, data=body, headers=headers, method="POST")
             try:
-                with urllib.request.urlopen(request, timeout=20) as response:
-                    return json.loads(response.read().decode("utf-8"))
+                def _sync_post() -> bytes:
+                    with urllib.request.urlopen(request, timeout=20) as resp:
+                        return resp.read()
+
+                raw = await asyncio.to_thread(_sync_post)
+                return json.loads(raw.decode("utf-8"))
             except urllib.error.HTTPError as exc:
                 detail = exc.read().decode("utf-8", errors="replace")
                 raise RuntimeError(f"{self.provider} request failed: {exc.code} {detail[:240]}") from exc

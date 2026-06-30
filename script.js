@@ -59,6 +59,8 @@ const T = {
     cmdUnknown: "Unknown command. Try /capabilities, /agent, /projects, /system, or /ask ...",
     cmdScrolled: "Navigated to",
     cmdAsking: "Forwarding question to Resume Agent",
+    pillsCommands: "Commands",
+    pillsQuestions: "Questions",
   },
   zh: {
     eyebrow: "AI 软件工程师",
@@ -117,6 +119,8 @@ const T = {
     cmdUnknown: "未知命令。可以试试 /capabilities、/agent、/projects、/system 或 /ask ...",
     cmdScrolled: "已跳转到",
     cmdAsking: "正在转交给简历 Agent",
+    pillsCommands: "命令",
+    pillsQuestions: "问题",
   },
 };
 
@@ -181,14 +185,20 @@ function addTerminalMessage(role, text) {
   return article;
 }
 
+function openTerminal() {
+  const float = $("#terminal-float");
+  if (!float) return;
+  float.classList.add("open");
+  window.setTimeout(() => $("[data-command-input]")?.focus({ preventScroll: true }), 80);
+}
+
+function closeTerminal() {
+  const float = $("#terminal-float");
+  if (float) float.classList.remove("open");
+}
+
 function focusTerminal() {
-  const panel = $(".command-panel");
-  if (panel) {
-    panel.scrollIntoView({ behavior: "smooth", block: "start" });
-  } else {
-    scrollToSection("top");
-  }
-  window.setTimeout(() => $("[data-command-input]")?.focus({ preventScroll: true }), 350);
+  openTerminal();
 }
 
 function scrollToSection(id) {
@@ -209,13 +219,17 @@ function runCommand(rawCommand) {
   const lower = command.toLowerCase();
   const routes = {
     "/capabilities": "capabilities",
-    "/agent": "top",
     "/projects": "projects",
     "/impact": "impact",
     "/system": "system",
     "/skills": "skills",
     "/contact": "contact",
   };
+
+  if (lower === "/agent") {
+    focusTerminal();
+    return;
+  }
 
   if (lower.startsWith("/ask ")) {
     const question = command.slice(5).trim();
@@ -232,11 +246,7 @@ function runCommand(rawCommand) {
   }
 
   if (routes[lower]) {
-    if (lower === "/agent") {
-      focusTerminal();
-    } else {
-      scrollToSection(routes[lower]);
-    }
+    scrollToSection(routes[lower]);
     addConsoleLine(command, `${t("cmdScrolled")}: ${routes[lower]}`);
     return;
   }
@@ -259,9 +269,22 @@ function bindCommandConsole() {
       const command = el.dataset.runCommand || el.dataset.command;
       if (!command) return;
       if (command.startsWith("/")) event.preventDefault();
+      if (el.classList.contains("pill-q")) {
+        const question = lang === "zh" ? (el.dataset.qZh || command) : (el.dataset.qEn || command);
+        sendMessage(question);
+        return;
+      }
       runCommand(command);
     });
   });
+  $$("[data-focus-terminal]").forEach((el) => {
+    el.addEventListener("click", () => openTerminal());
+  });
+}
+
+function bindFab() {
+  const toggleBtn = $("#terminal-toggle");
+  if (toggleBtn) toggleBtn.addEventListener("click", () => closeTerminal());
 }
 
 function bindBackground() {
@@ -481,15 +504,7 @@ async function sendMessage(message) {
 }
 
 function bindAgent() {
-  $$(".suggestion-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const question = lang === "zh" ? btn.dataset.qZh : btn.dataset.qEn;
-      if (question) {
-        focusTerminal();
-        sendMessage(question);
-      }
-    });
-  });
+  // suggestion-btn clicks handled via data-run-command in bindCommandConsole
 }
 
 async function warmup() {
@@ -520,7 +535,7 @@ async function warmup() {
 
 function markSuggestionReady(question, language) {
   if (language !== lang) return;
-  $$(".suggestion-btn").forEach((btn) => {
+  $$(".pill-q").forEach((btn) => {
     const value = language === "zh" ? btn.dataset.qZh : btn.dataset.qEn;
     if (value === question) btn.classList.add("warmed");
   });
@@ -534,6 +549,7 @@ function init() {
   });
   bindBackground();
   bindCommandConsole();
+  bindFab();
   bindMetricObserver();
   bindAgent();
   applyLang();
