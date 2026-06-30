@@ -169,6 +169,13 @@ ul { list-style: none; padding: 0; margin: 0; }
 main {
   width: min(var(--max), calc(100vw - 32px));
   margin: 0 auto;
+  transition: width 0.32s cubic-bezier(0.4, 0, 0.2, 1), margin 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* When terminal is open, shift content into the left region so it isn't covered */
+body.terminal-open main {
+  width: min(var(--max), calc(100vw - 32px - 608px));
+  margin-left: clamp(24px, calc((100vw - 608px - var(--max)) / 2), 240px);
+  margin-right: auto;
 }
 
 /* ─── Hero: single column ─── */
@@ -750,7 +757,11 @@ h3 { margin-bottom: 10px; font-size: 17px; }
     padding-top: 48px;
     padding-bottom: 40px;
   }
-  main { width: min(var(--max), calc(100vw - 32px)); }
+  main,
+  body.terminal-open main {
+    width: min(var(--max), calc(100vw - 32px));
+    margin: 0 auto;
+  }
   .terminal-launcher {
     bottom: 72px;
     right: 16px;

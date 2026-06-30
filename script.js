@@ -189,12 +189,14 @@ function openTerminal() {
   const float = $("#terminal-float");
   if (!float) return;
   float.classList.add("open");
+  document.body.classList.add("terminal-open");
   window.setTimeout(() => $("[data-command-input]")?.focus({ preventScroll: true }), 80);
 }
 
 function closeTerminal() {
   const float = $("#terminal-float");
   if (float) float.classList.remove("open");
+  document.body.classList.remove("terminal-open");
 }
 
 function focusTerminal() {
@@ -547,6 +549,7 @@ function markSuggestionReady(question, language) {
 function init() {
   $("#year").textContent = new Date().getFullYear();
   if (window.innerWidth <= 800) closeTerminal();
+  else document.body.classList.add("terminal-open");
   $("[data-lang-toggle]")?.addEventListener("click", () => {
     lang = lang === "zh" ? "en" : "zh";
     applyLang();
