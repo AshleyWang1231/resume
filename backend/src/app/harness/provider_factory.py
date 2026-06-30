@@ -27,7 +27,7 @@ def build_llm_client(ai_binding=None) -> LLMClient:
             api_key_env="QWEN_API_KEY",
             api_key_aliases=("DASHSCOPE_API_KEY",),
             model_env="QWEN_MODEL",
-            default_model="qwen3.6-27b",
+            default_model="qwen-turbo",
             base_url_env="QWEN_BASE_URL",
             default_base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
         )

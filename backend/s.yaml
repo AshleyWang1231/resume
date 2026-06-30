@@ -18,7 +18,7 @@ resources:
         AI_PROVIDER: qwen
         DEEPSEEK_API_KEY: ${env(DEEPSEEK_API_KEY)}
         QWEN_API_KEY: ${env(QWEN_API_KEY)}
-        QWEN_MODEL: qwen3.6-27b
+        QWEN_MODEL: qwen-turbo
         QWEN_BASE_URL: https://llm-9j3205gouw7wl2p6.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
       triggers:
         - triggerName: defaultHttpTrigger
@@ -30,5 +30,5 @@ resources:
               - POST
               - OPTIONS
       memorySize: 512
-      timeout: 60
+      timeout: 120
       instanceConcurrency: 10
