@@ -1,16 +1,45 @@
 from __future__ import annotations
 
+import re
 from typing import Any
+
+from rank_bm25 import BM25Okapi
 
 from app.models import EvidenceCard, Language
 from app.resume_data import RESUME_FACTS
 
 
+def _tokenize(text: str) -> list[str]:
+    return re.findall(r"[a-z0-9]+|[一-鿿]", text.lower())
+
+
+def _build_corpus() -> list[list[str]]:
+    return [
+        _tokenize(
+            " ".join([
+                item["id"],
+                item["title"],
+                item["summary_en"],
+                item["summary_zh"],
+                " ".join(item["skills"]),
+            ])
+        )
+        for item in RESUME_FACTS
+    ]
+
+
+_CORPUS = _build_corpus()
+_BM25 = BM25Okapi(_CORPUS)
+
+
 def search_resume_facts(query: str, language: Language, limit: int = 3) -> list[EvidenceCard]:
-    matches = _find_matches(query)
-    if not matches:
-        matches = RESUME_FACTS[:2]
-    return [_to_evidence_card(item, language) for item in matches[:limit]]
+    tokens = _tokenize(query)
+    scores = _BM25.get_scores(tokens)
+    ranked = sorted(range(len(RESUME_FACTS)), key=lambda i: scores[i], reverse=True)
+    top = [RESUME_FACTS[i] for i in ranked if scores[i] > 0][:limit]
+    if not top:
+        top = RESUME_FACTS[:2]
+    return [_to_evidence_card(item, language) for item in top]
 
 
 def get_project_detail(project_id: str, language: Language) -> EvidenceCard | None:
@@ -44,16 +73,6 @@ def serialize_tool_result(result: Any) -> Any:
     if isinstance(result, list):
         return [item.model_dump() if isinstance(item, EvidenceCard) else item for item in result]
     return result
-
-
-def _find_matches(message: str) -> list[dict[str, object]]:
-    query = message.lower()
-    scored: list[tuple[int, dict[str, object]]] = []
-    for item in RESUME_FACTS:
-        score = sum(1 for keyword in item["keywords"] if keyword in query)
-        if score:
-            scored.append((score, item))
-    return [item for _, item in sorted(scored, key=lambda pair: pair[0], reverse=True)]
 
 
 def _to_evidence_card(item: dict[str, object], language: Language) -> EvidenceCard:
