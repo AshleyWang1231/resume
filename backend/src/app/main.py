@@ -60,7 +60,7 @@ async def projects() -> list[ProjectCard]:
             company="Zalando",
             period="2025",
             summary_en="Built personalization input pipeline combining user behavior, conversation context, and profile signals. Designed async Warm-Up architecture with Redis registry and in-memory fallback. Added profile-service cache layer with TTL control and field-level invalidation.",
-            summary_zh="构建"历史行为 + 对话上下文 + 用户画像"个性化输入链路，设计基于 Redis 注册表的异步 Warm-Up 架构，并为用户画像服务增加 TTL 缓存层。",
+            summary_zh="构建「历史行为 + 对话上下文 + 用户画像」个性化输入链路，设计基于 Redis 注册表的异步 Warm-Up 架构，并为用户画像服务增加 TTL 缓存层。",
             impact=["+15% engagement", "-60% cold start", "-70% profile calls", "800+ scenarios"],
             skills=["Personalization", "LLM", "Redis", "Caching", "Warm-Up", "Evaluation", "Python"],
             highlight=True,
