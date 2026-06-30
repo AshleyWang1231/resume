@@ -644,12 +644,33 @@ h3 { margin-bottom: 10px; font-size: 17px; }
   border-top: 1px solid var(--line);
 }
 
-/* ─── FAB: hidden on desktop (terminal is always visible as sidebar) ─── */
+/* ─── Corner badge: email ─── */
 .fab {
-  display: none; /* always hidden; sidebar is always open */
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px 0 12px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  background: rgba(9, 14, 22, 0.88);
+  backdrop-filter: blur(12px);
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color 0.16s, color 0.16s, box-shadow 0.16s, transform 0.16s;
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
 }
+/* on mobile, terminal sidebar uses the same space → email badge stays */
 .fab:hover {
-  box-shadow: 0 12px 40px rgba(103, 232, 249, .34);
+  color: var(--cyan);
+  border-color: var(--line-strong);
+  box-shadow: 0 8px 28px rgba(103, 232, 249, .18);
   transform: translateY(-2px);
 }
 
@@ -703,27 +724,9 @@ h3 { margin-bottom: 10px; font-size: 17px; }
     height: 55vh;
     flex: none;
   }
-  /* show FAB on mobile to open terminal */
-  .fab {
-    display: flex;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 60;
-    align-items: center;
-    gap: 8px;
-    padding: 0 16px 0 12px;
-    height: 44px;
-    border-radius: 999px;
-    border: 1px solid rgba(103, 232, 249, .3);
-    color: #041014;
-    background: linear-gradient(135deg, var(--cyan), var(--green));
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 8px 32px rgba(103, 232, 249, .22);
-  }
-  .terminal-float.open ~ .fab { display: none; }
+  /* email badge: move up a bit on mobile to avoid overlapping bottom sheet trigger */
+  .fab { bottom: 72px; }
+  .terminal-float.open ~ .fab { opacity: 0; pointer-events: none; }
 
   .site-header { padding: 0 16px; }
   h1 { font-size: 40px; }
