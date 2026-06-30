@@ -167,13 +167,14 @@
       <span data-i18n="footerStack">Static frontend · Resume Agent API · Streaming responses</span>
     </footer>
 
-    <!-- ── Floating terminal: fixed right side ── -->
-    <div class="terminal-float" id="terminal-float" aria-label="Resume agent terminal">
+    <!-- ── Floating terminal ── -->
+    <div class="terminal-float open" id="terminal-float" aria-label="Resume agent terminal">
       <div class="command-panel" id="terminal-panel">
         <div class="window-bar">
-          <span></span><span></span><span></span>
+          <button class="window-dot window-dot-close" id="terminal-toggle" aria-label="Close terminal" type="button"></button>
+          <span class="window-dot window-dot-min" aria-hidden="true"></span>
+          <span class="window-dot window-dot-max" aria-hidden="true"></span>
           <small>resume.agent</small>
-          <button class="terminal-collapse-btn" id="terminal-toggle" aria-label="Close terminal" type="button">×</button>
         </div>
         <div class="console-feed" data-command-feed>
           <p><span class="prompt">lu@resume</span> boot --profile ai-engineer</p>
@@ -200,6 +201,12 @@
         </div>
       </div>
     </div>
+
+    <button class="terminal-launcher" id="terminal-launcher" aria-label="Open resume agent terminal" type="button">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M4 5h12M4 10h8M4 15h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </button>
 
     <!-- ── Corner badge: email ── -->
     <a class="fab" href="mailto:wanglu_ashley@126.com" aria-label="Send email">

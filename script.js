@@ -198,12 +198,7 @@ function closeTerminal() {
 }
 
 function focusTerminal() {
-  // On desktop sidebar is always visible — just focus the input.
-  // On mobile (<800px) also open the bottom sheet.
-  if (window.innerWidth <= 800) {
-    openTerminal();
-  }
-  window.setTimeout(() => $("[data-command-input]")?.focus({ preventScroll: true }), 80);
+  openTerminal();
 }
 
 function scrollToSection(id) {
@@ -269,16 +264,19 @@ function bindCommandConsole() {
     input.value = "";
     runCommand(command);
   });
-  $$("[data-run-command], [data-command]").forEach((el) => {
+  $$("[data-run-command], [data-command], .pill-q").forEach((el) => {
     el.addEventListener("click", (event) => {
-      const command = el.dataset.runCommand || el.dataset.command;
-      if (!command) return;
-      if (command.startsWith("/")) event.preventDefault();
       if (el.classList.contains("pill-q")) {
-        const question = lang === "zh" ? (el.dataset.qZh || command) : (el.dataset.qEn || command);
+        event.preventDefault();
+        const question = lang === "zh" ? (el.dataset.qZh || el.textContent.trim()) : (el.dataset.qEn || el.textContent.trim());
+        openTerminal();
         sendMessage(question);
         return;
       }
+      const command = el.dataset.runCommand || el.dataset.command;
+      if (!command) return;
+      if (command.startsWith("/")) event.preventDefault();
+      openTerminal();
       runCommand(command);
     });
   });
@@ -288,8 +286,8 @@ function bindCommandConsole() {
 }
 
 function bindFab() {
-  const toggleBtn = $("#terminal-toggle");
-  if (toggleBtn) toggleBtn.addEventListener("click", () => closeTerminal());
+  $("#terminal-toggle")?.addEventListener("click", () => closeTerminal());
+  $("#terminal-launcher")?.addEventListener("click", () => openTerminal());
 }
 
 function bindBackground() {
@@ -548,6 +546,7 @@ function markSuggestionReady(question, language) {
 
 function init() {
   $("#year").textContent = new Date().getFullYear();
+  if (window.innerWidth <= 800) closeTerminal();
   $("[data-lang-toggle]")?.addEventListener("click", () => {
     lang = lang === "zh" ? "en" : "zh";
     applyLang();
