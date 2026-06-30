@@ -208,6 +208,29 @@ class ChatCompletionsClient:
         messages.append({"role": "user", "content": message})
         return messages
 
+    async def _post_chat_completions(self, payload: dict[str, Any]) -> dict[str, Any]:
+        import asyncio
+        import urllib.error
+        import urllib.request
+
+        body = json.dumps(payload).encode("utf-8")
+        headers = {
+            "authorization": f"Bearer {self._api_key()}",
+            "content-type": "application/json",
+        }
+        url = f"{self._base_url()}/chat/completions"
+        request = urllib.request.Request(url, data=body, headers=headers, method="POST")
+        try:
+            def _sync_post() -> bytes:
+                with urllib.request.urlopen(request, timeout=30) as resp:
+                    return resp.read()
+
+            raw = await asyncio.to_thread(_sync_post)
+            return json.loads(raw.decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", errors="replace")
+            raise RuntimeError(f"{self.provider} request failed: {exc.code} {detail[:240]}") from exc
+
     async def _stream_first_pass(
         self,
         url: str,
