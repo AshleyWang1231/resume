@@ -4,7 +4,6 @@ import os
 import re
 from typing import Any
 
-import numpy as np
 from rank_bm25 import BM25Okapi
 
 from app.models import EvidenceCard, Language
@@ -45,6 +44,7 @@ def _get_faiss_index():
 
     try:
         import faiss
+        import numpy as np
         from app.harness.embedding import embed
 
         texts = [_doc_text(item) for item in RESUME_FACTS]
@@ -81,6 +81,7 @@ def search_resume_facts(query: str, language: Language, limit: int = 3) -> list[
     if faiss_index is not None:
         try:
             import faiss
+            import numpy as np
             from app.harness.embedding import embed
             qvec = np.array(embed([query]), dtype="float32")
             faiss.normalize_L2(qvec)
