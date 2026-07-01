@@ -1,17 +1,18 @@
 from __future__ import annotations
 
-import json
 import time
 import uuid
 from collections.abc import AsyncIterator
 
 from app.harness.events import sse_event
 from app.harness.events import _chunk_text
+from app.harness.guard import guard
 from app.harness.prompts import fallback_answer
 from app.harness.provider_factory import LLMClient, build_llm_client
 from app.harness.router import route_intent
 from app.harness.stream_types import StreamEvent
 from app.harness.tools import search_resume_facts
+from app.harness.utils import log as _log
 from app.models import AgentContext, ChatRequest, ChatResponse
 from app.resume_data import SUGGESTED_QUESTIONS
 from app.session import session_store
@@ -33,6 +34,20 @@ class ResumeAgent:
             intent=route_intent(request.message),
             session_id=session_id,
         )
+
+        guard_result = guard(context.message)
+        if not guard_result.ok:
+            _log("guard_blocked", request_id=context.request_id, reason=guard_result.reason)
+            reply = guard_result.reply_zh if request.language == "zh" else guard_result.reply_en
+            return ChatResponse(
+                answer=reply,
+                evidence=[],
+                suggested_questions=SUGGESTED_QUESTIONS[context.language],
+                request_id=context.request_id,
+                session_id=session_id,
+                source="guard",
+                tools_called=[],
+            )
         seed_evidence = search_resume_facts(context.message, context.language)
         _log("retrieval_done", request_id=context.request_id, evidence_count=len(seed_evidence),
              titles=[e.title for e in seed_evidence])
@@ -97,6 +112,26 @@ class ResumeAgent:
             intent=route_intent(request.message),
             session_id=session_id,
         )
+
+        guard_result = guard(context.message)
+        if not guard_result.ok:
+            _log("guard_blocked", request_id=context.request_id, reason=guard_result.reason)
+            reply = guard_result.reply_zh if request.language == "zh" else guard_result.reply_en
+            yield sse_event("metadata", {
+                "request_id": context.request_id,
+                "session_id": session_id,
+                "source": "guard",
+                "tools_called": [],
+            })
+            for chunk in _chunk_text(reply):
+                yield sse_event("answer_delta", {"text": chunk})
+            yield sse_event("evidence", [])
+            yield sse_event("done", {
+                "request_id": context.request_id,
+                "session_id": session_id,
+                "suggested_questions": SUGGESTED_QUESTIONS[context.language],
+            })
+            return
         seed_evidence = search_resume_facts(context.message, context.language)
         _log("retrieval_done", request_id=context.request_id, evidence_count=len(seed_evidence),
              titles=[e.title for e in seed_evidence])
@@ -166,7 +201,3 @@ class ResumeAgent:
             yield sse_event("evidence", [item.model_dump() for item in seed_evidence])
             yield sse_event("done", {"request_id": context.request_id, "session_id": session_id,
                                      "suggested_questions": SUGGESTED_QUESTIONS[context.language]})
-
-
-def _log(event: str, **kwargs) -> None:
-    print(json.dumps({"event": event, **kwargs}))

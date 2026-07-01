@@ -6,6 +6,7 @@ from app.harness.openai_client import OpenAIResult
 from app.harness.pydantic_tools import chat_completion_tool_schemas, validate_tool_arguments
 from app.harness.prompts import system_prompt
 from app.harness.tools import execute_tool, serialize_tool_result
+from app.harness.utils import dedupe_evidence, parse_arguments
 from app.models import EvidenceCard, Language
 
 DEFAULT_MODEL = "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b"
@@ -51,7 +52,7 @@ class WorkersAIClient:
             if not name:
                 continue
             raw_args = function.get("arguments")
-            arguments = validate_tool_arguments(str(name), _parse_arguments(raw_args))
+            arguments = validate_tool_arguments(str(name), parse_arguments(raw_args))
             tools_called.append(name)
             result = execute_tool(name, arguments, language)
             if isinstance(result, list):
@@ -71,28 +72,4 @@ class WorkersAIClient:
         answer = str(final_response.get("response") or final_response.get("content") or "").strip() if isinstance(final_response, dict) else str(final_response).strip()
         if not answer:
             return None
-        return OpenAIResult(answer=answer, evidence=_dedupe_evidence(evidence), tools_called=tools_called, provider=self.provider)
-
-
-def _parse_arguments(raw_arguments) -> dict:
-    if isinstance(raw_arguments, dict):
-        return raw_arguments
-    if not raw_arguments:
-        return {}
-    try:
-        parsed = json.loads(str(raw_arguments))
-    except json.JSONDecodeError:
-        return {}
-    return parsed if isinstance(parsed, dict) else {}
-
-
-def _dedupe_evidence(items: list[EvidenceCard]) -> list[EvidenceCard]:
-    seen: set[str] = set()
-    deduped: list[EvidenceCard] = []
-    for item in items:
-        key = item.id or item.title
-        if key in seen:
-            continue
-        seen.add(key)
-        deduped.append(item)
-    return deduped
+        return OpenAIResult(answer=answer, evidence=dedupe_evidence(evidence), tools_called=tools_called, provider=self.provider)

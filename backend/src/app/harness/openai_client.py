@@ -9,6 +9,7 @@ import httpx
 from app.harness.pydantic_tools import responses_tool_schemas, validate_tool_arguments
 from app.harness.prompts import system_prompt
 from app.harness.tools import execute_tool, serialize_tool_result
+from app.harness.utils import dedupe_evidence
 from app.models import EvidenceCard, Language
 
 
@@ -96,7 +97,7 @@ class OpenAIResponsesClient:
         answer = _extract_output_text(final_response)
         if not answer:
             return None
-        return OpenAIResult(answer=answer, evidence=_dedupe_evidence(evidence), tools_called=tools_called)
+        return OpenAIResult(answer=answer, evidence=dedupe_evidence(evidence), tools_called=tools_called)
 
     async def _post_json(self, payload: dict[str, Any]) -> dict[str, Any]:
         headers = {
@@ -151,15 +152,3 @@ def _extract_output_text(response: dict[str, Any]) -> str:
             if content.get("type") in {"output_text", "text"} and content.get("text"):
                 chunks.append(str(content["text"]))
     return "".join(chunks).strip()
-
-
-def _dedupe_evidence(items: list[EvidenceCard]) -> list[EvidenceCard]:
-    seen: set[str] = set()
-    deduped: list[EvidenceCard] = []
-    for item in items:
-        key = item.id or item.title
-        if key in seen:
-            continue
-        seen.add(key)
-        deduped.append(item)
-    return deduped

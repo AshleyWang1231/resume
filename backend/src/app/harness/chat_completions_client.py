@@ -12,6 +12,7 @@ from app.harness.pydantic_tools import chat_completion_tool_schemas, validate_to
 from app.harness.prompts import system_prompt, system_prompt_with_history
 from app.harness.stream_types import StreamEvent
 from app.harness.tools import execute_tool, serialize_tool_result
+from app.harness.utils import dedupe_evidence, log, parse_arguments
 from app.models import EvidenceCard, Language
 
 
@@ -75,7 +76,7 @@ class ChatCompletionsClient:
             name = function.get("name")
             if not name:
                 continue
-            arguments = validate_tool_arguments(str(name), _parse_arguments(function.get("arguments")))
+            arguments = validate_tool_arguments(str(name), parse_arguments(function.get("arguments")))
             tools_called.append(name)
             _log("tool_execute", provider=self.provider, tool=name)
             result = execute_tool(name, arguments, language)
@@ -102,7 +103,7 @@ class ChatCompletionsClient:
 
         if not answer:
             return None
-        return OpenAIResult(answer=answer, evidence=_dedupe_evidence(evidence), tools_called=tools_called, provider=self.provider)
+        return OpenAIResult(answer=answer, evidence=dedupe_evidence(evidence), tools_called=tools_called, provider=self.provider)
 
     async def stream_answer(
         self,
@@ -320,7 +321,7 @@ class ChatCompletionsClient:
 
 
 def _log(event: str, **kwargs: Any) -> None:
-    print(json.dumps({"event": event, **kwargs}))
+    log(event, **kwargs)
 
 
 def _extract_assistant_message(response: dict[str, Any]) -> dict[str, Any]:
@@ -329,27 +330,3 @@ def _extract_assistant_message(response: dict[str, Any]) -> dict[str, Any]:
         return {}
     message = choices[0].get("message") or {}
     return message if isinstance(message, dict) else {}
-
-
-def _parse_arguments(raw_arguments: Any) -> dict[str, Any]:
-    if isinstance(raw_arguments, dict):
-        return raw_arguments
-    if not raw_arguments:
-        return {}
-    try:
-        parsed = json.loads(str(raw_arguments))
-    except json.JSONDecodeError:
-        return {}
-    return parsed if isinstance(parsed, dict) else {}
-
-
-def _dedupe_evidence(items: list[EvidenceCard]) -> list[EvidenceCard]:
-    seen: set[str] = set()
-    deduped: list[EvidenceCard] = []
-    for item in items:
-        key = item.id or item.title
-        if key in seen:
-            continue
-        seen.add(key)
-        deduped.append(item)
-    return deduped
