@@ -275,50 +275,45 @@
       <!-- ── Evaluation ── -->
       <section id="skills" class="section-block">
         <div class="section-head">
-          <p class="kicker" data-i18n="evalKicker">Evaluation approach</p>
-          <h2 data-i18n="evalTitle">How I measure and improve agent quality.</h2>
+          <p class="kicker" data-i18n="evalKicker">How this backend is evaluated</p>
+          <h2 data-i18n="evalTitle">Three test layers, zero manual checking.</h2>
         </div>
 
-        <!-- Eval flow diagram -->
-        <div class="eval-flow" aria-label="Evaluation pipeline flow">
-          <div class="eval-step">
-            <div class="eval-step-num">01</div>
-            <strong data-i18n="evalStep1">Collect real queries</strong>
-            <p data-i18n="evalStep1Desc">Gather production or representative queries as the evaluation seed. For Text2SQL: 1,000+ real bank business queries. For RAG: real policy Q&amp;A cases.</p>
+        <!-- Three eval layers -->
+        <div class="eval-layers">
+          <div class="eval-layer-card">
+            <div class="eval-layer-num">01</div>
+            <strong data-i18n="evalLayer1Title">Retrieval quality</strong>
+            <p data-i18n="evalLayer1Desc">19 gold-standard queries with expected doc IDs. BM25 + FAISS scores are measured at every change. Current: 100% hit rate, MRR 0.947.</p>
+            <code class="eval-layer-code" data-i18n="evalLayer1Code">test_retrieval_eval.py · Precision@3 / Recall@3 / MRR</code>
           </div>
-          <div class="eval-connector" aria-hidden="true">→</div>
-          <div class="eval-step">
-            <div class="eval-step-num">02</div>
-            <strong data-i18n="evalStep2">Define metrics</strong>
-            <p data-i18n="evalStep2Desc">Text2SQL: SQL correctness + execution success rate. RAG: RAGAS faithfulness, relevance, context coverage. Agent: TTFT, tool-call accuracy, evidence hit rate.</p>
+          <div class="eval-layer-card">
+            <div class="eval-layer-num">02</div>
+            <strong data-i18n="evalLayer2Title">Agent end-to-end</strong>
+            <p data-i18n="evalLayer2Desc">4 full-pipeline cases. Each asserts the correct evidence card is retrieved AND the answer contains required keywords. No LLM mocking — runs against the real agent.</p>
+            <code class="eval-layer-code" data-i18n="evalLayer2Code">test_agent_eval.py · evidence hit + keyword match</code>
           </div>
-          <div class="eval-connector" aria-hidden="true">→</div>
-          <div class="eval-step">
-            <div class="eval-step-num">03</div>
-            <strong data-i18n="evalStep3">Run &amp; score</strong>
-            <p data-i18n="evalStep3Desc">Automated eval pipeline runs on every prompt or pipeline change. Results compared against baseline to detect regressions before deploy.</p>
-          </div>
-          <div class="eval-connector" aria-hidden="true">→</div>
-          <div class="eval-step">
-            <div class="eval-step-num">04</div>
-            <strong data-i18n="evalStep4">Iterate &amp; validate</strong>
-            <p data-i18n="evalStep4Desc">Findings drive targeted prompt changes, retrieval tuning, or workflow adjustments — then re-run the full eval suite before shipping.</p>
+          <div class="eval-layer-card">
+            <div class="eval-layer-num">03</div>
+            <strong data-i18n="evalLayer3Title">Component contracts</strong>
+            <p data-i18n="evalLayer3Desc">Guard (32 cases): injection patterns, off-topic, length limits. Output sanitiser (13 cases): XML tags, markdown headers, bold, lists. Provider factory and Pydantic tool schemas.</p>
+            <code class="eval-layer-code" data-i18n="evalLayer3Code">test_guard.py · test_sanitise.py · 78 cases total</code>
           </div>
         </div>
 
-        <!-- Results row -->
-        <div class="eval-results">
-          <div class="eval-result-card">
-            <strong data-i18n="evalResult1">+20% Text2SQL accuracy</strong>
-            <span data-i18n="evalResult1Desc">from 1,000+ eval-case iteration cycle</span>
+        <!-- Actual metrics row -->
+        <div class="eval-metrics">
+          <div class="eval-metric-card">
+            <strong data-i18n="evalMetric1">19/19</strong>
+            <span data-i18n="evalMetric1Label">retrieval hit rate</span>
           </div>
-          <div class="eval-result-card">
-            <strong data-i18n="evalResult2">RAGAS baseline</strong>
-            <span data-i18n="evalResult2Desc">faithfulness + relevance + context coverage</span>
+          <div class="eval-metric-card">
+            <strong data-i18n="evalMetric2">0.947</strong>
+            <span data-i18n="evalMetric2Label">MRR across 19 queries</span>
           </div>
-          <div class="eval-result-card">
-            <strong data-i18n="evalResult3">-25% TTFT</strong>
-            <span data-i18n="evalResult3Desc">benchmark-driven Streaming optimisation</span>
+          <div class="eval-metric-card">
+            <strong data-i18n="evalMetric3">78</strong>
+            <span data-i18n="evalMetric3Label">automated test cases</span>
           </div>
         </div>
       </section>
