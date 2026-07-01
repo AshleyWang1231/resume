@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Lu Wang, AI Software Engineer building LLM agents, Streaming systems, Tool Calling workflows, personalization, and Text2SQL products." />
+    <meta name="description" content="Lu Wang, AI Software Engineer building production LLM agents, Streaming systems, Tool Calling workflows, personalization, and Text2SQL products at Zalando and Thoughtworks." />
     <title>Lu Wang | AI Software Engineer</title>
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
@@ -37,72 +37,92 @@
     </header>
 
     <main id="top">
-      <!-- ── Hero: single column ── -->
+      <!-- ── Hero ── -->
       <section class="hero-section" aria-labelledby="hero-title">
         <div class="hero-copy">
           <p class="kicker" data-i18n="heroKicker">AI Software Engineer · Zalando</p>
-          <h1 id="hero-title" data-i18n="heroTitle">I build LLM agents that make product decisions easier.</h1>
+          <h1 id="hero-title" data-i18n="heroTitle">I ship AI Agent systems from design to production.</h1>
           <p class="hero-lead" data-i18n="heroLead">
-            Focused on Agent Runtime, Agent Workflow, Tool Calling, Streaming UX, personalization, and Text2SQL systems that can be measured, tested, and shipped.
+            4 years building LLM agents across e-commerce (Zalando) and financial services (Thoughtworks). Specialising in Agent Runtime, Streaming UX, Tool Calling, Personalization, and Text2SQL — with a focus on measurable, production-ready outcomes.
           </p>
           <div class="hero-actions">
             <button class="btn btn-primary" type="button" data-focus-terminal data-i18n="heroAsk">Ask the resume agent</button>
             <a class="btn btn-secondary" href="#projects" data-command="/projects" data-i18n="heroWork">View selected work</a>
           </div>
           <div class="signal-row" aria-label="Selected outcomes">
+            <span>Zalando · <strong>Agent Runtime</strong></span>
+            <span>Thoughtworks · <strong>Text2SQL</strong></span>
             <span><strong>-25%</strong> TTFT</span>
-            <span><strong>+20%</strong> comparison engagement</span>
             <span><strong>1,000+</strong> eval cases</span>
           </div>
         </div>
       </section>
 
+      <!-- ── Capabilities ── -->
       <section id="capabilities" class="section-block">
         <div class="section-head">
-          <p class="kicker" data-i18n="capKicker">Core capabilities</p>
-          <h2 data-i18n="capTitle">AI engineering, kept close to product outcomes.</h2>
+          <p class="kicker" data-i18n="capKicker">What I bring</p>
+          <h2 data-i18n="capTitle">Production AI engineering across the full stack.</h2>
         </div>
         <div class="capability-grid">
           <article class="capability-card">
             <span>01</span>
-            <h3>Agent Runtime</h3>
-            <p data-i18n="cap1">Tool orchestration, state handling, and grounded responses for shopping and enterprise workflows.</p>
+            <h3 data-i18n="cap1Title">Agent Runtime &amp; Tool Orchestration</h3>
+            <p data-i18n="cap1">I design the runtime loop that makes agents reliable: tool dispatch with Pydantic-validated schemas, state-machine Streaming that separates process events from user-visible text, and multi-turn session management. Built at Zalando for a live shopping assistant handling real user traffic.</p>
           </article>
           <article class="capability-card">
             <span>02</span>
-            <h3>Streaming UX</h3>
-            <p data-i18n="cap2">Typed event streams that separate process state, business actions, and final user-facing text.</p>
+            <h3 data-i18n="cap2Title">Streaming UX &amp; Real-Time Performance</h3>
+            <p data-i18n="cap2">Typed SSE event streams that give users instant feedback: tool progress, intermediate states, and final text each arrive as distinct events. Reduced TTFT by ~25% on Zalando's Suggestions API. Solved FC-specific streaming termination bugs in production.</p>
           </article>
           <article class="capability-card">
             <span>03</span>
-            <h3>Personalization</h3>
-            <p data-i18n="cap3">Context-aware recommendations driven by user profile, history, conversation context, and product signals.</p>
+            <h3 data-i18n="cap3Title">Personalization &amp; Recommendation Systems</h3>
+            <p data-i18n="cap3">End-to-end personalization pipelines combining conversation context, user profiles, and behavioural signals. Designed async Warm-Up (Redis registry + in-memory fallback) to decouple LLM generation from request latency. Evaluation-driven iteration across 800+ real product scenarios.</p>
           </article>
           <article class="capability-card">
             <span>04</span>
-            <h3>Text2SQL &amp; RAG</h3>
-            <p data-i18n="cap4">Natural-language data access for enterprise users: multi-stage agent workflows, dual-layer vector reranking, SQL validation, and 1,000+ case eval suites.</p>
+            <h3 data-i18n="cap4Title">Text2SQL &amp; Enterprise RAG</h3>
+            <p data-i18n="cap4">Multi-stage agent workflows for structured data access: intent clarification → SQL generation → validation + retry → result summarisation. Dual-layer vector reranking (field + value) to reduce schema hallucination. Built 1,000+ case eval suites as regression baselines.</p>
           </article>
         </div>
       </section>
 
+      <!-- ── Impact metrics with context ── -->
       <section id="impact" class="section-block">
         <div class="section-head">
-          <p class="kicker" data-i18n="impactKicker">Selected metrics</p>
-          <h2 data-i18n="impactTitle">Measured improvements across latency, engagement, and reliability.</h2>
+          <p class="kicker" data-i18n="impactKicker">Selected outcomes</p>
+          <h2 data-i18n="impactTitle">Four numbers from four different problems.</h2>
         </div>
         <div class="metrics-grid">
-          <article class="metric-card"><strong data-count="25" data-prefix="-" data-suffix="%">-25%</strong><span data-i18n="metric1">average TTFT reduction in Suggestions API benchmark</span></article>
-          <article class="metric-card"><strong data-count="60" data-prefix="-" data-suffix="%">-60%</strong><span data-i18n="metric2">first-screen cold-start reduction via Warm-Up</span></article>
-          <article class="metric-card"><strong data-count="70" data-prefix="-" data-suffix="%">-70%</strong><span data-i18n="metric3">profile-service calls after cache layer</span></article>
-          <article class="metric-card"><strong data-count="20" data-prefix="+" data-suffix="%">+20%</strong><span data-i18n="metric4">product-comparison engagement lift</span></article>
+          <article class="metric-card">
+            <strong data-count="25" data-prefix="-" data-suffix="%">-25%</strong>
+            <span class="metric-ctx" data-i18n="impactCtx1">Zalando Assistant · Streaming redesign</span>
+            <span data-i18n="metric1">TTFT reduction — Suggestions API benchmark after Streaming state-machine + OpenAI Responses API migration</span>
+          </article>
+          <article class="metric-card">
+            <strong data-count="60" data-prefix="-" data-suffix="%">-60%</strong>
+            <span class="metric-ctx" data-i18n="impactCtx2">Zalando Assistant · Personalization</span>
+            <span data-i18n="metric2">cold-start reduction — async Warm-Up architecture decoupled LLM generation from the request critical path</span>
+          </article>
+          <article class="metric-card">
+            <strong data-count="70" data-prefix="-" data-suffix="%">-70%</strong>
+            <span class="metric-ctx" data-i18n="impactCtx3">Zalando Assistant · Profile service</span>
+            <span data-i18n="metric3">profile-service calls eliminated after adding TTL cache layer with field-level invalidation</span>
+          </article>
+          <article class="metric-card">
+            <strong data-count="20" data-prefix="+" data-suffix="%">+20%</strong>
+            <span class="metric-ctx" data-i18n="impactCtx4">Thoughtworks · Text2SQL Agent</span>
+            <span data-i18n="metric4">accuracy improvement — from 1,000+ eval-case iteration cycle on real bank business queries</span>
+          </article>
         </div>
       </section>
 
+      <!-- ── Projects ── -->
       <section id="projects" class="section-block">
         <div class="section-head">
-          <p class="kicker" data-i18n="projectsKicker">Selected AI work</p>
-          <h2 data-i18n="projectsTitle">Project cases with concrete outcomes.</h2>
+          <p class="kicker" data-i18n="projectsKicker">Selected work</p>
+          <h2 data-i18n="projectsTitle">Each case: problem → approach → outcome.</h2>
         </div>
         <div class="projects-grid" data-projects-grid>
           <article class="project-skeleton"></article>
@@ -112,10 +132,11 @@
         </div>
       </section>
 
+      <!-- ── System ── -->
       <section id="system" class="section-block system-section">
         <div class="section-head">
           <p class="kicker" data-i18n="systemKicker">This site's backend</p>
-          <h2 data-i18n="systemTitle">A small agent stack behind the portfolio.</h2>
+          <h2 data-i18n="systemTitle">A minimal agent stack. Two engineering decisions worth noting.</h2>
         </div>
         <div class="system-grid">
           <div class="arch-diagram" data-arch-diagram>
@@ -123,37 +144,58 @@
           </div>
           <div class="system-copy">
             <p data-arch-summary></p>
+            <div class="system-challenges">
+              <div class="challenge-item">
+                <strong class="challenge-title" data-i18n="systemChallenge1Title">Serverless + SSE</strong>
+                <p data-i18n="systemChallenge1">Aliyun FC terminates streaming responses early. Solved by collecting all SSE chunks server-side before flushing — the client still receives typed events and renders progressively. Same challenge I solved for a different reason at Zalando.</p>
+              </div>
+              <div class="challenge-item">
+                <strong class="challenge-title" data-i18n="systemChallenge2Title">Multi-provider fallback</strong>
+                <p data-i18n="systemChallenge2">Primary LLM is Qwen-Turbo via OpenAI-compatible API. Automatic fallback to DeepSeek then OpenAI — all providers share the same async httpx client and Pydantic tool schemas. Swapping is config-only, no code changes.</p>
+              </div>
+            </div>
             <div class="stack-list">
-              <span>FastAPI</span><span>SSE</span><span>Tool Calling</span><span>Pydantic schemas</span><span>Multi-provider LLM</span>
+              <span>FastAPI</span><span>SSE</span><span>Tool Calling</span><span>Pydantic</span><span>Multi-provider LLM</span><span>Aliyun FC</span>
             </div>
           </div>
         </div>
       </section>
 
+      <!-- ── Skills ── -->
       <section id="skills" class="section-block compact-section">
         <div class="section-head">
           <p class="kicker" data-i18n="skillsKicker">Stack</p>
-          <h2 data-i18n="skillsTitle">Tools I use to ship AI systems.</h2>
+          <h2 data-i18n="skillsTitle">What I reach for to ship AI systems.</h2>
         </div>
         <div class="skills-grid">
           <article>
-            <h3 data-i18n="skillAi">AI / LLM</h3>
-            <p>LLM Agent, Agent Workflow, Tool Calling, Streaming, OpenAI Responses API, Pydantic-AI, RAG, Text2SQL, Prompt Engineering, RAGAS</p>
+            <h3 data-i18n="skillAi">AI / Agents</h3>
+            <p>LLM Agent · Agent Workflow · Tool Calling · OpenAI Responses API · Pydantic-AI · Streaming · Prompt Engineering</p>
+            <div class="skill-tag-row">
+              <span>RAG</span><span>Text2SQL</span><span>RAGAS</span><span>Eval-Driven Dev</span>
+            </div>
           </article>
           <article>
-            <h3 data-i18n="skillBackend">Backend</h3>
-            <p>Python, FastAPI, Java, Spring Cloud, Redis, Docker, Git, Pytest</p>
+            <h3 data-i18n="skillBackend">Backend &amp; Infra</h3>
+            <p>Python · FastAPI · Java · Spring Cloud · Redis · Docker · Pytest</p>
+            <div class="skill-tag-row">
+              <span>Aliyun FC</span><span>Async / SSE</span><span>REST APIs</span>
+            </div>
           </article>
           <article>
-            <h3 data-i18n="skillRetrieval">Retrieval</h3>
-            <p>FAISS, LlamaIndex, Embedding, Reranking, BGE-Reranker, pgvector</p>
+            <h3 data-i18n="skillRetrieval">Retrieval &amp; Eval</h3>
+            <p>FAISS · LlamaIndex · Embedding · Reranking · BGE-Reranker · pgvector</p>
+            <div class="skill-tag-row">
+              <span>Dual-layer Rerank</span><span>SQL Validation</span><span>RAGAS</span>
+            </div>
           </article>
         </div>
       </section>
 
+      <!-- ── Contact ── -->
       <section id="contact" class="section-block final-section">
         <p class="kicker" data-i18n="contactKicker">Contact</p>
-        <h2 data-i18n="contactTitle">Available for AI software engineering roles.</h2>
+        <h2 data-i18n="contactTitle">Open to AI software engineering roles.</h2>
         <div class="contact-row">
           <a href="mailto:wanglu_ashley@126.com">wanglu_ashley@126.com</a>
           <span data-i18n="phone">+86 13122038365</span>
@@ -184,7 +226,7 @@
         </div>
         <div class="console-feed" data-command-feed>
           <p><span class="prompt">lu@resume</span> boot --profile ai-engineer</p>
-          <p class="console-muted" data-i18n="consoleLine1">Profile loaded: Agent Runtime, Agent Workflow, Streaming, Tool Calling, Personalization, Text2SQL.</p>
+          <p class="console-muted" data-i18n="consoleLine1">Profile loaded: Zalando · Thoughtworks · Agent Runtime · Streaming · Text2SQL</p>
           <p><span class="prompt">lu@resume</span> status</p>
           <p class="console-muted" data-i18n="consoleLine2">Ready. Ask naturally, or use commands like /projects.</p>
         </div>
@@ -203,10 +245,10 @@
           </div>
           <p class="pills-label" data-i18n="pillsQuestions">Questions</p>
           <div class="pills-q-grid">
-            <button type="button" class="pill-q suggestion-btn" data-q-en="What AI Agent systems has Lu built?" data-q-zh="汪露做过哪些 AI Agent 系统？" data-i18n="agentQ1">What AI Agent systems has Lu built?</button>
-            <button type="button" class="pill-q suggestion-btn" data-q-en="Show Lu's Streaming and Tool Calling experience." data-q-zh="展示 Streaming 和 Tool Calling 经验。" data-i18n="agentQ2">Show Streaming and Tool Calling experience.</button>
-            <button type="button" class="pill-q suggestion-btn" data-q-en="What measurable impact does Lu have?" data-q-zh="有哪些可量化结果？" data-i18n="agentQ3">What measurable impact?</button>
-            <button type="button" class="pill-q suggestion-btn" data-q-en="Explain Lu's Text2SQL experience." data-q-zh="介绍 Text2SQL 项目经验。" data-i18n="agentQ4">Explain Text2SQL experience.</button>
+            <button type="button" class="pill-q suggestion-btn" data-q-en="How does Lu design Agent Runtimes?" data-q-zh="汪露是如何设计 Agent Runtime 的？" data-i18n="agentQ1">How does Lu design Agent Runtimes?</button>
+            <button type="button" class="pill-q suggestion-btn" data-q-en="Tell me about the Streaming architecture at Zalando." data-q-zh="介绍 Zalando 的 Streaming 架构。" data-i18n="agentQ2">Tell me about the Streaming architecture at Zalando.</button>
+            <button type="button" class="pill-q suggestion-btn" data-q-en="What engineering problems has Lu solved?" data-q-zh="汪露解决过哪些工程难题？" data-i18n="agentQ3">What engineering problems has Lu solved?</button>
+            <button type="button" class="pill-q suggestion-btn" data-q-en="Explain the Text2SQL pipeline and evaluation approach." data-q-zh="解释 Text2SQL 流水线和评估方法。" data-i18n="agentQ4">Explain the Text2SQL pipeline and evaluation approach.</button>
           </div>
         </div>
       </div>

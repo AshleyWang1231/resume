@@ -515,6 +515,12 @@ h3 { margin-bottom: 10px; font-size: 17px; }
   padding: 22px;
   border-radius: var(--radius);
 }
+.capability-card p {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--muted);
+  margin-bottom: 0;
+}
 .capability-card span {
   display: inline-grid;
   place-items: center;
@@ -526,7 +532,6 @@ h3 { margin-bottom: 10px; font-size: 17px; }
   background: var(--cyan);
   font-weight: 850;
 }
-.capability-card p,
 .metric-card span,
 .project-card p,
 .skills-grid p,
@@ -568,14 +573,24 @@ h3 { margin-bottom: 10px; font-size: 17px; }
 }
 
 /* Metrics */
-.metric-card { min-height: 160px; }
+.metric-card { min-height: auto; padding-bottom: 24px; }
 .metric-card strong {
   display: block;
-  margin-bottom: 12px;
+  margin-bottom: 6px;
   color: var(--cyan);
   font-size: 44px;
   line-height: 1;
   letter-spacing: 0;
+}
+.metric-ctx {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--cyan);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.7;
 }
 
 /* Projects */
@@ -648,14 +663,14 @@ h3 { margin-bottom: 10px; font-size: 17px; }
   gap: 10px;
 }
 .arch-node {
-  min-height: 116px;
+  min-height: 100px;
   padding: 14px;
   border: 1px solid var(--line);
   border-radius: 14px;
   background: rgba(255,255,255,.04);
 }
 .arch-node-label { font-weight: 760; margin-bottom: 5px; }
-.arch-node-desc { color: var(--muted); font-size: 12px; }
+.arch-node-desc { color: var(--muted); font-size: 12px; line-height: 1.5; }
 .arch-node-type {
   display: inline-block;
   margin-top: 9px;
@@ -668,8 +683,24 @@ h3 { margin-bottom: 10px; font-size: 17px; }
 .system-copy {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
+  gap: 16px;
   min-width: 0;
+}
+.system-challenges { display: flex; flex-direction: column; gap: 14px; }
+.challenge-item { }
+.challenge-title {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+}
+.challenge-item p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 /* Skills & Contact */
@@ -679,6 +710,21 @@ h3 { margin-bottom: 10px; font-size: 17px; }
   gap: 14px;
 }
 .skills-grid article { min-height: 170px; }
+.skills-grid article p { margin-bottom: 12px; line-height: 1.65; }
+.skill-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.skill-tag-row span {
+  padding: 3px 8px;
+  border: 1px solid rgba(103, 232, 249, .18);
+  border-radius: 999px;
+  color: var(--cyan);
+  background: rgba(103, 232, 249, .06);
+  font-size: 11px;
+}
 .final-section {
   border-radius: 28px;
   padding: clamp(36px, 7vw, 70px);
