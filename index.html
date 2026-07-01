@@ -140,131 +140,167 @@
         </div>
         <p class="system-intro" data-i18n="systemSummary">A multi-turn agent built to demonstrate the same patterns I use professionally: a typed event stream that separates tool calls from answer text, Pydantic-validated tool schemas, a four-stage workflow loop, and multi-provider LLM fallback.</p>
 
-        <div class="arch-flow" aria-label="Architecture diagram">
+        <div class="arch-flow2" aria-label="Architecture diagram">
 
-          <!-- L6: Guard -->
-          <div class="af-row af-row-guard">
-            <div class="af-box af-guard">
-              <code class="af-tag af-tag-l6">L6 · guard</code>
-              <span class="af-label">Input Guard</span>
-              <span class="af-sub">length · prompt injection regex · off-topic detection</span>
+          <!-- Row 1: User Query + Guard + Blocked -->
+          <div class="af2-row af2-row-top">
+            <div class="af2-box af2-green">
+              <div class="af2-box-title">User Query <span class="af2-tag">API POST</span></div>
+              <div class="af2-items">
+                <span>message</span>
+                <span>session_id</span>
+                <span>language</span>
+              </div>
             </div>
-            <div class="af-guard-reject">
-              <span class="af-reject-arrow">→</span>
-              <div class="af-reject-box">
-                <span class="af-reject-title">blocked</span>
-                <span class="af-reject-sub">fixed reply · no LLM call</span>
+            <div class="af2-arrow af2-arrow-r">→</div>
+            <div class="af2-box af2-green">
+              <div class="af2-box-title">Guard <span class="af2-tag">Multi-step</span></div>
+              <div class="af2-items">
+                <span>Injection regex detection</span>
+                <span>Off-topic filtering</span>
+                <span>Length check</span>
+              </div>
+            </div>
+            <div class="af2-arrow af2-arrow-r af2-arrow-blocked">blocked →</div>
+            <div class="af2-box af2-orange af2-blocked">
+              <div class="af2-box-title">⚠ Blocked: Fixed Reply</div>
+              <div class="af2-items"><span>No LLM Call</span></div>
+            </div>
+          </div>
+
+          <div class="af2-arrow af2-arrow-d af2-arrow-from-guard">↓</div>
+
+          <!-- Row 2: Intent + Session + Prompt -->
+          <div class="af2-row af2-row-mid">
+            <div class="af2-box af2-blue">
+              <div class="af2-box-title">Intent <span class="af2-tag">Router</span></div>
+              <div class="af2-items">
+                <span>5-type classification</span>
+                <span>Sub-workflow routing</span>
+                <span>Hint doc association</span>
+              </div>
+            </div>
+            <div class="af2-box af2-blue">
+              <div class="af2-box-title">Session <span class="af2-tag">Store</span></div>
+              <div class="af2-items">
+                <span>Multi-turn history</span>
+                <span>LRU 500 · 30 min TTL</span>
+              </div>
+            </div>
+            <div class="af2-box af2-blue">
+              <div class="af2-box-title">Prompt <span class="af2-tag">Orchestrator</span></div>
+              <div class="af2-items">
+                <span>System context</span>
+                <span>Tools definition</span>
+                <span>History injection</span>
+                <span>Intent focus</span>
               </div>
             </div>
           </div>
 
-          <div class="af-connector">↓ <span class="af-connector-label">pass</span></div>
+          <div class="af2-arrow af2-arrow-d">↓</div>
 
-          <!-- Harness boundary -->
-          <div class="af-row">
-            <div class="af-harness-frame">
-              <span class="af-harness-badge">agent harness</span>
+          <!-- Row 3: Retrieval + Workflow Loop -->
+          <div class="af2-row af2-row-loop">
 
-              <!-- L1: Context Management -->
-              <div class="af-layer-row">
-                <span class="af-layer-tag af-layer-l1">L1</span>
-                <div class="af-pre-row">
-                  <div class="af-box af-intent">
-                    <code class="af-tag">intent router</code>
-                    <span class="af-label">Intent Classification</span>
-                    <span class="af-sub">5 intents → retrieval_hint</span>
-                    <span class="af-sub af-sub-dim">+ prompt_focus injected into L1 prompt</span>
-                  </div>
-                  <div class="af-box af-session">
-                    <code class="af-tag">session store</code>
-                    <span class="af-label">Context Management</span>
-                    <span class="af-sub">history[-6:] → system prompt</span>
-                    <span class="af-sub af-sub-dim">LRU 500 · 30 min TTL</span>
+            <!-- Retrieval (left column) -->
+            <div class="af2-box af2-blue af2-retrieval-box">
+              <div class="af2-box-title">Retrieval <span class="af2-tag">Hybrid KB</span></div>
+              <div class="af2-items">
+                <span>FAISS · Vector search</span>
+                <span>BM25 · Keyword search</span>
+                <span>RRF fusion ranker</span>
+                <span>intent_hint boosts</span>
+              </div>
+            </div>
+
+            <div class="af2-arrow af2-arrow-r">→</div>
+
+            <!-- Workflow Loop (right, large) -->
+            <div class="af2-workflow-frame">
+              <div class="af2-workflow-title">Workflow Loop</div>
+              <div class="af2-workflow-inner">
+
+                <!-- Tools -->
+                <div class="af2-box af2-blue">
+                  <div class="af2-box-title">Tools <span class="af2-tag">Pydantic schemas</span></div>
+                  <div class="af2-items">
+                    <span>search_resume_facts</span>
+                    <span>get_project_detail</span>
+                    <span>list_capabilities</span>
                   </div>
                 </div>
-              </div>
 
-              <div class="af-inner-connector">↓</div>
-
-              <!-- L2: Tool System -->
-              <div class="af-layer-row">
-                <span class="af-layer-tag af-layer-l2">L2</span>
-                <div class="af-box af-retrieval">
-                  <code class="af-tag">hybrid retrieval</code>
-                  <span class="af-label">FAISS vector + BM25 keyword → RRF fusion</span>
-                  <span class="af-sub">intent_hint boosts relevant docs · limit from intent</span>
-                  <span class="af-sub af-sub-dim">→ seed_evidence passed to LLM context</span>
+                <div class="af2-tool-arrows">
+                  <span class="af2-tool-req">ToolRequest →</span>
+                  <span class="af2-tool-res">← ToolResponse</span>
                 </div>
-              </div>
 
-              <div class="af-inner-connector">↓</div>
-
-              <!-- L3: Workflow Loop -->
-              <div class="af-layer-row">
-                <span class="af-layer-tag af-layer-l3">L3</span>
-                <div class="af-loop-frame">
-                  <span class="af-loop-badge">workflow loop</span>
-                  <div class="af-loop-cols">
-                    <div class="af-box af-tools">
-                      <code class="af-tag">tool calling</code>
-                      <span class="af-label">Tool Dispatch</span>
-                      <span class="af-sub">search_resume_facts</span>
-                      <span class="af-sub">get_project_detail</span>
-                      <span class="af-sub af-sub-dim">Pydantic-validated schemas</span>
-                    </div>
-                    <div class="af-bidirect">↔</div>
-                    <div class="af-box af-llm">
-                      <code class="af-tag">llm</code>
-                      <span class="af-label">LLM</span>
-                      <span class="af-sub">Qwen <span class="af-dim">primary</span></span>
-                      <span class="af-sub">DeepSeek / OpenAI <span class="af-dim">fallback</span></span>
-                    </div>
+                <!-- LLM -->
+                <div class="af2-box af2-blue">
+                  <div class="af2-box-title">LLM <span class="af2-tag">Fallback chain</span></div>
+                  <div class="af2-items">
+                    <span>Qwen-Turbo <em>primary</em></span>
+                    <span>DeepSeek <em>fallback</em></span>
+                    <span>OpenAI <em>fallback</em></span>
                   </div>
                 </div>
-              </div>
 
-              <div class="af-inner-connector">↓</div>
+                <div class="af2-arrow af2-arrow-r">→</div>
 
-              <!-- L6: Self-correction + Post-process + Fallback -->
-              <div class="af-layer-row">
-                <span class="af-layer-tag af-layer-l6">L6</span>
-                <div class="af-post-row">
-                  <div class="af-box af-postprocess">
-                    <code class="af-tag">self-correction</code>
-                    <span class="af-label">Quality Loop</span>
-                    <span class="af-sub">LLM reviews own answer</span>
-                    <span class="af-sub af-sub-dim">IMPROVE → retry (max 2×)</span>
-                  </div>
-                  <div class="af-post-sep">·</div>
-                  <div class="af-box af-postprocess">
-                    <code class="af-tag">post-process</code>
-                    <span class="af-label">Output Sanitiser</span>
-                    <span class="af-sub">sanitise_answer()</span>
-                    <span class="af-sub af-sub-dim">strip tags · markdown</span>
-                  </div>
-                  <div class="af-post-sep">·</div>
-                  <div class="af-box af-fallback">
-                    <code class="af-tag">fallback</code>
-                    <span class="af-label">Fallback Answer</span>
-                    <span class="af-sub">LLM unavailable</span>
-                    <span class="af-sub af-sub-dim">seed_evidence → template</span>
+                <!-- Self-Correct -->
+                <div class="af2-box af2-blue">
+                  <div class="af2-box-title">Self-Correct <span class="af2-tag">Reviewer</span></div>
+                  <div class="af2-items">
+                    <span>Quality assessment</span>
+                    <span>IMPROVE instruction</span>
+                    <span>Retry max 2×</span>
                   </div>
                 </div>
-              </div>
 
+              </div>
             </div>
           </div>
 
-          <div class="af-connector">↓</div>
+          <div class="af2-arrow af2-arrow-d">↓</div>
 
-          <!-- L3: SSE Stream -->
-          <div class="af-row">
-            <div class="af-box af-stream">
-              <code class="af-tag af-tag-l3">L3 · stream</code>
-              <span class="af-label">SSE Stream</span>
-              <span class="af-sub af-stream-events">
+          <!-- Row 4: Answer Cleaning + Metrics + Fallback -->
+          <div class="af2-row af2-row-post">
+            <div class="af2-box af2-orange">
+              <div class="af2-box-title">Answer Cleaning <span class="af2-tag">Sanitizer</span></div>
+              <div class="af2-items">
+                <span>Strip error tags</span>
+                <span>Markdown formatting</span>
+                <span>Bold / header removal</span>
+              </div>
+            </div>
+            <div class="af2-box af2-orange">
+              <div class="af2-box-title">Metrics <span class="af2-tag">Analytics</span></div>
+              <div class="af2-items">
+                <span>Execution logs (elapsed_ms)</span>
+                <span>Error tracking</span>
+                <span>Latency per provider</span>
+              </div>
+            </div>
+            <div class="af2-box af2-orange">
+              <div class="af2-box-title">Fallback <span class="af2-tag">Error Handler</span></div>
+              <div class="af2-items">
+                <span>Seeded evidence template</span>
+                <span>LLM-unavailable reply</span>
+                <span>Multi-provider degradation</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="af2-arrow af2-arrow-d">↓</div>
+
+          <!-- Row 5: SSE Stream -->
+          <div class="af2-row">
+            <div class="af2-box af2-orange af2-sse">
+              <div class="af2-box-title">SSE Stream <span class="af2-tag">Typed Events</span></div>
+              <div class="af2-sse-events">
                 <code>metadata</code><code>tool_call</code><code>answer_delta</code><code>evidence</code><code>done</code>
-              </span>
+              </div>
             </div>
           </div>
 
