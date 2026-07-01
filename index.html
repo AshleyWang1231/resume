@@ -136,59 +136,134 @@
       <section id="system" class="section-block system-section">
         <div class="section-head">
           <p class="kicker" data-i18n="systemKicker">This site's backend</p>
-          <h2 data-i18n="systemTitle">A minimal agent stack. Two engineering decisions worth noting.</h2>
+          <h2 data-i18n="systemTitle">Agent Runtime · Agent Workflow · Tool Calling · Streaming</h2>
         </div>
-        <div class="system-grid">
-          <div class="arch-diagram" data-arch-diagram>
-            <div class="arch-loading" data-i18n="archLoading">Loading architecture...</div>
-          </div>
-          <div class="system-copy">
-            <p data-arch-summary></p>
-            <div class="system-challenges">
-              <div class="challenge-item">
-                <strong class="challenge-title" data-i18n="systemChallenge1Title">Serverless + SSE</strong>
-                <p data-i18n="systemChallenge1">Aliyun FC terminates streaming responses early. Solved by collecting all SSE chunks server-side before flushing — the client still receives typed events and renders progressively. Same challenge I solved for a different reason at Zalando.</p>
+        <p class="system-intro" data-i18n="systemSummary">A multi-turn agent built to demonstrate the same patterns I use professionally: a typed event stream that separates tool calls from answer text, Pydantic-validated tool schemas, a four-stage workflow loop, and multi-provider LLM fallback.</p>
+
+        <!-- High-level architecture diagram (static SVG) -->
+        <div class="arch-hld" aria-label="Architecture diagram">
+          <div class="hld-diagram">
+            <!-- User -->
+            <div class="hld-node hld-user">
+              <span class="hld-icon">💬</span>
+              <span class="hld-label">User</span>
+            </div>
+            <div class="hld-arrow hld-arrow-right"><span class="hld-arrow-label">question</span></div>
+
+            <!-- Agent Runtime -->
+            <div class="hld-node hld-agent hld-highlight">
+              <span class="hld-icon">⚙️</span>
+              <span class="hld-label">Agent Runtime</span>
+              <span class="hld-sublabel">Session · Multi-turn</span>
+            </div>
+
+            <!-- Workflow loop -->
+            <div class="hld-workflow-col">
+              <div class="hld-arrow hld-arrow-down"><span class="hld-arrow-label">drives</span></div>
+              <div class="hld-node hld-workflow">
+                <span class="hld-icon">🔄</span>
+                <span class="hld-label">Agent Workflow</span>
+                <div class="hld-steps">
+                  <span>Intent routing</span>
+                  <span class="hld-chevron">→</span>
+                  <span>Tool Calling</span>
+                  <span class="hld-chevron">→</span>
+                  <span>Retrieval</span>
+                  <span class="hld-chevron">→</span>
+                  <span>Synthesis</span>
+                </div>
               </div>
-              <div class="challenge-item">
-                <strong class="challenge-title" data-i18n="systemChallenge2Title">Multi-provider fallback</strong>
-                <p data-i18n="systemChallenge2">Primary LLM is Qwen-Turbo via OpenAI-compatible API. Automatic fallback to DeepSeek then OpenAI — all providers share the same async httpx client and Pydantic tool schemas. Swapping is config-only, no code changes.</p>
+              <div class="hld-arrow hld-arrow-down"><span class="hld-arrow-label">tool dispatch</span></div>
+              <div class="hld-tools-row">
+                <div class="hld-node hld-tool">
+                  <span class="hld-label">search_facts</span>
+                </div>
+                <div class="hld-node hld-tool">
+                  <span class="hld-label">get_project</span>
+                </div>
+                <div class="hld-node hld-tool">
+                  <span class="hld-label">list_caps</span>
+                </div>
               </div>
             </div>
-            <div class="stack-list">
-              <span>FastAPI</span><span>SSE</span><span>Tool Calling</span><span>Pydantic</span><span>Multi-provider LLM</span><span>Aliyun FC</span>
+
+            <!-- LLM -->
+            <div class="hld-llm-col">
+              <div class="hld-arrow hld-arrow-down"><span class="hld-arrow-label">chat completions</span></div>
+              <div class="hld-node hld-llm">
+                <span class="hld-icon">🧠</span>
+                <span class="hld-label">LLM</span>
+                <span class="hld-sublabel">Qwen → DeepSeek → OpenAI</span>
+              </div>
+            </div>
+
+            <!-- SSE -->
+            <div class="hld-arrow hld-arrow-right hld-arrow-sse"><span class="hld-arrow-label">Streaming (SSE)</span></div>
+            <div class="hld-node hld-sse">
+              <span class="hld-icon">⚡</span>
+              <span class="hld-label">Typed Events</span>
+              <div class="hld-events">
+                <span>tool_call</span>
+                <span>answer_delta</span>
+                <span>evidence</span>
+                <span>done</span>
+              </div>
             </div>
           </div>
         </div>
+
+        <!-- Dynamic nodes from API (keep for completeness) -->
+        <div class="arch-nodes-secondary" data-arch-diagram style="display:none"></div>
       </section>
 
-      <!-- ── Skills ── -->
-      <section id="skills" class="section-block compact-section">
+      <!-- ── Evaluation ── -->
+      <section id="skills" class="section-block">
         <div class="section-head">
-          <p class="kicker" data-i18n="skillsKicker">Stack</p>
-          <h2 data-i18n="skillsTitle">What I reach for to ship AI systems.</h2>
+          <p class="kicker" data-i18n="evalKicker">Evaluation approach</p>
+          <h2 data-i18n="evalTitle">How I measure and improve agent quality.</h2>
         </div>
-        <div class="skills-grid">
-          <article>
-            <h3 data-i18n="skillAi">AI / Agents</h3>
-            <p>LLM Agent · Agent Workflow · Tool Calling · OpenAI Responses API · Pydantic-AI · Streaming · Prompt Engineering</p>
-            <div class="skill-tag-row">
-              <span>RAG</span><span>Text2SQL</span><span>RAGAS</span><span>Eval-Driven Dev</span>
-            </div>
-          </article>
-          <article>
-            <h3 data-i18n="skillBackend">Backend &amp; Infra</h3>
-            <p>Python · FastAPI · Java · Spring Cloud · Redis · Docker · Pytest</p>
-            <div class="skill-tag-row">
-              <span>Aliyun FC</span><span>Async / SSE</span><span>REST APIs</span>
-            </div>
-          </article>
-          <article>
-            <h3 data-i18n="skillRetrieval">Retrieval &amp; Eval</h3>
-            <p>FAISS · LlamaIndex · Embedding · Reranking · BGE-Reranker · pgvector</p>
-            <div class="skill-tag-row">
-              <span>Dual-layer Rerank</span><span>SQL Validation</span><span>RAGAS</span>
-            </div>
-          </article>
+
+        <!-- Eval flow diagram -->
+        <div class="eval-flow" aria-label="Evaluation pipeline flow">
+          <div class="eval-step">
+            <div class="eval-step-num">01</div>
+            <strong data-i18n="evalStep1">Collect real queries</strong>
+            <p data-i18n="evalStep1Desc">Gather production or representative queries as the evaluation seed. For Text2SQL: 1,000+ real bank business queries. For RAG: real policy Q&amp;A cases.</p>
+          </div>
+          <div class="eval-connector" aria-hidden="true">→</div>
+          <div class="eval-step">
+            <div class="eval-step-num">02</div>
+            <strong data-i18n="evalStep2">Define metrics</strong>
+            <p data-i18n="evalStep2Desc">Text2SQL: SQL correctness + execution success rate. RAG: RAGAS faithfulness, relevance, context coverage. Agent: TTFT, tool-call accuracy, evidence hit rate.</p>
+          </div>
+          <div class="eval-connector" aria-hidden="true">→</div>
+          <div class="eval-step">
+            <div class="eval-step-num">03</div>
+            <strong data-i18n="evalStep3">Run &amp; score</strong>
+            <p data-i18n="evalStep3Desc">Automated eval pipeline runs on every prompt or pipeline change. Results compared against baseline to detect regressions before deploy.</p>
+          </div>
+          <div class="eval-connector" aria-hidden="true">→</div>
+          <div class="eval-step">
+            <div class="eval-step-num">04</div>
+            <strong data-i18n="evalStep4">Iterate &amp; validate</strong>
+            <p data-i18n="evalStep4Desc">Findings drive targeted prompt changes, retrieval tuning, or workflow adjustments — then re-run the full eval suite before shipping.</p>
+          </div>
+        </div>
+
+        <!-- Results row -->
+        <div class="eval-results">
+          <div class="eval-result-card">
+            <strong data-i18n="evalResult1">+20% Text2SQL accuracy</strong>
+            <span data-i18n="evalResult1Desc">from 1,000+ eval-case iteration cycle</span>
+          </div>
+          <div class="eval-result-card">
+            <strong data-i18n="evalResult2">RAGAS baseline</strong>
+            <span data-i18n="evalResult2Desc">faithfulness + relevance + context coverage</span>
+          </div>
+          <div class="eval-result-card">
+            <strong data-i18n="evalResult3">-25% TTFT</strong>
+            <span data-i18n="evalResult3Desc">benchmark-driven Streaming optimisation</span>
+          </div>
         </div>
       </section>
 

@@ -48,6 +48,13 @@ class ProjectCard(BaseModel):
     period: str
     summary_en: str
     summary_zh: str
+    # STAR fields — concise, one sentence each
+    star_s_en: str = ""   # Situation / Task
+    star_a_en: str = ""   # Action
+    star_r_en: str = ""   # Result
+    star_s_zh: str = ""
+    star_a_zh: str = ""
+    star_r_zh: str = ""
     impact: list[str]
     skills: list[str]
     highlight: bool = False

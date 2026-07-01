@@ -11,7 +11,7 @@ const T = {
     navProjects: "Projects",
     navSystem: "System",
     downloadResume: "PDF",
-    heroKicker: "AI Software Engineer · Zalando",
+    heroKicker: "AI Software Engineer",
     heroTitle: "I ship AI Agent systems from design to production.",
     heroLead: "4 years building LLM agents across e-commerce (Zalando) and financial services (Thoughtworks). Specialising in Agent Runtime, Streaming UX, Tool Calling, Personalization, and Text2SQL — with a focus on measurable, production-ready outcomes.",
     heroAsk: "Ask the resume agent",
@@ -60,17 +60,26 @@ const T = {
     projectsTitle: "Each case: problem → approach → outcome.",
 
     systemKicker: "This site's backend",
-    systemTitle: "A minimal agent stack. Two engineering decisions worth noting.",
-    systemChallenge1Title: "Serverless + SSE",
-    systemChallenge1: "Aliyun FC terminates streaming responses early. Solved by collecting all SSE chunks server-side before flushing — the client still receives typed events and renders progressively. Same challenge I solved for a different reason at Zalando.",
-    systemChallenge2Title: "Multi-provider fallback",
-    systemChallenge2: "Primary LLM is Qwen-Turbo via OpenAI-compatible API. Automatic fallback to DeepSeek then OpenAI — all providers share the same async httpx client and Pydantic tool schemas. Swapping is config-only, no code changes.",
+    systemTitle: "Agent Runtime · Agent Workflow · Tool Calling · Streaming",
+    systemSummary: "A multi-turn agent built to demonstrate the same patterns I use professionally: a typed event stream that separates tool calls from answer text, Pydantic-validated tool schemas, a four-stage workflow loop, and multi-provider LLM fallback.",
+    systemArchTitle: "How it works",
 
-    skillsKicker: "Stack",
-    skillsTitle: "What I reach for to ship AI systems.",
-    skillAi: "AI / Agents",
-    skillBackend: "Backend & Infra",
-    skillRetrieval: "Retrieval & Eval",
+    evalKicker: "Evaluation approach",
+    evalTitle: "How I measure and improve agent quality.",
+    evalStep1: "Collect real queries",
+    evalStep1Desc: "Gather production or representative queries as the evaluation seed. For Text2SQL: 1,000+ real bank business queries. For RAG: real policy Q&A cases.",
+    evalStep2: "Define metrics",
+    evalStep2Desc: "Text2SQL: end-to-end SQL correctness + execution success rate. RAG: RAGAS faithfulness, answer relevance, context coverage. Agent: TTFT, tool-call accuracy, evidence hit rate.",
+    evalStep3: "Run & score",
+    evalStep3Desc: "Automated eval pipeline runs on every prompt or pipeline change. Results compared against baseline to detect regressions before deploy.",
+    evalStep4: "Iterate & validate",
+    evalStep4Desc: "Findings drive targeted prompt changes, retrieval tuning, or workflow adjustments. Changes re-run through the full eval suite before shipping.",
+    evalResult1: "+20% Text2SQL accuracy",
+    evalResult1Desc: "from 1,000+ eval-case iteration cycle",
+    evalResult2: "RAGAS baseline",
+    evalResult2Desc: "faithfulness + relevance + context coverage",
+    evalResult3: "-25% TTFT",
+    evalResult3Desc: "benchmark-driven Streaming optimisation",
 
     contactKicker: "Contact",
     contactTitle: "Open to AI software engineering roles.",
@@ -137,17 +146,26 @@ const T = {
     projectsTitle: "每个案例：问题 → 方案 → 结果。",
 
     systemKicker: "本站后端",
-    systemTitle: "精简的 Agent 系统，两个值得记录的工程决策。",
-    systemChallenge1Title: "Serverless + SSE",
-    systemChallenge1: "阿里云函数计算会提前终止流式响应。解决方案：后端收集所有 SSE chunk 后一次性 flush，客户端仍收到类型化事件并逐步渲染。与我在 Zalando 解决的另一个 Streaming 挑战异曲同工。",
-    systemChallenge2Title: "多 Provider 降级",
-    systemChallenge2: "主 LLM 为 Qwen-Turbo（OpenAI 兼容接口）。自动降级链：Qwen → DeepSeek → OpenAI。所有 Provider 共用同一个 async httpx client 和 Pydantic 工具 Schema，切换仅需改配置。",
+    systemTitle: "Agent Runtime · Agent Workflow · Tool Calling · Streaming",
+    systemSummary: "一个多轮有状态 Agent，展示了我在工作中使用的相同模式：类型化事件流区分工具调用与回答文本，Pydantic 校验工具 Schema，四阶段工作流循环，多 Provider LLM 降级。",
+    systemArchTitle: "工作原理",
 
-    skillsKicker: "技术栈",
-    skillsTitle: "交付 AI 系统时我会用到的工具。",
-    skillAi: "AI / Agent",
-    skillBackend: "后端与基础设施",
-    skillRetrieval: "检索与评估",
+    evalKicker: "评估方法",
+    evalTitle: "我如何度量和改进 Agent 质量。",
+    evalStep1: "收集真实查询",
+    evalStep1Desc: "以生产或代表性查询作为评估种子。Text2SQL：1,000+ 条真实银行业务查询；RAG：真实政策问答案例。",
+    evalStep2: "定义指标",
+    evalStep2Desc: "Text2SQL：端到端 SQL 正确率 + 执行成功率。RAG：RAGAS 忠实性、答案相关性、上下文覆盖率。Agent：TTFT、工具调用准确率、证据命中率。",
+    evalStep3: "运行与评分",
+    evalStep3Desc: "每次 Prompt 或流水线变更后自动运行评估，与基线对比，在部署前检测回归。",
+    evalStep4: "迭代与验证",
+    evalStep4Desc: "评估结果驱动针对性的 Prompt 调整、检索调优或工作流修改，变更后重新跑完整评估套件再上线。",
+    evalResult1: "+20% Text2SQL 准确率",
+    evalResult1Desc: "来自 1,000+ 用例的迭代循环",
+    evalResult2: "RAGAS 基线",
+    evalResult2Desc: "忠实性 + 相关性 + 上下文覆盖率",
+    evalResult3: "-25% TTFT",
+    evalResult3Desc: "基准测试驱动的 Streaming 优化",
 
     contactKicker: "联系",
     contactTitle: "正在寻找 AI 软件工程相关机会。",
@@ -380,7 +398,19 @@ function renderProjects(projects) {
   if (!projects) return;
   const grid = $("[data-projects-grid]");
   if (!grid) return;
-  grid.innerHTML = projects.map((project) => `
+  grid.innerHTML = projects.map((project) => {
+    const s = lang === "zh" ? project.star_s_zh : project.star_s_en;
+    const a = lang === "zh" ? project.star_a_zh : project.star_a_en;
+    const r = lang === "zh" ? project.star_r_zh : project.star_r_en;
+    const hasStar = s && a && r;
+    const body = hasStar
+      ? `<div class="star-block">
+          <div class="star-row"><span class="star-label star-s">S</span><p>${escapeHtml(s)}</p></div>
+          <div class="star-row"><span class="star-label star-a">A</span><p>${escapeHtml(a)}</p></div>
+          <div class="star-row"><span class="star-label star-r">R</span><p>${escapeHtml(r)}</p></div>
+        </div>`
+      : `<p>${escapeHtml(lang === "zh" ? project.summary_zh : project.summary_en)}</p>`;
+    return `
     <article class="project-card ${project.highlight ? "highlight" : ""}">
       <div class="project-header">
         <div>
@@ -389,11 +419,11 @@ function renderProjects(projects) {
         </div>
         <div class="project-period">${escapeHtml(project.period)}</div>
       </div>
-      <p>${escapeHtml(lang === "zh" ? project.summary_zh : project.summary_en)}</p>
+      ${body}
       <div class="impact-chips">${project.impact.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div>
       <div class="skill-chips">${project.skills.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div>
-    </article>
-  `).join("");
+    </article>`;
+  }).join("");
 }
 
 async function loadArchitecture() {
