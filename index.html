@@ -140,10 +140,9 @@
         </div>
         <p class="system-intro" data-i18n="systemSummary">A multi-turn agent built to demonstrate the same patterns I use professionally: a typed event stream that separates tool calls from answer text, Pydantic-validated tool schemas, a four-stage workflow loop, and multi-provider LLM fallback.</p>
 
-        <!-- Architecture flow diagram -->
         <div class="arch-flow" aria-label="Architecture diagram">
 
-          <!-- Request -->
+          <!-- 1. Request -->
           <div class="af-row">
             <div class="af-box af-request">
               <code class="af-tag">request</code>
@@ -154,82 +153,115 @@
 
           <div class="af-connector">↓</div>
 
-          <!-- Guard -->
+          <!-- 2. Guard -->
           <div class="af-row af-row-guard">
             <div class="af-box af-guard">
               <code class="af-tag">guard</code>
               <span class="af-label">Input Guard</span>
-              <span class="af-sub">length · prompt injection · off-topic</span>
+              <span class="af-sub">length check · prompt injection (regex) · off-topic detection</span>
             </div>
             <div class="af-guard-reject">
               <span class="af-reject-arrow">→</span>
-              <span class="af-reject-label">blocked · fixed reply · no LLM call</span>
+              <div class="af-reject-box">
+                <span class="af-reject-title">blocked</span>
+                <span class="af-reject-sub">fixed reply · no LLM call</span>
+              </div>
             </div>
           </div>
 
           <div class="af-connector">↓ <span class="af-connector-label">pass</span></div>
 
-          <!-- Agent Runtime + Harness -->
+          <!-- 3–7. Harness boundary -->
           <div class="af-row">
-            <div class="af-box af-runtime">
-              <div class="af-runtime-header">
-                <code class="af-tag">runtime</code>
-                <span class="af-label">Agent Runtime</span>
-                <span class="af-sub">session store · LRU 500 · 30 min TTL · multi-turn history</span>
+            <div class="af-harness-frame">
+              <span class="af-harness-badge">agent harness</span>
+
+              <!-- 3. Pre-processing: Intent + Retrieval + Session -->
+              <div class="af-pre-row">
+                <div class="af-box af-intent">
+                  <code class="af-tag">intent</code>
+                  <span class="af-label">Intent Router</span>
+                  <span class="af-sub">route_intent()</span>
+                  <span class="af-sub af-sub-dim">interview · role_fit · metrics</span>
+                  <span class="af-sub af-sub-dim">project_detail · experience</span>
+                </div>
+                <div class="af-box af-retrieval">
+                  <code class="af-tag">retrieval</code>
+                  <span class="af-label">Hybrid Retrieval</span>
+                  <span class="af-sub">FAISS · vector search</span>
+                  <span class="af-sub">BM25 · keyword search</span>
+                  <span class="af-sub af-sub-dim">RRF fusion → seed_evidence</span>
+                </div>
+                <div class="af-box af-session">
+                  <code class="af-tag">session</code>
+                  <span class="af-label">Session Store</span>
+                  <span class="af-sub">in-process LRU</span>
+                  <span class="af-sub af-sub-dim">500 sessions · 30 min TTL</span>
+                  <span class="af-sub af-sub-dim">multi-turn history</span>
+                </div>
               </div>
 
-              <div class="af-harness">
-                <span class="af-harness-badge">harness</span>
-                <div class="af-harness-chips">
-                  <span class="af-chip">Router · intent detection</span>
-                  <span class="af-chip">FAISS + BM25 · RRF fusion</span>
-                  <span class="af-chip">Observability · structured logs</span>
-                </div>
+              <div class="af-inner-connector">↓</div>
 
-                <div class="af-loop">
-                  <span class="af-loop-label">workflow loop</span>
-                  <div class="af-loop-cols">
-                    <div class="af-box af-tools">
-                      <code class="af-tag">tools</code>
-                      <span class="af-label">Tool Calling</span>
-                      <span class="af-sub">search_resume_facts</span>
-                      <span class="af-sub">get_project_detail</span>
-                      <span class="af-sub">list_capabilities</span>
-                      <span class="af-sub af-sub-dim">Pydantic-validated schemas</span>
-                    </div>
-                    <div class="af-bidirect">↔</div>
-                    <div class="af-box af-llm">
-                      <code class="af-tag">llm</code>
-                      <span class="af-label">LLM</span>
-                      <span class="af-sub">Qwen-Turbo <span class="af-dim">primary</span></span>
-                      <span class="af-sub">DeepSeek <span class="af-dim">fallback</span></span>
-                      <span class="af-sub">OpenAI <span class="af-dim">fallback</span></span>
-                    </div>
+              <!-- 4–5. Workflow Loop -->
+              <div class="af-loop-frame">
+                <span class="af-loop-badge">workflow loop</span>
+                <div class="af-loop-cols">
+                  <div class="af-box af-tools">
+                    <code class="af-tag">tools</code>
+                    <span class="af-label">Tool Calling</span>
+                    <span class="af-sub">search_resume_facts</span>
+                    <span class="af-sub">get_project_detail</span>
+                    <span class="af-sub">list_capabilities</span>
+                    <span class="af-sub af-sub-dim">Pydantic-validated schemas</span>
+                  </div>
+                  <div class="af-bidirect">↔</div>
+                  <div class="af-box af-llm">
+                    <code class="af-tag">llm</code>
+                    <span class="af-label">LLM</span>
+                    <span class="af-sub">Qwen-Turbo <span class="af-dim">primary</span></span>
+                    <span class="af-sub">DeepSeek <span class="af-dim">fallback</span></span>
+                    <span class="af-sub">OpenAI <span class="af-dim">fallback</span></span>
                   </div>
                 </div>
               </div>
+
+              <div class="af-inner-connector">↓</div>
+
+              <!-- 6–7. Post-process + Fallback -->
+              <div class="af-post-row">
+                <div class="af-box af-postprocess">
+                  <code class="af-tag">post-process</code>
+                  <span class="af-label">Output Sanitiser</span>
+                  <span class="af-sub">sanitise_answer()</span>
+                  <span class="af-sub af-sub-dim">strip &lt;error&gt; · markdown · bold</span>
+                </div>
+                <div class="af-post-sep">or</div>
+                <div class="af-box af-fallback">
+                  <code class="af-tag">fallback</code>
+                  <span class="af-label">Fallback Answer</span>
+                  <span class="af-sub">LLM unavailable</span>
+                  <span class="af-sub af-sub-dim">seed_evidence → template reply</span>
+                </div>
+              </div>
+
             </div>
           </div>
 
           <div class="af-connector">↓</div>
 
-          <!-- SSE Stream -->
+          <!-- 8. SSE Stream -->
           <div class="af-row">
             <div class="af-box af-stream">
               <code class="af-tag">stream</code>
               <span class="af-label">SSE Stream</span>
-              <span class="af-sub">
-                <code>tool_call</code> ·
-                <code>answer_delta</code> ·
-                <code>evidence</code> ·
-                <code>done</code>
+              <span class="af-sub af-stream-events">
+                <code>metadata</code><code>tool_call</code><code>answer_delta</code><code>evidence</code><code>done</code>
               </span>
             </div>
           </div>
 
         </div>
-
-        <!-- Dynamic nodes from API (hidden, kept for agent data) -->
         <div data-arch-diagram style="display:none"></div>
       </section>
 
