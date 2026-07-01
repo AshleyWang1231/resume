@@ -1,10 +1,10 @@
 RESUME_FACTS = [
     {
         "id": "profile",
-        "company": "Lu Wang",
+        "company": "Lu Wang · 汪露",
         "title": "AI Software Engineer — Profile",
         "summary_en": (
-            "AI Software Engineer focused on building production-grade LLM applications and AI Agent systems. "
+            "Lu Wang is an AI Software Engineer focused on building production-grade LLM applications and AI Agent systems. "
             "Experienced in Python and Java backend development, Agent Workflows, Tool Calling, Streaming, "
             "personalization, product decision support, Text2SQL, and observability-driven performance diagnostics. "
             "Led AI product capabilities across e-commerce (Zalando) and financial services (Thoughtworks / major domestic bank), "
@@ -12,7 +12,7 @@ RESUME_FACTS = [
             "End-to-end experience from system design to production rollout."
         ),
         "summary_zh": (
-            "AI 软件工程师，专注于生产级 LLM 应用与 AI Agent 系统建设。"
+            "汪露是一名 AI 软件工程师，专注于生产级 LLM 应用与 AI Agent 系统建设。"
             "擅长 Python/Java 后端开发，在 Agent Workflow、Tool Calling、Streaming、个性化推荐、"
             "商品决策辅助及 Text2SQL 等方向具备丰富实践经验。"
             "主导电商（Zalando）与金融（Thoughtworks / 国内知名银行）领域 AI 产品研发，"

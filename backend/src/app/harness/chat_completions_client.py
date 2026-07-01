@@ -12,7 +12,7 @@ from app.harness.pydantic_tools import chat_completion_tool_schemas, validate_to
 from app.harness.prompts import system_prompt, system_prompt_with_history
 from app.harness.stream_types import StreamEvent
 from app.harness.tools import execute_tool, serialize_tool_result
-from app.harness.utils import dedupe_evidence, log, parse_arguments
+from app.harness.utils import dedupe_evidence, log, parse_arguments, sanitise_answer
 from app.models import EvidenceCard, Language
 
 
@@ -62,7 +62,7 @@ class ChatCompletionsClient:
         tool_calls = assistant_message.get("tool_calls") or []
 
         if not tool_calls:
-            text = str(assistant_message.get("content") or "").strip()
+            text = sanitise_answer(str(assistant_message.get("content") or ""))
             _log("llm_http_done", provider=self.provider, step="first_pass", has_tools=False, answer_len=len(text))
             return OpenAIResult(answer=text, evidence=seed_evidence, tools_called=[], provider=self.provider)
 
@@ -98,7 +98,7 @@ class ChatCompletionsClient:
         _log("llm_http_start", provider=self.provider, model=self._model(), step="final_pass")
         final_response = await self._post_chat_completions({"model": self._model(), "messages": messages})
         final_message = _extract_assistant_message(final_response)
-        answer = str(final_message.get("content") or "").strip()
+        answer = sanitise_answer(str(final_message.get("content") or ""))
         _log("llm_http_done", provider=self.provider, step="final_pass", answer_len=len(answer))
 
         if not answer:
@@ -135,7 +135,7 @@ class ChatCompletionsClient:
             yield StreamEvent("answer_delta", {"text": delta})
 
         if not tool_calls:
-            answer = "".join(content_parts).strip()
+            answer = sanitise_answer("".join(content_parts))
             if not answer:
                 return
             _log("llm_stream_done", provider=self.provider, step="first_pass_no_tools", answer_len=len(answer))
@@ -217,7 +217,7 @@ class ChatCompletionsClient:
                     content_parts.append(text)
                     yield StreamEvent("answer_delta", {"text": text})
 
-        answer = "".join(content_parts).strip()
+        answer = sanitise_answer("".join(content_parts))
         if not answer:
             return
         _log("llm_stream_done", provider=self.provider, step="final_pass", answer_len=len(answer))

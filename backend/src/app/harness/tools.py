@@ -19,8 +19,10 @@ def _tokenize(text: str) -> list[str]:
 
 
 def _doc_text(item: dict[str, object]) -> str:
+    # Include company so "汪露" / "Lu Wang" / "Zalando" / "Thoughtworks" are searchable
     return " ".join([
         str(item["id"]),
+        str(item.get("company", "")),
         str(item["title"]),
         str(item["summary_en"]),
         str(item["summary_zh"]),
