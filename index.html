@@ -140,80 +140,97 @@
         </div>
         <p class="system-intro" data-i18n="systemSummary">A multi-turn agent built to demonstrate the same patterns I use professionally: a typed event stream that separates tool calls from answer text, Pydantic-validated tool schemas, a four-stage workflow loop, and multi-provider LLM fallback.</p>
 
-        <!-- High-level architecture diagram (static SVG) -->
-        <div class="arch-hld" aria-label="Architecture diagram">
-          <div class="hld-diagram">
-            <!-- User -->
-            <div class="hld-node hld-user">
-              <span class="hld-icon">💬</span>
-              <span class="hld-label">User</span>
-            </div>
-            <div class="hld-arrow hld-arrow-right"><span class="hld-arrow-label">question</span></div>
+        <!-- Architecture flow diagram -->
+        <div class="arch-flow" aria-label="Architecture diagram">
 
-            <!-- Agent Runtime -->
-            <div class="hld-node hld-agent hld-highlight">
-              <span class="hld-icon">⚙️</span>
-              <span class="hld-label">Agent Runtime</span>
-              <span class="hld-sublabel">Session · Multi-turn</span>
+          <!-- Request -->
+          <div class="af-row">
+            <div class="af-box af-request">
+              <code class="af-tag">request</code>
+              <span class="af-label">POST /api/chat/stream</span>
+              <span class="af-sub">message · language · session_id</span>
             </div>
+          </div>
 
-            <!-- Workflow loop -->
-            <div class="hld-workflow-col">
-              <div class="hld-arrow hld-arrow-down"><span class="hld-arrow-label">drives</span></div>
-              <div class="hld-node hld-workflow">
-                <span class="hld-icon">🔄</span>
-                <span class="hld-label">Agent Workflow</span>
-                <div class="hld-steps">
-                  <span>Intent routing</span>
-                  <span class="hld-chevron">→</span>
-                  <span>Tool Calling</span>
-                  <span class="hld-chevron">→</span>
-                  <span>Retrieval</span>
-                  <span class="hld-chevron">→</span>
-                  <span>Synthesis</span>
-                </div>
+          <div class="af-connector">↓</div>
+
+          <!-- Guard -->
+          <div class="af-row af-row-guard">
+            <div class="af-box af-guard">
+              <code class="af-tag">guard</code>
+              <span class="af-label">Input Guard</span>
+              <span class="af-sub">length · prompt injection · off-topic</span>
+            </div>
+            <div class="af-guard-reject">
+              <span class="af-reject-arrow">→</span>
+              <span class="af-reject-label">blocked · fixed reply · no LLM call</span>
+            </div>
+          </div>
+
+          <div class="af-connector">↓ <span class="af-connector-label">pass</span></div>
+
+          <!-- Agent Runtime + Harness -->
+          <div class="af-row">
+            <div class="af-box af-runtime">
+              <div class="af-runtime-header">
+                <code class="af-tag">runtime</code>
+                <span class="af-label">Agent Runtime</span>
+                <span class="af-sub">session store · LRU 500 · 30 min TTL · multi-turn history</span>
               </div>
-              <div class="hld-arrow hld-arrow-down"><span class="hld-arrow-label">tool dispatch</span></div>
-              <div class="hld-tools-row">
-                <div class="hld-node hld-tool">
-                  <span class="hld-label">search_facts</span>
-                </div>
-                <div class="hld-node hld-tool">
-                  <span class="hld-label">get_project</span>
-                </div>
-                <div class="hld-node hld-tool">
-                  <span class="hld-label">list_caps</span>
-                </div>
-              </div>
-            </div>
 
-            <!-- LLM -->
-            <div class="hld-llm-col">
-              <div class="hld-arrow hld-arrow-down"><span class="hld-arrow-label">chat completions</span></div>
-              <div class="hld-node hld-llm">
-                <span class="hld-icon">🧠</span>
-                <span class="hld-label">LLM</span>
-                <span class="hld-sublabel">Qwen → DeepSeek → OpenAI</span>
-              </div>
-            </div>
+              <div class="af-harness">
+                <span class="af-harness-badge">harness</span>
+                <div class="af-harness-chips">
+                  <span class="af-chip">Router · intent detection</span>
+                  <span class="af-chip">FAISS + BM25 · RRF fusion</span>
+                  <span class="af-chip">Observability · structured logs</span>
+                </div>
 
-            <!-- SSE -->
-            <div class="hld-arrow hld-arrow-right hld-arrow-sse"><span class="hld-arrow-label">Streaming (SSE)</span></div>
-            <div class="hld-node hld-sse">
-              <span class="hld-icon">⚡</span>
-              <span class="hld-label">Typed Events</span>
-              <div class="hld-events">
-                <span>tool_call</span>
-                <span>answer_delta</span>
-                <span>evidence</span>
-                <span>done</span>
+                <div class="af-loop">
+                  <span class="af-loop-label">workflow loop</span>
+                  <div class="af-loop-cols">
+                    <div class="af-box af-tools">
+                      <code class="af-tag">tools</code>
+                      <span class="af-label">Tool Calling</span>
+                      <span class="af-sub">search_resume_facts</span>
+                      <span class="af-sub">get_project_detail</span>
+                      <span class="af-sub">list_capabilities</span>
+                      <span class="af-sub af-sub-dim">Pydantic-validated schemas</span>
+                    </div>
+                    <div class="af-bidirect">↔</div>
+                    <div class="af-box af-llm">
+                      <code class="af-tag">llm</code>
+                      <span class="af-label">LLM</span>
+                      <span class="af-sub">Qwen-Turbo <span class="af-dim">primary</span></span>
+                      <span class="af-sub">DeepSeek <span class="af-dim">fallback</span></span>
+                      <span class="af-sub">OpenAI <span class="af-dim">fallback</span></span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
+          <div class="af-connector">↓</div>
+
+          <!-- SSE Stream -->
+          <div class="af-row">
+            <div class="af-box af-stream">
+              <code class="af-tag">stream</code>
+              <span class="af-label">SSE Stream</span>
+              <span class="af-sub">
+                <code>tool_call</code> ·
+                <code>answer_delta</code> ·
+                <code>evidence</code> ·
+                <code>done</code>
+              </span>
+            </div>
+          </div>
+
         </div>
 
-        <!-- Dynamic nodes from API (keep for completeness) -->
-        <div class="arch-nodes-secondary" data-arch-diagram style="display:none"></div>
+        <!-- Dynamic nodes from API (hidden, kept for agent data) -->
+        <div data-arch-diagram style="display:none"></div>
       </section>
 
       <!-- ── Evaluation ── -->
