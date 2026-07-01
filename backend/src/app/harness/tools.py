@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import re
 from typing import Any
 
@@ -30,19 +31,96 @@ def _doc_text(item: dict[str, object]) -> str:
 _CORPUS = [_tokenize(_doc_text(item)) for item in RESUME_FACTS]
 _BM25 = _BM25Okapi(_CORPUS) if _HAS_BM25 else None
 
+# FAISS index — built lazily on first query; None until initialised or if unavailable
+_faiss_index = None
+_faiss_ready = False
+
+
+def _build_faiss_index():
+    """Build FAISS index synchronously at startup. Silently degrades to None on any failure."""
+    global _faiss_index, _faiss_ready
+
+    embedding_key = (
+        os.getenv("QWEN_API_KEY")
+        or os.getenv("DASHSCOPE_API_KEY")
+        or os.getenv("EMBEDDING_API_KEY")
+    )
+    if not embedding_key:
+        _faiss_ready = True
+        return
+
+    try:
+        import faiss  # noqa: PLC0415
+        import numpy as np  # noqa: PLC0415
+        from app.harness.embedding import embed_sync
+
+        texts = [_doc_text(item) for item in RESUME_FACTS]
+        vecs = embed_sync(texts)
+        mat = np.array(vecs, dtype="float32")
+        faiss.normalize_L2(mat)
+        index = faiss.IndexFlatIP(mat.shape[1])
+        index.add(mat)
+        _faiss_index = index
+    except Exception:
+        _faiss_index = None
+
+    _faiss_ready = True
+
+
+def _get_faiss_index():
+    global _faiss_ready
+    if not _faiss_ready:
+        _build_faiss_index()
+    return _faiss_index
+
+
+def _rrf(rankings: list[list[int]], k: int = 60) -> list[int]:
+    """Reciprocal Rank Fusion across multiple ranked lists."""
+    scores: dict[int, float] = {}
+    for ranking in rankings:
+        for rank, idx in enumerate(ranking):
+            scores[idx] = scores.get(idx, 0.0) + 1.0 / (k + rank + 1)
+    return sorted(scores, key=lambda i: scores[i], reverse=True)
+
 
 def search_resume_facts(query: str, language: Language, limit: int = 3) -> list[EvidenceCard]:
+    # BM25 ranking
+    bm25_ranked: list[int] = []
     if _BM25 is not None:
         tokens = _tokenize(query)
-        scores = _BM25.get_scores(tokens)
-        ranked = [i for i in sorted(range(len(RESUME_FACTS)), key=lambda i: scores[i], reverse=True) if scores[i] > 0]
+        bm25_scores = _BM25.get_scores(tokens)
+        bm25_ranked = [
+            i for i in sorted(range(len(RESUME_FACTS)), key=lambda i: bm25_scores[i], reverse=True)
+            if bm25_scores[i] > 0
+        ]
+
+    # FAISS ranking (skipped if index unavailable or embedding call fails)
+    faiss_ranked: list[int] = []
+    faiss_index = _get_faiss_index()
+    if faiss_index is not None:
+        try:
+            import faiss  # noqa: PLC0415
+            import numpy as np  # noqa: PLC0415
+            from app.harness.embedding import embed_sync
+
+            qvec = np.array(embed_sync([query]), dtype="float32")
+            faiss.normalize_L2(qvec)
+            _, ids = faiss_index.search(qvec, len(RESUME_FACTS))
+            faiss_ranked = [int(i) for i in ids[0] if i >= 0]
+        except Exception:
+            pass
+
+    # Fuse rankings
+    if faiss_ranked and bm25_ranked:
+        fused = _rrf([bm25_ranked, faiss_ranked])
+    elif bm25_ranked:
+        fused = bm25_ranked
+    elif faiss_ranked:
+        fused = faiss_ranked
     else:
-        ranked = []
+        fused = list(range(min(2, len(RESUME_FACTS))))
 
-    if not ranked:
-        ranked = list(range(min(2, len(RESUME_FACTS))))
-
-    return [_to_evidence_card(RESUME_FACTS[i], language) for i in ranked[:limit]]
+    return [_to_evidence_card(RESUME_FACTS[i], language) for i in fused[:limit]]
 
 
 def get_project_detail(project_id: str, language: Language) -> EvidenceCard | None:

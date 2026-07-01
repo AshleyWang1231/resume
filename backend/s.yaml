@@ -32,3 +32,5 @@ resources:
       memorySize: 512
       timeout: 60
       instanceConcurrency: 10
+      layers:
+        - acs:fc:cn-hangzhou:official:layers/Python3x-Pandas2x/versions/1

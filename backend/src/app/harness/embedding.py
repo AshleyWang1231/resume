@@ -7,7 +7,8 @@ from typing import Any
 import httpx
 
 
-async def embed(texts: list[str]) -> list[list[float]]:
+def _do_embed(texts: list[str]) -> list[list[float]]:
+    """Shared implementation called by both sync and async wrappers."""
     api_key = os.getenv("QWEN_API_KEY") or os.getenv("DASHSCOPE_API_KEY") or os.getenv("EMBEDDING_API_KEY")
     base_url = (os.getenv("QWEN_BASE_URL") or "https://dashscope.aliyuncs.com/compatible-mode/v1").rstrip("/")
     model = os.getenv("EMBEDDING_MODEL") or "text-embedding-v3"
@@ -15,9 +16,9 @@ async def embed(texts: list[str]) -> list[list[float]]:
     if not api_key:
         raise RuntimeError("No embedding API key configured (QWEN_API_KEY / DASHSCOPE_API_KEY / EMBEDDING_API_KEY)")
 
-    async with httpx.AsyncClient(timeout=30) as client:
+    with httpx.Client(timeout=30) as client:
         try:
-            resp = await client.post(
+            resp = client.post(
                 f"{base_url}/embeddings",
                 headers={"authorization": f"Bearer {api_key}", "content-type": "application/json"},
                 content=json.dumps({"model": model, "input": texts}).encode(),
@@ -29,3 +30,13 @@ async def embed(texts: list[str]) -> list[list[float]]:
 
     items = sorted(data["data"], key=lambda x: x["index"])
     return [item["embedding"] for item in items]
+
+
+def embed_sync(texts: list[str]) -> list[list[float]]:
+    """Synchronous embedding call — used for FAISS index initialisation at startup."""
+    return _do_embed(texts)
+
+
+async def embed(texts: list[str]) -> list[list[float]]:
+    """Async embedding call — used during request handling."""
+    return _do_embed(texts)
