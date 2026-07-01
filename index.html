@@ -196,14 +196,18 @@
         </form>
         <div class="command-pills" aria-label="Suggested inputs">
           <p class="pills-label" data-i18n="pillsCommands">Commands</p>
-          <button type="button" class="pill-cmd" data-run-command="/capabilities">/capabilities</button>
-          <button type="button" class="pill-cmd" data-run-command="/projects">/projects</button>
-          <button type="button" class="pill-cmd" data-run-command="/system">/system</button>
+          <div class="pills-cmd-row">
+            <button type="button" class="pill-cmd" data-run-command="/capabilities">/capabilities</button>
+            <button type="button" class="pill-cmd" data-run-command="/projects">/projects</button>
+            <button type="button" class="pill-cmd" data-run-command="/system">/system</button>
+          </div>
           <p class="pills-label" data-i18n="pillsQuestions">Questions</p>
-          <button type="button" class="pill-q suggestion-btn" data-q-en="What AI Agent systems has Lu built?" data-q-zh="汪露做过哪些 AI Agent 系统？" data-i18n="agentQ1">What AI Agent systems has Lu built?</button>
-          <button type="button" class="pill-q suggestion-btn" data-q-en="Show Lu's Streaming and Tool Calling experience." data-q-zh="展示 Streaming 和 Tool Calling 经验。" data-i18n="agentQ2">Show Streaming and Tool Calling experience.</button>
-          <button type="button" class="pill-q suggestion-btn" data-q-en="What measurable impact does Lu have?" data-q-zh="有哪些可量化结果？" data-i18n="agentQ3">What measurable impact?</button>
-          <button type="button" class="pill-q suggestion-btn" data-q-en="Explain Lu's Text2SQL experience." data-q-zh="介绍 Text2SQL 项目经验。" data-i18n="agentQ4">Explain Text2SQL experience.</button>
+          <div class="pills-q-grid">
+            <button type="button" class="pill-q suggestion-btn" data-q-en="What AI Agent systems has Lu built?" data-q-zh="汪露做过哪些 AI Agent 系统？" data-i18n="agentQ1">What AI Agent systems has Lu built?</button>
+            <button type="button" class="pill-q suggestion-btn" data-q-en="Show Lu's Streaming and Tool Calling experience." data-q-zh="展示 Streaming 和 Tool Calling 经验。" data-i18n="agentQ2">Show Streaming and Tool Calling experience.</button>
+            <button type="button" class="pill-q suggestion-btn" data-q-en="What measurable impact does Lu have?" data-q-zh="有哪些可量化结果？" data-i18n="agentQ3">What measurable impact?</button>
+            <button type="button" class="pill-q suggestion-btn" data-q-en="Explain Lu's Text2SQL experience." data-q-zh="介绍 Text2SQL 项目经验。" data-i18n="agentQ4">Explain Text2SQL experience.</button>
+          </div>
         </div>
       </div>
     </div>
