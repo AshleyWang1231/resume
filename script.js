@@ -197,6 +197,26 @@ function escapeHtml(value = "") {
     .replaceAll("'", "&#039;");
 }
 
+/**
+ * Strip LLM formatting artifacts from a completed answer string.
+ * Mirrors the server-side sanitise_answer() as a client-side safety net,
+ * applied once to the full text after streaming completes.
+ *   - XML/HTML tags: <error>…</error>
+ *   - Markdown headers: ###, ##, #
+ *   - Bold/italic: **x**, *x*, __x__, _x_
+ *   - List markers: leading - or * or 1.
+ */
+function sanitiseAnswer(text) {
+  if (!text) return text;
+  text = text.replace(/<\/?[a-z][a-z0-9]*(?:\s[^>]*)?>/gi, "");  // XML tags
+  text = text.replace(/^#{1,6}\s+/gm, "");                        // ### headers
+  text = text.replace(/(\*{1,3}|_{1,3})(.+?)\1/gs, "$2");         // **bold** / *italic*
+  text = text.replace(/^[\-\*]\s+/gm, "");                        // - list items
+  text = text.replace(/^\d+\.\s+/gm, "");                         // 1. numbered lists
+  text = text.replace(/\n{3,}/g, "\n\n");                         // collapse blank lines
+  return text.trim();
+}
+
 function applyLang() {
   const dictionary = T[lang];
   document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
@@ -543,7 +563,7 @@ async function sendMessage(message) {
     const data = warmupCache[cacheKey];
     if (data.session_id && !sessionId) sessionId = data.session_id;
     const answer = addTerminalMessage("assistant", "");
-    revealText(answer.querySelector("p"), data.answer, () => addEvidence(answer, data.evidence));
+    revealText(answer.querySelector("p"), sanitiseAnswer(data.answer), () => addEvidence(answer, data.evidence));
     return;
   }
 
@@ -590,6 +610,8 @@ async function sendMessage(message) {
         if (event === "evidence") {
           toolMessages.forEach((msg) => msg.remove());
           pendingEvidence = payload;
+          // Sanitise the fully-streamed text before closing (replaces any leaked tags/markdown)
+          textEl.textContent = sanitiseAnswer(textEl.textContent);
           streamer.close();
         }
         if (event === "done" && payload.session_id) sessionId = payload.session_id;

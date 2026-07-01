@@ -9,7 +9,7 @@ import httpx
 from app.harness.pydantic_tools import responses_tool_schemas, validate_tool_arguments
 from app.harness.prompts import system_prompt
 from app.harness.tools import execute_tool, serialize_tool_result
-from app.harness.utils import dedupe_evidence
+from app.harness.utils import dedupe_evidence, sanitise_answer
 from app.models import EvidenceCard, Language
 
 
@@ -145,10 +145,10 @@ def _extract_tool_calls(response: dict[str, Any]) -> list[dict[str, Any]]:
 
 def _extract_output_text(response: dict[str, Any]) -> str:
     if response.get("output_text"):
-        return str(response["output_text"])
+        return sanitise_answer(str(response["output_text"]))
     chunks: list[str] = []
     for item in response.get("output", []):
         for content in item.get("content", []):
             if content.get("type") in {"output_text", "text"} and content.get("text"):
                 chunks.append(str(content["text"]))
-    return "".join(chunks).strip()
+    return sanitise_answer("".join(chunks))
