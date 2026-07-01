@@ -1,3 +1,4 @@
+# Layer 3 — Execution Orchestration (SSE serialisation)
 from __future__ import annotations
 
 import json

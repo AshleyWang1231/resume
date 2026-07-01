@@ -1,3 +1,4 @@
+# Layer 2 — Tool System (retrieval, tool dispatch)
 from __future__ import annotations
 
 import os
@@ -85,7 +86,17 @@ def _rrf(rankings: list[list[int]], k: int = 60) -> list[int]:
     return sorted(scores, key=lambda i: scores[i], reverse=True)
 
 
-def search_resume_facts(query: str, language: Language, limit: int = 3) -> list[EvidenceCard]:
+def search_resume_facts(
+    query: str,
+    language: Language,
+    limit: int = 3,
+    intent_hint: list[str] | None = None,
+) -> list[EvidenceCard]:
+    """Hybrid BM25 + FAISS retrieval with optional intent-driven boosting.
+
+    intent_hint: doc ids from IntentResult.retrieval_hint — these are moved
+    to the front of the fused ranking before the limit is applied.
+    """
     # BM25 ranking
     bm25_ranked: list[int] = []
     if _BM25 is not None:
@@ -122,6 +133,15 @@ def search_resume_facts(query: str, language: Language, limit: int = 3) -> list[
     else:
         fused = list(range(min(2, len(RESUME_FACTS))))
 
+    # Intent-driven boosting: promote hinted doc ids to the front
+    if intent_hint:
+        hint_indices = [
+            i for i, item in enumerate(RESUME_FACTS)
+            if str(item["id"]) in intent_hint
+        ]
+        hint_set = set(hint_indices)
+        fused = hint_indices + [i for i in fused if i not in hint_set]
+
     return [_to_evidence_card(RESUME_FACTS[i], language) for i in fused[:limit]]
 
 
@@ -140,9 +160,18 @@ def list_capabilities() -> dict[str, list[str]]:
     return {skill: sorted(projects) for skill, projects in sorted(capabilities.items())}
 
 
-def execute_tool(name: str, arguments: dict[str, Any], language: Language) -> Any:
+def execute_tool(
+    name: str,
+    arguments: dict[str, Any],
+    language: Language,
+    intent_hint: list[str] | None = None,
+) -> Any:
     if name == "search_resume_facts":
-        return search_resume_facts(str(arguments.get("query", "")), language)
+        return search_resume_facts(
+            str(arguments.get("query", "")),
+            language,
+            intent_hint=intent_hint,
+        )
     if name == "get_project_detail":
         return get_project_detail(str(arguments.get("project_id", "")), language)
     if name == "list_capabilities":

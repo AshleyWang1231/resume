@@ -1,3 +1,4 @@
+# Infrastructure — multi-provider LLM factory
 from __future__ import annotations
 
 import os

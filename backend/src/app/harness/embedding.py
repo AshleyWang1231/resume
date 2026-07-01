@@ -1,3 +1,4 @@
+# Layer 2 — Tool System (embedding API)
 from __future__ import annotations
 
 import json

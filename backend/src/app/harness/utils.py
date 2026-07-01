@@ -1,3 +1,4 @@
+# Layer 6 — Constraints, Validation & Failure Recovery
 """Shared small utilities used across harness modules.
 
 Extracted here to eliminate copy-paste between clients.

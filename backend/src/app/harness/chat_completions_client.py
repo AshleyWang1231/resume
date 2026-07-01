@@ -1,3 +1,4 @@
+# Infrastructure — OpenAI-compatible chat completions client
 from __future__ import annotations
 
 import json
@@ -44,11 +45,17 @@ class ChatCompletionsClient:
         language: Language,
         seed_evidence: list[EvidenceCard],
         history: list[dict[str, str]] | None = None,
+        focus: str = "",
+        intent_hint: list[str] | None = None,
     ) -> OpenAIResult | None:
         if not self.is_configured():
             return None
 
-        sys_prompt = system_prompt_with_history(language) if history else system_prompt(language)
+        sys_prompt = (
+            system_prompt_with_history(language, focus=focus)
+            if history
+            else system_prompt(language, focus=focus)
+        )
         messages: list[dict[str, Any]] = [{"role": "system", "content": sys_prompt}]
         if history:
             messages.extend({"role": h["role"], "content": h["content"]} for h in history[-6:])
@@ -79,7 +86,7 @@ class ChatCompletionsClient:
             arguments = validate_tool_arguments(str(name), parse_arguments(function.get("arguments")))
             tools_called.append(name)
             _log("tool_execute", provider=self.provider, tool=name)
-            result = execute_tool(name, arguments, language)
+            result = execute_tool(name, arguments, language, intent_hint=intent_hint)
             if isinstance(result, list):
                 evidence.extend(item for item in result if isinstance(item, EvidenceCard))
             elif isinstance(result, EvidenceCard):
@@ -111,11 +118,13 @@ class ChatCompletionsClient:
         language: Language,
         seed_evidence: list[EvidenceCard],
         history: list[dict[str, str]] | None = None,
+        focus: str = "",
+        intent_hint: list[str] | None = None,
     ) -> AsyncIterator[StreamEvent]:
         if not self.is_configured():
             return
 
-        messages = self._build_messages(message, language, history)
+        messages = self._build_messages(message, language, history, focus=focus)
         url = f"{self._base_url()}/chat/completions"
         headers = {
             "authorization": f"Bearer {self._api_key()}",
@@ -236,8 +245,13 @@ class ChatCompletionsClient:
         message: str,
         language: Language,
         history: list[dict[str, str]] | None,
+        focus: str = "",
     ) -> list[dict[str, Any]]:
-        sys_prompt = system_prompt_with_history(language) if history else system_prompt(language)
+        sys_prompt = (
+            system_prompt_with_history(language, focus=focus)
+            if history
+            else system_prompt(language, focus=focus)
+        )
         messages: list[dict[str, Any]] = [{"role": "system", "content": sys_prompt}]
         if history:
             messages.extend({"role": h["role"], "content": h["content"]} for h in history[-6:])

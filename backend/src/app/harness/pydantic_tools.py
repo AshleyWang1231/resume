@@ -1,3 +1,4 @@
+# Layer 2 — Tool System (schema generation)
 from __future__ import annotations
 
 from typing import Any

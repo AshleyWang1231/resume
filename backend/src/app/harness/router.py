@@ -1,15 +1,79 @@
+# Layer 1 — Context Management (intent routing)
+"""Intent routing — Layer 1 (Context Management) + Layer 3 (Execution Orchestration).
+
+Classifies the user's message into one of five intents and attaches:
+- retrieval_hint: which RESUME_FACTS ids to boost / retrieve first
+- retrieval_limit: how many evidence cards to fetch (more for broad queries)
+- prompt_focus: a one-sentence focus instruction injected into the system prompt
+"""
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 
-def route_intent(message: str) -> str:
+
+@dataclass(frozen=True)
+class IntentResult:
+    intent: str
+    retrieval_hint: list[str] = field(default_factory=list)   # doc ids to prioritise
+    retrieval_limit: int = 3
+    prompt_focus: str = ""
+
+
+def route_intent(message: str) -> IntentResult:
     query = message.lower()
-    if any(term in query for term in ("interview", "面试", "challenge", "conflict", "why")):
-        return "interview_answer"
-    if any(term in query for term in ("fit", "match", "jd", "job", "岗位", "匹配")):
-        return "role_fit"
-    if any(term in query for term in ("metric", "impact", "result", "量化", "指标", "成果")):
-        return "impact_metrics"
-    if any(term in query for term in ("project", "detail", "项目", "经历")):
-        return "project_detail"
-    return "experience_lookup"
 
+    # Interview / behavioural questions
+    if any(t in query for t in ("interview", "面试", "challenge", "conflict", "why", "weakness")):
+        return IntentResult(
+            intent="interview_answer",
+            retrieval_hint=["profile", "agent-runtime", "personalization"],
+            retrieval_limit=3,
+            prompt_focus=(
+                "Answer in a structured STAR-style (Situation → Action → Result). "
+                "Draw on concrete project evidence."
+            ),
+        )
+
+    # Job-fit / role match
+    if any(t in query for t in ("fit", "match", "jd", "job", "岗位", "匹配", "suitable", "qualify")):
+        return IntentResult(
+            intent="role_fit",
+            retrieval_hint=["profile"],
+            retrieval_limit=4,
+            prompt_focus=(
+                "Summarise why Lu Wang is a strong fit. "
+                "Map specific skills and projects to the question."
+            ),
+        )
+
+    # Metrics / impact numbers
+    if any(t in query for t in ("metric", "impact", "result", "量化", "指标", "成果", "number", "数字", "%", "percent")):
+        return IntentResult(
+            intent="impact_metrics",
+            retrieval_hint=["agent-runtime", "personalization", "text2sql", "product-comparison"],
+            retrieval_limit=4,
+            prompt_focus=(
+                "Lead with specific numbers and percentages. "
+                "Always state the project context before the metric."
+            ),
+        )
+
+    # Project deep-dive
+    if any(t in query for t in ("project", "detail", "项目", "经历", "experience", "built", "designed", "implemented")):
+        return IntentResult(
+            intent="project_detail",
+            retrieval_hint=[],          # let retrieval decide
+            retrieval_limit=3,
+            prompt_focus=(
+                "Give a concise problem → approach → result narrative. "
+                "Mention the specific challenge and measurable outcome."
+            ),
+        )
+
+    # General experience / capability lookup (default)
+    return IntentResult(
+        intent="experience_lookup",
+        retrieval_hint=[],
+        retrieval_limit=3,
+        prompt_focus="",
+    )

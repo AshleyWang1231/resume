@@ -142,23 +142,12 @@
 
         <div class="arch-flow" aria-label="Architecture diagram">
 
-          <!-- 1. Request -->
-          <div class="af-row">
-            <div class="af-box af-request">
-              <code class="af-tag">request</code>
-              <span class="af-label">POST /api/chat/stream</span>
-              <span class="af-sub">message · language · session_id</span>
-            </div>
-          </div>
-
-          <div class="af-connector">↓</div>
-
-          <!-- 2. Guard -->
+          <!-- L6: Guard -->
           <div class="af-row af-row-guard">
             <div class="af-box af-guard">
-              <code class="af-tag">guard</code>
+              <code class="af-tag af-tag-l6">L6 · guard</code>
               <span class="af-label">Input Guard</span>
-              <span class="af-sub">length check · prompt injection (regex) · off-topic detection</span>
+              <span class="af-sub">length · prompt injection regex · off-topic detection</span>
             </div>
             <div class="af-guard-reject">
               <span class="af-reject-arrow">→</span>
@@ -171,77 +160,95 @@
 
           <div class="af-connector">↓ <span class="af-connector-label">pass</span></div>
 
-          <!-- 3–7. Harness boundary -->
+          <!-- Harness boundary -->
           <div class="af-row">
             <div class="af-harness-frame">
               <span class="af-harness-badge">agent harness</span>
 
-              <!-- 3. Pre-processing: Intent + Retrieval + Session -->
-              <div class="af-pre-row">
-                <div class="af-box af-intent">
-                  <code class="af-tag">intent</code>
-                  <span class="af-label">Intent Router</span>
-                  <span class="af-sub">route_intent()</span>
-                  <span class="af-sub af-sub-dim">interview · role_fit · metrics</span>
-                  <span class="af-sub af-sub-dim">project_detail · experience</span>
+              <!-- L1: Context Management -->
+              <div class="af-layer-row">
+                <span class="af-layer-tag af-layer-l1">L1</span>
+                <div class="af-pre-row">
+                  <div class="af-box af-intent">
+                    <code class="af-tag">intent router</code>
+                    <span class="af-label">Intent Classification</span>
+                    <span class="af-sub">5 intents → retrieval_hint</span>
+                    <span class="af-sub af-sub-dim">+ prompt_focus injected into L1 prompt</span>
+                  </div>
+                  <div class="af-box af-session">
+                    <code class="af-tag">session store</code>
+                    <span class="af-label">Context Management</span>
+                    <span class="af-sub">history[-6:] → system prompt</span>
+                    <span class="af-sub af-sub-dim">LRU 500 · 30 min TTL</span>
+                  </div>
                 </div>
+              </div>
+
+              <div class="af-inner-connector">↓</div>
+
+              <!-- L2: Tool System -->
+              <div class="af-layer-row">
+                <span class="af-layer-tag af-layer-l2">L2</span>
                 <div class="af-box af-retrieval">
-                  <code class="af-tag">retrieval</code>
-                  <span class="af-label">Hybrid Retrieval</span>
-                  <span class="af-sub">FAISS · vector search</span>
-                  <span class="af-sub">BM25 · keyword search</span>
-                  <span class="af-sub af-sub-dim">RRF fusion → seed_evidence</span>
-                </div>
-                <div class="af-box af-session">
-                  <code class="af-tag">session</code>
-                  <span class="af-label">Session Store</span>
-                  <span class="af-sub">in-process LRU</span>
-                  <span class="af-sub af-sub-dim">500 sessions · 30 min TTL</span>
-                  <span class="af-sub af-sub-dim">multi-turn history</span>
+                  <code class="af-tag">hybrid retrieval</code>
+                  <span class="af-label">FAISS vector + BM25 keyword → RRF fusion</span>
+                  <span class="af-sub">intent_hint boosts relevant docs · limit from intent</span>
+                  <span class="af-sub af-sub-dim">→ seed_evidence passed to LLM context</span>
                 </div>
               </div>
 
               <div class="af-inner-connector">↓</div>
 
-              <!-- 4–5. Workflow Loop -->
-              <div class="af-loop-frame">
-                <span class="af-loop-badge">workflow loop</span>
-                <div class="af-loop-cols">
-                  <div class="af-box af-tools">
-                    <code class="af-tag">tools</code>
-                    <span class="af-label">Tool Calling</span>
-                    <span class="af-sub">search_resume_facts</span>
-                    <span class="af-sub">get_project_detail</span>
-                    <span class="af-sub">list_capabilities</span>
-                    <span class="af-sub af-sub-dim">Pydantic-validated schemas</span>
-                  </div>
-                  <div class="af-bidirect">↔</div>
-                  <div class="af-box af-llm">
-                    <code class="af-tag">llm</code>
-                    <span class="af-label">LLM</span>
-                    <span class="af-sub">Qwen-Turbo <span class="af-dim">primary</span></span>
-                    <span class="af-sub">DeepSeek <span class="af-dim">fallback</span></span>
-                    <span class="af-sub">OpenAI <span class="af-dim">fallback</span></span>
+              <!-- L3: Workflow Loop -->
+              <div class="af-layer-row">
+                <span class="af-layer-tag af-layer-l3">L3</span>
+                <div class="af-loop-frame">
+                  <span class="af-loop-badge">workflow loop</span>
+                  <div class="af-loop-cols">
+                    <div class="af-box af-tools">
+                      <code class="af-tag">tool calling</code>
+                      <span class="af-label">Tool Dispatch</span>
+                      <span class="af-sub">search_resume_facts</span>
+                      <span class="af-sub">get_project_detail</span>
+                      <span class="af-sub af-sub-dim">Pydantic-validated schemas</span>
+                    </div>
+                    <div class="af-bidirect">↔</div>
+                    <div class="af-box af-llm">
+                      <code class="af-tag">llm</code>
+                      <span class="af-label">LLM</span>
+                      <span class="af-sub">Qwen <span class="af-dim">primary</span></span>
+                      <span class="af-sub">DeepSeek / OpenAI <span class="af-dim">fallback</span></span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               <div class="af-inner-connector">↓</div>
 
-              <!-- 6–7. Post-process + Fallback -->
-              <div class="af-post-row">
-                <div class="af-box af-postprocess">
-                  <code class="af-tag">post-process</code>
-                  <span class="af-label">Output Sanitiser</span>
-                  <span class="af-sub">sanitise_answer()</span>
-                  <span class="af-sub af-sub-dim">strip &lt;error&gt; · markdown · bold</span>
-                </div>
-                <div class="af-post-sep">or</div>
-                <div class="af-box af-fallback">
-                  <code class="af-tag">fallback</code>
-                  <span class="af-label">Fallback Answer</span>
-                  <span class="af-sub">LLM unavailable</span>
-                  <span class="af-sub af-sub-dim">seed_evidence → template reply</span>
+              <!-- L6: Self-correction + Post-process + Fallback -->
+              <div class="af-layer-row">
+                <span class="af-layer-tag af-layer-l6">L6</span>
+                <div class="af-post-row">
+                  <div class="af-box af-postprocess">
+                    <code class="af-tag">self-correction</code>
+                    <span class="af-label">Quality Loop</span>
+                    <span class="af-sub">LLM reviews own answer</span>
+                    <span class="af-sub af-sub-dim">IMPROVE → retry (max 2×)</span>
+                  </div>
+                  <div class="af-post-sep">·</div>
+                  <div class="af-box af-postprocess">
+                    <code class="af-tag">post-process</code>
+                    <span class="af-label">Output Sanitiser</span>
+                    <span class="af-sub">sanitise_answer()</span>
+                    <span class="af-sub af-sub-dim">strip tags · markdown</span>
+                  </div>
+                  <div class="af-post-sep">·</div>
+                  <div class="af-box af-fallback">
+                    <code class="af-tag">fallback</code>
+                    <span class="af-label">Fallback Answer</span>
+                    <span class="af-sub">LLM unavailable</span>
+                    <span class="af-sub af-sub-dim">seed_evidence → template</span>
+                  </div>
                 </div>
               </div>
 
@@ -250,10 +257,10 @@
 
           <div class="af-connector">↓</div>
 
-          <!-- 8. SSE Stream -->
+          <!-- L3: SSE Stream -->
           <div class="af-row">
             <div class="af-box af-stream">
-              <code class="af-tag">stream</code>
+              <code class="af-tag af-tag-l3">L3 · stream</code>
               <span class="af-label">SSE Stream</span>
               <span class="af-sub af-stream-events">
                 <code>metadata</code><code>tool_call</code><code>answer_delta</code><code>evidence</code><code>done</code>

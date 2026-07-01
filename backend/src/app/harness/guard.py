@@ -1,3 +1,4 @@
+# Layer 6 — Constraints, Validation & Failure Recovery
 """Rule-based input guard — zero extra API calls.
 
 Checks run in order; first match wins. Each check is a plain function so
