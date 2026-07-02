@@ -30,10 +30,10 @@ const T = {
     cap4Title: "Text2SQL & Enterprise RAG",
     cap4: "Multi-stage agent workflows for structured data access: intent clarification → SQL generation → validation + retry → result summarisation. Dual-layer vector reranking (field + value) to reduce schema hallucination. Built 1,000+ case eval suites as regression baselines.",
 
-    agentQ1: "How does Lu design Agent Runtimes?",
-    agentQ2: "Tell me about the Streaming architecture at Zalando.",
-    agentQ3: "What engineering problems has Lu solved?",
-    agentQ4: "Explain the Text2SQL pipeline and evaluation approach.",
+    agentQ1: "How did Lu cut TTFT by 25% at Zalando?",
+    agentQ2: "What's the Agent Runtime architecture Lu built?",
+    agentQ3: "How does Lu prevent LLM output from being unreliable in production?",
+    agentQ4: "What made Lu's Text2SQL agent accurate enough for a real bank?",
     agentThinking: "Calling tools...",
     agentError: "The resume agent is temporarily unavailable. Please try again later.",
 
@@ -107,10 +107,10 @@ const T = {
     cap4Title: "Text2SQL 与企业级 RAG",
     cap4: "面向结构化数据访问的多阶段 Agent 流水线：意图澄清 → SQL 生成 → 校验重试 → 结果总结。字段+值双层向量 Rerank 降低 schema 幻觉。构建 1,000+ 用例评估集作为回归基线。",
 
-    agentQ1: "汪露是如何设计 Agent Runtime 的？",
-    agentQ2: "介绍 Zalando 的 Streaming 架构。",
-    agentQ3: "汪露解决过哪些工程难题？",
-    agentQ4: "解释 Text2SQL 流水线和评估方法。",
+    agentQ1: "Zalando 的 TTFT 是怎么降了 25% 的？",
+    agentQ2: "汪露设计的 Agent Runtime 架构是什么样的？",
+    agentQ3: "汪露如何确保 LLM 输出在生产环境可靠？",
+    agentQ4: "Text2SQL Agent 是怎么做到银行级准确率的？",
     agentThinking: "正在调用工具...",
     agentError: "简历 Agent 暂时不可用，请稍后再试。",
 
@@ -458,20 +458,18 @@ function addToolMsg(toolName) {
 function addEvidence(parent, evidence) {
   parent.querySelector(".evidence-list")?.remove();
   if (!evidence?.length) return;
+  const item = evidence[0];
   const list = document.createElement("div");
   list.className = "evidence-list";
-  evidence.forEach((item) => {
-    const card = document.createElement("div");
-    card.className = "evidence-card";
-    card.innerHTML = `
-      <strong>${escapeHtml(item.title)}</strong>
-      <span class="ev-company">${escapeHtml(item.company)}</span>
-      <p>${escapeHtml(item.summary)}</p>
-      <div class="ev-chips">
-        ${[...(item.evidence || []), ...(item.skills || []).slice(0, 3)].map((chip) => `<span>${escapeHtml(chip)}</span>`).join("")}
-      </div>`;
-    list.append(card);
-  });
+  const card = document.createElement("div");
+  card.className = "evidence-card";
+  card.innerHTML = `
+    <strong>${escapeHtml(item.title)}</strong>
+    <span class="ev-company">${escapeHtml(item.company)}</span>
+    <div class="ev-chips">
+      ${(item.evidence || []).slice(0, 4).map((chip) => `<span>${escapeHtml(chip)}</span>`).join("")}
+    </div>`;
+  list.append(card);
   parent.append(list);
   const feed = $("[data-command-feed]");
   if (feed) feed.scrollTop = feed.scrollHeight;
@@ -625,14 +623,14 @@ function bindAgent() {
 async function warmup() {
   try { await fetch(`${API}/health`); } catch {}
   const questions = [
-    ["How does Lu design Agent Runtimes?", "en"],
-    ["Tell me about the Streaming architecture at Zalando.", "en"],
-    ["What engineering problems has Lu solved?", "en"],
-    ["Explain the Text2SQL pipeline and evaluation approach.", "en"],
-    ["汪露是如何设计 Agent Runtime 的？", "zh"],
-    ["介绍 Zalando 的 Streaming 架构。", "zh"],
-    ["汪露解决过哪些工程难题？", "zh"],
-    ["解释 Text2SQL 流水线和评估方法。", "zh"],
+    ["How did Lu cut TTFT by 25% at Zalando?", "en"],
+    ["What's the Agent Runtime architecture Lu built?", "en"],
+    ["How does Lu prevent LLM output from being unreliable in production?", "en"],
+    ["What made Lu's Text2SQL agent accurate enough for a real bank?", "en"],
+    ["Zalando 的 TTFT 是怎么降了 25% 的？", "zh"],
+    ["汪露设计的 Agent Runtime 架构是什么样的？", "zh"],
+    ["汪露如何确保 LLM 输出在生产环境可靠？", "zh"],
+    ["Text2SQL Agent 是怎么做到银行级准确率的？", "zh"],
   ];
   await Promise.allSettled(questions.map(async ([message, language]) => {
     const key = `${language}|${message}`;

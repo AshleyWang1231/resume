@@ -171,15 +171,15 @@ RESUME_FACTS = [
 
 SUGGESTED_QUESTIONS = {
     "en": [
-        "What AI Agent systems has Lu built?",
-        "Show Lu's Streaming and Tool Calling experience.",
-        "What measurable impact does Lu have?",
-        "Explain Lu's Text2SQL experience.",
+        "How did Lu cut TTFT by 25% at Zalando?",
+        "What's the Agent Runtime architecture Lu built?",
+        "How does Lu prevent LLM output from being unreliable in production?",
+        "What made Lu's Text2SQL agent accurate enough for a real bank?",
     ],
     "zh": [
-        "汪露做过哪些 AI Agent 系统？",
-        "展示 Streaming 和 Tool Calling 经验。",
-        "有哪些可量化结果？",
-        "介绍 Text2SQL 项目经验。",
+        "Zalando 的 TTFT 是怎么降了 25% 的？",
+        "汪露设计的 Agent Runtime 架构是什么样的？",
+        "汪露如何确保 LLM 输出在生产环境可靠？",
+        "Text2SQL Agent 是怎么做到银行级准确率的？",
     ],
 }
