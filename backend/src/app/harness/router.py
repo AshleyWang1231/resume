@@ -70,10 +70,27 @@ def route_intent(message: str) -> IntentResult:
             ),
         )
 
+    # Broad overview / "who is Lu" / "what problems has Lu solved"
+    if any(t in query for t in (
+        "解决过", "难题", "工程问题", "工程经验", "介绍", "经历", "overview", "background",
+        "who is", "introduce", "what has lu", "what problems", "what challenges",
+        "engineering problems", "engineering challenges",
+    )):
+        return IntentResult(
+            intent="overview",
+            retrieval_hint=["profile"],
+            retrieval_limit=1,
+            prompt_focus=(
+                "Give a brief 2-3 sentence overview from the profile. "
+                "Name the two most relevant expertise areas. "
+                "End by inviting the user to ask about a specific project or skill."
+            ),
+        )
+
     # General experience / capability lookup (default)
     return IntentResult(
         intent="experience_lookup",
         retrieval_hint=[],
-        retrieval_limit=3,
+        retrieval_limit=2,
         prompt_focus="",
     )

@@ -30,6 +30,8 @@ def _base_rules(language: Language, has_history: bool = False) -> str:
         "Answer questions using only the resume evidence returned by tools. "
         "Do not invent employers, dates, metrics, tools, or project outcomes. "
         "Prefer concise, hiring-manager-friendly answers with concrete evidence. "
+        "Keep answers to 3-5 sentences unless the question explicitly asks for detail. "
+        "Do NOT enumerate all projects — focus on the most relevant one or two. "
         f"Respond in {output_language}. "
         "If the evidence is insufficient, say what IS available and suggest a better question. "
         "FORMATTING RULES (strictly enforced): "
