@@ -140,10 +140,132 @@
         </div>
         <p class="system-intro" data-i18n="systemSummary">A multi-turn agent built to demonstrate the same patterns I use professionally: a typed event stream that separates tool calls from answer text, Pydantic-validated tool schemas, a four-stage workflow loop, and multi-provider LLM fallback.</p>
 
-        <div class="arch-img-wrap">
-          <img src="assets/arch-diagram.png" alt="Detailed Resume Agent Architecture diagram" class="arch-img" style="width:100%;max-width:100%;height:auto;display:block;" />
+        <div class="arch-diagram">
+
+          <!-- Row 1: User Query → Input Guard → Blocked -->
+          <div class="ad-r ad-r-top">
+            <div class="ad-box ad-green">
+              <div class="ad-title">POST /api/chat/stream</div>
+              <ul class="ad-items">
+                <li>msg</li><li>lang</li><li>session</li>
+              </ul>
+            </div>
+            <span class="ad-arr">→</span>
+            <div class="ad-box ad-green">
+              <div class="ad-title">Input Guard</div>
+              <ul class="ad-items">
+                <li>Length check</li><li>Injection regex</li><li>Off-topic det.</li>
+              </ul>
+            </div>
+            <span class="ad-arr ad-arr-warn">blocked →</span>
+            <div class="ad-box ad-amber ad-blocked">
+              <div class="ad-title">⚠ Blocked: Fixed Reply</div>
+              <ul class="ad-items"><li>No LLM Call</li></ul>
+            </div>
+          </div>
+
+          <div class="ad-down ad-down-r1">↓ pass</div>
+
+          <!-- Row 2: Intent Router | Session Store | System Prompt -->
+          <div class="ad-r-3">
+            <div class="ad-box ad-cyan">
+              <div class="ad-title">Intent Router</div>
+              <ul class="ad-items">
+                <li>5 intent types</li><li>Hint docs routing</li><li>Limit constraints</li>
+              </ul>
+            </div>
+            <div class="ad-box ad-cyan">
+              <div class="ad-title">Session Store</div>
+              <ul class="ad-items">
+                <li>LRU / 500</li><li>30 min TTL</li><li>Multi-turn history</li>
+              </ul>
+            </div>
+            <div class="ad-box ad-cyan">
+              <div class="ad-title">System Prompt</div>
+              <ul class="ad-items">
+                <li>Role + rules</li><li>Intent focus</li><li>History[-6:]</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="ad-down">↓</div>
+
+          <!-- Row 3: Hybrid Retrieval + Workflow Loop -->
+          <div class="ad-r ad-r-loop">
+            <div class="ad-box ad-cyan ad-retrieval">
+              <div class="ad-title">Hybrid Retrieval</div>
+              <ul class="ad-items">
+                <li>FAISS · Vector search</li><li>BM25 · Keyword search</li>
+                <li>intent_hint boost</li><li>RRF fusion → seed_evidence</li>
+              </ul>
+            </div>
+            <span class="ad-arr ad-arr-mid">→</span>
+            <div class="ad-workflow">
+              <div class="ad-workflow-title">Workflow Loop</div>
+              <div class="ad-r ad-workflow-inner">
+                <div class="ad-box ad-cyan">
+                  <div class="ad-title">Tools <span class="ad-tag">Pydantic val.</span></div>
+                  <ul class="ad-items">
+                    <li>search_facts</li><li>get_project</li><li>list_caps</li>
+                  </ul>
+                </div>
+                <div class="ad-bidirect">
+                  <span>ToolRequest →</span>
+                  <span>← ToolResponse</span>
+                </div>
+                <div class="ad-box ad-cyan">
+                  <div class="ad-title">LLM <span class="ad-tag">Fallback chain</span></div>
+                  <ul class="ad-items">
+                    <li>Qwen-Turbo</li><li>DeepSeek</li><li>OpenAI</li>
+                  </ul>
+                </div>
+                <span class="ad-arr">→</span>
+                <div class="ad-box ad-cyan">
+                  <div class="ad-title">Self-Correct <span class="ad-tag">Reviewer</span></div>
+                  <ul class="ad-items">
+                    <li>Reviewer eval</li><li>IMPROVE?</li><li>Retry max 2×</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ad-down">↓</div>
+
+          <!-- Row 4: Sanitise Answer | Structured Logs | Fallback Logic -->
+          <div class="ad-r-3">
+            <div class="ad-box ad-amber">
+              <div class="ad-title">Sanitise Answer</div>
+              <ul class="ad-items">
+                <li>Strip tags</li><li>Strip ## / **</li>
+              </ul>
+            </div>
+            <div class="ad-box ad-amber">
+              <div class="ad-title">Structured Logs</div>
+              <ul class="ad-items">
+                <li>elapsed_ms</li><li>error_type</li><li>guard / llm / ret</li>
+              </ul>
+            </div>
+            <div class="ad-box ad-amber">
+              <div class="ad-title">Fallback Logic</div>
+              <ul class="ad-items">
+                <li>LLM unavailable</li><li>seed_ev → tmpl</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="ad-down">↓</div>
+
+          <!-- Row 5: SSE Stream -->
+          <div class="ad-box ad-amber ad-sse">
+            <div class="ad-title">SSE Stream <span class="ad-tag">Typed Events</span></div>
+            <div class="ad-sse-events">
+              <code>metadata</code><code>tool_call</code><code>answer_delta</code><code>evidence</code><code>done</code>
+            </div>
+          </div>
+
         </div>
-        <div data-arch-diagram style="display:none"></div>
+
       </section>
 
       <!-- ── Evaluation ── -->
