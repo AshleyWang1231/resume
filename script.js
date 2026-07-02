@@ -56,7 +56,7 @@ const T = {
     impactCtx4: "Thoughtworks · Text2SQL Agent",
     metric4: "accuracy improvement — from 1,000+ eval-case iteration cycle on real bank business queries",
 
-    projectsKicker: "Selected work",
+    projectsKicker: "Related experience",
     projectsTitle: "Each case: problem → approach → outcome.",
 
     systemKicker: "This site's backend",
@@ -98,7 +98,7 @@ const T = {
     navProjects: "项目",
     navSystem: "系统",
     downloadResume: "简历 PDF",
-    heroKicker: "AI 软件工程师 · Zalando",
+    heroKicker: "AI 软件工程师",
     heroTitle: "从设计到上线，我构建生产级 AI Agent 系统。",
     heroLead: "专注于生产级 LLM 应用与 AI Agent 系统建设。擅长基于 Python/Java 构建高可用后端服务，在 Agent Workflow、Tool Calling、Streaming、个性化推荐、商品决策辅助及 Text2SQL 等方向具备丰富实践经验。主导电商与金融领域 AI 产品研发，负责个性化导购、实时响应优化、企业级数据分析 Agent 等核心能力建设，具备从系统设计到生产落地的完整经验。",
     heroAsk: "询问简历 Agent",
@@ -143,7 +143,7 @@ const T = {
     impactCtx4: "Thoughtworks · Text2SQL Agent",
     metric4: "准确率提升 — 基于银行真实业务查询的 1,000+ 用例迭代",
 
-    projectsKicker: "精选项目",
+    projectsKicker: "相关项目经验",
     projectsTitle: "每个案例：问题 → 方案 → 结果。",
 
     systemKicker: "本站后端",

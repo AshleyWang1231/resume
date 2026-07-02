@@ -20,7 +20,7 @@ RESUME_FACTS = [
             "具备从系统设计到生产落地的完整经验。"
         ),
         "evidence": ["Zalando", "Thoughtworks", "e-commerce", "financial services", "production LLM systems"],
-        "skills": ["LLM Agent", "Agent Workflow", "Tool Calling", "Streaming", "Python", "Java", "FastAPI"],
+        "skills": ["LLM Agent", "Agent Workflow", "Tool Calling", "Streaming", "Java", "FastAPI"],
     },
     {
         "id": "personalization",
@@ -50,7 +50,7 @@ RESUME_FACTS = [
             "基于约 800 个真实商品详情页场景建立推荐效果分析体系，将分析结果转化为推荐规则与安全门控策略。"
         ),
         "evidence": ["+15% engagement", "-60% cold start", "-70% profile calls", "800+ scenarios", "-60% P99 latency"],
-        "skills": ["Personalization", "LLM", "Redis", "Caching", "Warm-Up", "Evaluation", "Python"],
+        "skills": ["Personalization", "LLM", "Redis", "Caching", "Warm-Up", "Evaluation"],
     },
     {
         "id": "agent-runtime",
@@ -76,7 +76,7 @@ RESUME_FACTS = [
             "完成 Agent 主链路从 Chat Completions 向 Responses API 的迁移，P95 TTFT 降低约 25%。"
         ),
         "evidence": ["-25% avg TTFT", "-25% P95 TTFT", "Streaming stability", "OpenAI Responses API", "Tool Calling"],
-        "skills": ["Agent Runtime", "Tool Calling", "Streaming", "OpenAI Responses API", "Observability", "Python", "State Machine"],
+        "skills": ["Agent Runtime", "Tool Calling", "Streaming", "OpenAI Responses API", "Observability", "State Machine"],
     },
     {
         "id": "product-comparison",
@@ -102,7 +102,7 @@ RESUME_FACTS = [
             "解决纯 LLM 生成表格格式不稳定、字段缺失和前端难以渲染的问题。"
         ),
         "evidence": ["+20% engagement", "Multi-turn references", "Structured output", "Stable rendering"],
-        "skills": ["Product Comparison", "Structured Output", "Tool Calling", "Multi-turn", "Python"],
+        "skills": ["Product Comparison", "Structured Output", "Tool Calling", "Multi-turn"],
     },
     {
         "id": "text2sql",
@@ -126,7 +126,7 @@ RESUME_FACTS = [
             "基于向量数据库构建字段 + 值双层 Rerank 机制；引入 SQL 校验、异常重试等机制增强链路稳定性。"
         ),
         "evidence": ["+20% accuracy", "1,000+ eval cases", "Dual-layer rerank", "Multi-stage pipeline", "SQL validation"],
-        "skills": ["Text2SQL", "RAG", "Reranking", "FAISS", "SQL Validation", "Evaluation", "Prompt Engineering", "LlamaIndex", "Python"],
+        "skills": ["Text2SQL", "RAG", "Reranking", "FAISS", "Evaluation", "Prompt Engineering", "LlamaIndex"],
     },
     {
         "id": "rag-chatbot",
@@ -143,7 +143,7 @@ RESUME_FACTS = [
             "引入 RAGAS 评估答案相关性和上下文覆盖率，形成可复用的 RAG 研发与评估模板。"
         ),
         "evidence": ["LlamaIndex + FAISS pipeline", "RAGAS evaluation", "Reusable RAG template"],
-        "skills": ["RAG", "LlamaIndex", "FAISS", "Embedding", "RAGAS", "Prompt Engineering", "Python"],
+        "skills": ["RAG", "LlamaIndex", "FAISS", "Embedding", "RAGAS", "Prompt Engineering"],
     },
     {
         "id": "pricing-system",
