@@ -76,7 +76,7 @@ async def projects() -> list[ProjectCard]:
             star_a_zh="引入状态机 Streaming 层，将过程状态、业务事件和用户可见文本拆分为类型化 SSE 事件。接入商品详情 Tool Calling，让回答基于实时商品数据。将主链路从 Chat Completions 迁移至 OpenAI Responses API，统一 Tool Calling + Streaming 路径。",
             star_r_zh="平均 TTFT 降低 25%（Suggestions API 基准测试），P95 TTFT 降低 25%，用户实时可见工具调用进度。",
             impact=["-25% avg TTFT", "-25% P95 TTFT", "Typed SSE events", "OpenAI Responses API"],
-            skills=["Agent Runtime", "Tool Calling", "Streaming", "State Machine", "OpenAI Responses API", "Python"],
+            skills=["Agent Runtime", "Tool Calling", "Streaming", "State Machine", "OpenAI Responses API"],
             highlight=True,
         ),
         ProjectCard(
@@ -93,7 +93,7 @@ async def projects() -> list[ProjectCard]:
             star_a_zh="(1) 重建输入链路，融合实时对话上下文、用户画像和历史行为。(2) 在画像服务前加 TTL 缓存层，支持字段级失效。(3) 设计异步 Warm-Up：Redis 注册表追踪待处理首屏请求，后台 Worker 提前生成建议，内存降级兜底。",
             star_r_zh="推荐入口互动率 +15%，冷启动时间 -60%，画像服务调用量 -70%，高并发下 P99 延迟 -60%。基于 800+ 真实商品页面场景验证。",
             impact=["+15% engagement", "-60% cold-start", "-70% profile calls", "-60% P99 latency"],
-            skills=["Personalization", "Redis", "Async Warm-Up", "Caching", "Eval-Driven", "Python"],
+            skills=["Personalization", "Redis", "Async Warm-Up", "Caching", "Eval-Driven"],
             highlight=True,
         ),
         ProjectCard(
@@ -110,7 +110,7 @@ async def projects() -> list[ProjectCard]:
             star_a_zh="责任拆分：模型负责意图理解、对话状态追踪和总结文案；确定性代码负责商品引用解析、字段选择、折扣计算和布局渲染，向前端提供与模型版本无关的稳定契约。",
             star_r_zh="对比场景互动率 +20%，消除 LLM 格式不稳定问题，前端渲染跨模型版本保持稳定。",
             impact=["+20% engagement", "Stable rendering", "Multi-turn references", "Model/code split"],
-            skills=["Structured Output", "Tool Calling", "Multi-turn", "Deterministic Rendering", "Python"],
+            skills=["Structured Output", "Tool Calling", "Multi-turn", "Deterministic Rendering"],
             highlight=True,
         ),
         ProjectCard(
@@ -127,7 +127,7 @@ async def projects() -> list[ProjectCard]:
             star_a_zh="设计多阶段 Agent 流水线：意图澄清 → SQL 生成 → 自动 SQL 校验 → 异常重试 → 结果总结与可视化。构建字段+值双层向量 Rerank 减少 schema 幻觉。从真实业务查询积累 1,000+ 条评估用例作为回归基线。",
             star_r_zh="端到端查询准确率 +20%，SQL 校验+重试消除静默失败，1,000+ 评估用例成为团队标准回归基线。",
             impact=["+20% accuracy", "1,000+ eval cases", "Dual-layer rerank", "Auto SQL validation"],
-            skills=["Text2SQL", "Multi-stage Agent", "FAISS", "Reranking", "SQL Validation", "Evaluation", "Python"],
+            skills=["Text2SQL", "Multi-stage Agent", "FAISS", "Reranking", "SQL Validation", "Evaluation"],
             highlight=False,
         ),
         ProjectCard(
@@ -161,7 +161,7 @@ async def projects() -> list[ProjectCard]:
             star_a_zh="基于 LlamaIndex + FAISS 构建完整 RAG 流水线——切片策略、Embedding、向量检索和答案生成。引入 RAGAS（忠实性、相关性、上下文覆盖率）作为质量门控，形成团队后续 RAG 工作的可复用评估框架。",
             star_r_zh="RAGAS 成为团队 RAG 质量标准框架，可复用流水线模板缩短后续项目上线周期。",
             impact=["RAGAS eval harness", "Faithfulness + relevance metrics", "Reusable RAG template"],
-            skills=["RAG", "LlamaIndex", "FAISS", "Embedding", "RAGAS", "Python"],
+            skills=["RAG", "LlamaIndex", "FAISS", "Embedding", "RAGAS"],
             highlight=False,
         ),
     ]
