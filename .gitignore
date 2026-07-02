@@ -19,3 +19,6 @@ node_modules/
 backend/vendor/
 backend/.venv-workers/
 backend/.wrangler/
+
+.dev.vars*
+!.dev.vars.example
