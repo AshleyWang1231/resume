@@ -146,25 +146,26 @@ RESUME_FACTS = [
         "skills": ["RAG", "LlamaIndex", "FAISS", "Embedding", "RAGAS", "Prompt Engineering"],
     },
     {
-        "id": "pricing-system",
+        "id": "pricing-management",
         "company": "Thoughtworks · Major Domestic Bank",
-        "title": "Pricing Management System — Access Control & Reporting",
+        "title": "Pricing Management System — Access Control & Data Pipeline",
         "summary_en": (
-            "Led access-control module design based on Hexagonal Architecture and Domain-Driven Design (DDD). "
-            "Built a Tablesaw-based in-memory data processing solution for reporting, improving reporting development efficiency by ~40%. "
-            "Drove a zero-impact MySQL database migration supporting millions of daily pricing requests. "
-            "Also owned the after-sales management module backend architecture and API integration across headquarters, "
-            "platform services, and WMS — delivered 100% on time, resolved 98% of integration blockers, "
-            "supporting tens of thousands of daily spare-part transactions after launch."
+            "Backend module owner for a bank-wide interest-rate product pricing platform. "
+            "Led access-control module design using Hexagonal Architecture and DDD — modelling complex role hierarchies "
+            "and fine-grained permissions as a reusable domain layer adopted across multiple sub-systems. "
+            "Designed a custom in-memory data processing pipeline (Tablesaw + custom toolchain) for the reporting module, "
+            "improving reporting dev efficiency by ~40% and shortening delivery cycle by 2+ weeks. "
+            "Spearheaded the database migration strategy, delivering a zero-downtime production switchover, "
+            "sustaining stable operation under millions of daily pricing requests."
         ),
         "summary_zh": (
-            "主导基于六边形架构 + DDD 的权限模块设计，自研 Tablesaw 内存数据加工方案，报表开发效率提升约 40%。"
-            "推动 MySQL 到新架构的数据库迁移，实现 0 业务感知、每日数百万笔定价请求稳定运行。"
-            "负责售后模块后端架构与 API 对接，协调总部、中台、WMS 多系统集成；"
-            "联调阻塞修复率约 98%，系统上线后支撑日均数万级备件交易流转。"
+            "负责国内知名银行利率类金融产品定价管理系统的权限模块、报表模块及数据库迁移等核心工作。"
+            "基于六边形架构与 DDD 主导权限模块设计，构建可复用领域模型，在多个子系统中复用。"
+            "针对报表模块自研内存数据加工方案（Tablesaw + 自定义工具链），报表开发效率提升约 40%，工期缩短 2 周以上。"
+            "主导数据库迁移方案设计与实施，实现 0 业务感知平滑切换，系统在每日数百万笔定价请求下稳定运行。"
         ),
-        "evidence": ["+40% reporting efficiency", "Zero-impact DB migration", "Millions of daily pricing requests", "98% blocker resolution"],
-        "skills": ["Hexagonal Architecture", "DDD", "Java", "Spring Cloud", "MySQL", "Tablesaw"],
+        "evidence": ["+40% dev efficiency", "–2 weeks cycle", "0-downtime DB migration", "Multi-system reuse"],
+        "skills": ["Java", "Spring Cloud", "DDD", "Hexagonal Architecture", "Tablesaw", "MySQL", "Redis", "RabbitMQ"],
     },
 ]
 
