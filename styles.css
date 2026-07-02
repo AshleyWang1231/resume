@@ -742,170 +742,16 @@ h3 { margin-bottom: 10px; font-size: 17px; }
 }
 
 /* ─── Architecture diagram ─── */
-.arch-diagram {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 12.5px;
-}
-
-/* Shared box */
-.ad-box {
+.arch-img-card {
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 13px 15px;
-  background: linear-gradient(180deg, rgba(13,20,31,0.86), rgba(9,14,22,0.72));
-  backdrop-filter: blur(22px);
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
+  overflow: hidden;
+  background: #fff;
 }
-.ad-green { border-color: rgba(125,211,169,.28); }
-.ad-cyan  { border-color: rgba(103,232,249,.20); }
-.ad-amber { border-color: rgba(245,193,108,.22); }
-
-.ad-title {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-}
-.ad-green .ad-title { color: var(--green); }
-.ad-cyan  .ad-title { color: var(--cyan); }
-.ad-amber .ad-title { color: var(--amber); }
-
-.ad-tag {
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--faint);
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-}
-
-.ad-items {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-.ad-items li {
-  color: var(--muted);
-  font-size: 11.5px;
-  line-height: 1.4;
-  padding-left: 10px;
-  position: relative;
-}
-.ad-items li::before {
-  content: "·";
-  position: absolute;
-  left: 0;
-  color: var(--faint);
-}
-
-/* Row layouts */
-.ad-r {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-}
-.ad-r-top { align-items: center; }
-.ad-r-loop { align-items: stretch; }
-.ad-r-3 {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-
-/* Arrows */
-.ad-arr {
-  color: var(--faint);
-  align-self: center;
-  flex-shrink: 0;
-  font-size: 14px;
-}
-.ad-arr-warn { color: var(--amber); font-size: 11.5px; }
-.ad-arr-mid  { align-self: center; }
-
-/* Down arrows between rows */
-.ad-down {
-  text-align: center;
-  color: var(--faint);
-  font-size: 13px;
-  line-height: 1;
-  padding: 2px 0;
-}
-.ad-down-r1 {
-  text-align: left;
-  padding-left: calc(25% + 4px);
-  font-size: 11px;
-}
-
-/* Blocked box — constrained width */
-.ad-blocked {
-  flex: none;
-}
-
-/* Retrieval box — fixed width so it doesn't grow */
-.ad-retrieval {
-  flex: none;
-  width: 190px;
-}
-
-/* Workflow frame */
-.ad-workflow {
-  flex: 1;
-  border: 1px dashed rgba(103,232,249,.18);
-  border-radius: var(--radius);
-  padding: 12px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-}
-.ad-workflow-title {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--cyan);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  opacity: 0.7;
-}
-.ad-workflow-inner {
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.ad-workflow-inner .ad-box { flex: 1; min-width: 120px; }
-
-/* Bidirectional tool arrows */
-.ad-bidirect {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-self: center;
-  flex-shrink: 0;
-  color: var(--faint);
-  font-size: 10.5px;
-  white-space: nowrap;
-}
-
-/* SSE row */
-.ad-sse { width: 100%; }
-.ad-sse-events {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.ad-sse-events code {
-  font-family: ui-monospace, "Cascadia Code", monospace;
-  font-size: 11px;
-  color: var(--amber);
-  background: rgba(245,193,108,.07);
-  border: 1px solid rgba(245,193,108,.18);
-  padding: 3px 9px;
-  border-radius: 6px;
+.arch-img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 /* ─── Eval section ─── */
@@ -992,8 +838,6 @@ h3 { margin-bottom: 10px; font-size: 17px; }
   .metrics-grid { grid-template-columns: repeat(2, 1fr); }
   .eval-layers { grid-template-columns: 1fr; }
   .eval-metrics { grid-template-columns: repeat(2, 1fr); }
-  .ad-retrieval { width: 160px; }
-  .ad-workflow-inner { flex-wrap: wrap; }
 }
 
 /* ─── Breakpoint: narrow — terminal becomes bottom sheet, full content ─── */
@@ -1045,13 +889,7 @@ h3 { margin-bottom: 10px; font-size: 17px; }
   .projects-grid,
   .skills-grid,
   .eval-layers,
-  .eval-metrics,
-  .ad-r-3 { grid-template-columns: 1fr; }
-  .ad-r-top { flex-wrap: wrap; }
-  .ad-r-loop { flex-direction: column; }
-  .ad-retrieval { width: 100%; }
-  .ad-arr-mid { display: none; }
-  .ad-down-r1 { text-align: center; padding-left: 0; }
+  .eval-metrics { grid-template-columns: 1fr; }
   .split-head { display: block; }
   .site-footer { flex-direction: column; }
   .site-header {
