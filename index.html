@@ -154,11 +154,11 @@
             </div>
             <div class="af2-arrow af2-arrow-r">→</div>
             <div class="af2-box af2-green">
-              <div class="af2-box-title">Guard <span class="af2-tag">Multi-step</span></div>
+              <div class="af2-box-title">Input Guard</div>
               <div class="af2-items">
-                <span>Injection regex detection</span>
-                <span>Off-topic filtering</span>
                 <span>Length check</span>
+                <span>Injection regex</span>
+                <span>Off-topic detection</span>
               </div>
             </div>
             <div class="af2-arrow af2-arrow-r af2-arrow-blocked">blocked →</div>
@@ -173,27 +173,27 @@
           <!-- Row 2: Intent + Session + Prompt -->
           <div class="af2-row af2-row-mid">
             <div class="af2-box af2-blue">
-              <div class="af2-box-title">Intent <span class="af2-tag">Router</span></div>
+              <div class="af2-box-title">Intent Router</div>
               <div class="af2-items">
-                <span>5-type classification</span>
-                <span>Sub-workflow routing</span>
-                <span>Hint doc association</span>
+                <span>5 intent types</span>
+                <span>Hint docs routing</span>
+                <span>Limit constraints</span>
               </div>
             </div>
             <div class="af2-box af2-blue">
-              <div class="af2-box-title">Session <span class="af2-tag">Store</span></div>
+              <div class="af2-box-title">Session Store</div>
               <div class="af2-items">
+                <span>LRU / 500</span>
+                <span>30 min TTL</span>
                 <span>Multi-turn history</span>
-                <span>LRU 500 · 30 min TTL</span>
               </div>
             </div>
             <div class="af2-box af2-blue">
-              <div class="af2-box-title">Prompt <span class="af2-tag">Orchestrator</span></div>
+              <div class="af2-box-title">System Prompt</div>
               <div class="af2-items">
-                <span>System context</span>
-                <span>Tools definition</span>
-                <span>History injection</span>
+                <span>Role + rules</span>
                 <span>Intent focus</span>
+                <span>History[-6:]</span>
               </div>
             </div>
           </div>
@@ -205,12 +205,12 @@
 
             <!-- Retrieval (left column) -->
             <div class="af2-box af2-blue af2-retrieval-box">
-              <div class="af2-box-title">Retrieval <span class="af2-tag">Hybrid KB</span></div>
+              <div class="af2-box-title">Hybrid Retrieval</div>
               <div class="af2-items">
                 <span>FAISS · Vector search</span>
                 <span>BM25 · Keyword search</span>
-                <span>RRF fusion ranker</span>
-                <span>intent_hint boosts</span>
+                <span>intent_hint boost</span>
+                <span>RRF fusion → seed_evidence</span>
               </div>
             </div>
 
@@ -223,11 +223,11 @@
 
                 <!-- Tools -->
                 <div class="af2-box af2-blue">
-                  <div class="af2-box-title">Tools <span class="af2-tag">Pydantic schemas</span></div>
+                  <div class="af2-box-title">Tools <span class="af2-tag">Pydantic val.</span></div>
                   <div class="af2-items">
-                    <span>search_resume_facts</span>
-                    <span>get_project_detail</span>
-                    <span>list_capabilities</span>
+                    <span>search_facts</span>
+                    <span>get_project</span>
+                    <span>list_caps</span>
                   </div>
                 </div>
 
@@ -240,9 +240,9 @@
                 <div class="af2-box af2-blue">
                   <div class="af2-box-title">LLM <span class="af2-tag">Fallback chain</span></div>
                   <div class="af2-items">
-                    <span>Qwen-Turbo <em>primary</em></span>
-                    <span>DeepSeek <em>fallback</em></span>
-                    <span>OpenAI <em>fallback</em></span>
+                    <span>Qwen-Turbo</span>
+                    <span>DeepSeek</span>
+                    <span>OpenAI</span>
                   </div>
                 </div>
 
@@ -252,8 +252,8 @@
                 <div class="af2-box af2-blue">
                   <div class="af2-box-title">Self-Correct <span class="af2-tag">Reviewer</span></div>
                   <div class="af2-items">
-                    <span>Quality assessment</span>
-                    <span>IMPROVE instruction</span>
+                    <span>Reviewer eval</span>
+                    <span>IMPROVE?</span>
                     <span>Retry max 2×</span>
                   </div>
                 </div>
@@ -267,27 +267,25 @@
           <!-- Row 4: Answer Cleaning + Metrics + Fallback -->
           <div class="af2-row af2-row-post">
             <div class="af2-box af2-orange">
-              <div class="af2-box-title">Answer Cleaning <span class="af2-tag">Sanitizer</span></div>
+              <div class="af2-box-title">Sanitise Answer</div>
               <div class="af2-items">
-                <span>Strip error tags</span>
-                <span>Markdown formatting</span>
-                <span>Bold / header removal</span>
+                <span>Strip tags</span>
+                <span>Strip ## / **</span>
               </div>
             </div>
             <div class="af2-box af2-orange">
-              <div class="af2-box-title">Metrics <span class="af2-tag">Analytics</span></div>
+              <div class="af2-box-title">Structured Logs</div>
               <div class="af2-items">
-                <span>Execution logs (elapsed_ms)</span>
-                <span>Error tracking</span>
-                <span>Latency per provider</span>
+                <span>elapsed_ms</span>
+                <span>error_type</span>
+                <span>guard / llm / ret</span>
               </div>
             </div>
             <div class="af2-box af2-orange">
-              <div class="af2-box-title">Fallback <span class="af2-tag">Error Handler</span></div>
+              <div class="af2-box-title">Fallback Logic</div>
               <div class="af2-items">
-                <span>Seeded evidence template</span>
-                <span>LLM-unavailable reply</span>
-                <span>Multi-provider degradation</span>
+                <span>LLM unavailable</span>
+                <span>seed_ev → tmpl</span>
               </div>
             </div>
           </div>
