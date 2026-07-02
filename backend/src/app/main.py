@@ -144,7 +144,7 @@ async def projects() -> list[ProjectCard]:
             star_a_zh="(1) 基于六边形架构与 DDD 主导权限模块设计与落地，构建可复用领域模型，在多个子系统中复用。(2) 针对报表模块自研内存数据加工方案（Tablesaw + 自定义工具链），替代外部依赖。(3) 主导数据库迁移方案设计与实施，完成生产环境平滑切换。",
             star_r_zh="报表模块开发效率提升约 40%，开发工期缩短 2 周以上。数据库迁移实现 0 业务感知，系统在每日数百万笔定价请求下稳定运行。权限模块在多个子系统中复用。",
             impact=["+40% dev efficiency", "–2 weeks cycle", "0-downtime DB migration", "Multi-system reuse"],
-            skills=["Java", "Spring Cloud", "DDD", "Hexagonal Architecture", "Tablesaw", "MySQL", "Redis", "RabbitMQ"],
+            skills=["Spring Cloud", "Hexagonal Architecture", "Tablesaw", "MySQL", "Redis", "RabbitMQ"],
             highlight=False,
         ),
         ProjectCard(
