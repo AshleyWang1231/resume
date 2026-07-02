@@ -63,7 +63,7 @@ class ChatCompletionsClient:
 
         _log("llm_http_start", provider=self.provider, model=self._model(), step="first_pass")
         first_response = await self._post_chat_completions(
-            {"model": self._model(), "messages": messages, "tools": chat_completion_tool_schemas(), "tool_choice": "auto"}
+            {"model": self._model(), "messages": messages, "tools": chat_completion_tool_schemas(), "tool_choice": "required"}
         )
         assistant_message = _extract_assistant_message(first_response)
         tool_calls = assistant_message.get("tool_calls") or []
@@ -134,7 +134,7 @@ class ChatCompletionsClient:
             "model": self._model(),
             "messages": messages,
             "tools": chat_completion_tool_schemas(),
-            "tool_choice": "auto",
+            "tool_choice": "required",
         }
 
         _log("llm_stream_start", provider=self.provider, model=self._model(), step="first_pass")
