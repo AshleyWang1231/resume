@@ -34,8 +34,8 @@ GOLD = [
     ("RAG LlamaIndex FAISS document retrieval", "en", {"rag-chatbot"}),
     ("RAGAS evaluation answer relevance", "en", {"rag-chatbot"}),
     # Pricing system / backend
-    ("Hexagonal architecture DDD Java pricing", "en", {"pricing-system"}),
-    ("六边形架构 报表 MySQL", "zh", {"pricing-system"}),
+    ("Hexagonal architecture DDD Java pricing", "en", {"pricing-management"}),
+    ("六边形架构 报表 MySQL", "zh", {"pricing-management"}),
     # Profile / general
     ("AI software engineer background overview", "en", {"profile"}),
     ("汪露工作经历 简介", "zh", {"profile"}),
