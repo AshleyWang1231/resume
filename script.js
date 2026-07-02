@@ -7,7 +7,6 @@ const T = {
   en: {
     eyebrow: "AI Software Engineer",
     navCapabilities: "Capabilities",
-    navAgent: "Agent",
     navProjects: "Projects",
     navSystem: "System",
     downloadResume: "PDF",
@@ -31,13 +30,6 @@ const T = {
     cap4Title: "Text2SQL & Enterprise RAG",
     cap4: "Multi-stage agent workflows for structured data access: intent clarification → SQL generation → validation + retry → result summarisation. Dual-layer vector reranking (field + value) to reduce schema hallucination. Built 1,000+ case eval suites as regression baselines.",
 
-    agentKicker: "Resume agent",
-    agentTitle: "One terminal for navigation, questions, and evidence.",
-    agentProof1Title: "Live backend",
-    agentProof1: "The hero terminal calls the Resume Agent API and falls back gracefully when streaming is unavailable.",
-    agentProof2Title: "Evidence first",
-    agentProof2: "Answers cite project evidence instead of repeating generic profile copy.",
-    agentSuggestionsTitle: "Useful prompts",
     agentQ1: "How does Lu design Agent Runtimes?",
     agentQ2: "Tell me about the Streaming architecture at Zalando.",
     agentQ3: "What engineering problems has Lu solved?",
@@ -62,8 +54,6 @@ const T = {
     systemKicker: "This site's backend",
     systemTitle: "Agent Runtime · Agent Workflow · Tool Calling · Streaming",
     systemSummary: "A multi-turn agent built to demonstrate the same patterns I use professionally: a typed event stream that separates tool calls from answer text, Pydantic-validated tool schemas, a four-stage workflow loop, and multi-provider LLM fallback.",
-    systemArchTitle: "How it works",
-
     evalKicker: "How this backend is evaluated",
     evalTitle: "Three test layers, zero manual checking.",
     evalLayer1Title: "Retrieval quality",
@@ -94,7 +84,6 @@ const T = {
   zh: {
     eyebrow: "AI 软件工程师",
     navCapabilities: "核心能力",
-    navAgent: "简历 Agent",
     navProjects: "项目",
     navSystem: "系统",
     downloadResume: "简历 PDF",
@@ -118,13 +107,6 @@ const T = {
     cap4Title: "Text2SQL 与企业级 RAG",
     cap4: "面向结构化数据访问的多阶段 Agent 流水线：意图澄清 → SQL 生成 → 校验重试 → 结果总结。字段+值双层向量 Rerank 降低 schema 幻觉。构建 1,000+ 用例评估集作为回归基线。",
 
-    agentKicker: "简历 Agent",
-    agentTitle: "一个终端完成导航、提问和证据展示。",
-    agentProof1Title: "真实后端",
-    agentProof1: "首屏 terminal 会调用 Resume Agent API；当流式接口不可用时自动降级。",
-    agentProof2Title: "证据优先",
-    agentProof2: "回答引用项目证据，而不是重复泛泛的个人简介。",
-    agentSuggestionsTitle: "可以这样问",
     agentQ1: "汪露是如何设计 Agent Runtime 的？",
     agentQ2: "介绍 Zalando 的 Streaming 架构。",
     agentQ3: "汪露解决过哪些工程难题？",
@@ -149,8 +131,6 @@ const T = {
     systemKicker: "本站后端",
     systemTitle: "Agent Runtime · Agent Workflow · Tool Calling · Streaming",
     systemSummary: "一个多轮有状态 Agent，展示了我在工作中使用的相同模式：类型化事件流区分工具调用与回答文本，Pydantic 校验工具 Schema，四阶段工作流循环，多 Provider LLM 降级。",
-    systemArchTitle: "工作原理",
-
     evalKicker: "本站后端如何评估",
     evalTitle: "三层测试，零人工检查。",
     evalLayer1Title: "检索质量",
@@ -696,7 +676,6 @@ function init() {
   bindAgent();
   applyLang();
   loadProjects();
-  loadArchitecture();
   setTimeout(warmup, 900);
 }
 
