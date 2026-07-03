@@ -39,7 +39,7 @@ def build_resume_facts() -> list[dict]:
         "Led AI product capabilities across e-commerce and financial services, including personalized shopping assistance, "
         "real-time response optimization, and enterprise data analysis agents, with end-to-end experience from system design to production rollout. "
         "Work experience: Zalando (2025–present), Thoughtworks (2021–2025). "
-        "Education: MSc Computing, Cardiff University UK (2019–2021); BA Marketing, Shanghai University of Engineering Science (2015–2019)."
+        "Education: MSc Computing, Cardiff University UK (2019–2021)."
     )
     zh_profile = _strip(
         "汪露是一名 AI 软件工程师，专注于生产级 LLM 应用与 AI Agent 系统建设。"
@@ -47,7 +47,7 @@ def build_resume_facts() -> list[dict]:
         "商品决策辅助及 Text2SQL 等方向具备丰富实践经验。"
         "主导电商（嘉兰朵/Zalando）与金融（Thoughtworks / 国内知名银行）领域 AI 产品研发。"
         "工作经历：嘉兰朵/Zalando（2025年8月至今），思特沃克/Thoughtworks（2021年4月–2025年8月）。"
-        "教育背景：英国卡迪夫大学 Computing 硕士（2019–2021）；上海工程技术大学 市场营销 本科（2015–2019）。"
+        "教育背景：英国卡迪夫大学 Computing 硕士（2019–2021）。"
     )
     facts.append({
         "id": "profile",

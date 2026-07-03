@@ -135,8 +135,9 @@ def route_intent(message: str) -> IntentResult:
             retrieval_limit=2,
             prompt_focus=(
                 "The user is asking about education. "
-                "List ALL degrees from the evidence — do not omit any. "
-                "Include degree name, institution, and graduation year for each."
+                "Mention only the highest degree: MSc Computing, Cardiff University UK (2019–2021). "
+                "Only include the undergraduate degree (BA Marketing, Shanghai University of Engineering Science) "
+                "if the question explicitly asks about bachelor's, undergraduate, or a second degree."
             ),
         )
 
