@@ -14,7 +14,6 @@ from app.harness.guard import guard
     "What is Lu's experience with Text2SQL?",
     "Show me the projects",           # short navigation command
     "/projects",                      # CLI-style command
-    "hi",                             # greeting — short, passes
     "How does Tool Calling work in the agent?",
     "Explain the FAISS retrieval setup.",
     "汪露做过哪些 AI Agent 系统？",
@@ -63,13 +62,26 @@ def test_off_topic_blocked(message: str) -> None:
 # ── Short messages always pass ────────────────────────────────────────────────
 
 @pytest.mark.parametrize("message", [
-    "hello",
-    "hi there",
     "ok thanks",
+    "sure",
+    "got it",
 ])
 def test_short_messages_pass(message: str) -> None:
     result = guard(message)
     assert result.ok
+
+
+# ── Greetings are intercepted ─────────────────────────────────────────────────
+
+@pytest.mark.parametrize("message", [
+    "hello", "hi", "hey", "你好", "嗨",
+])
+def test_greetings_blocked(message: str) -> None:
+    result = guard(message)
+    assert not result.ok
+    assert result.reason == "greeting"
+    assert result.reply_en
+    assert result.reply_zh
 
 
 # ── Length limits ─────────────────────────────────────────────────────────────
