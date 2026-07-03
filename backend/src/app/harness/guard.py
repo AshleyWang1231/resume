@@ -144,9 +144,8 @@ def _check_injection(text: str) -> GuardResult | None:
 
 
 def _check_off_topic(text: str) -> GuardResult | None:
-    # Short messages (commands, greetings) pass through without token check
-    words = text.split()
-    if len(words) <= _SHORT_MSG_WORD_THRESHOLD:
+    # Slash commands (/projects, /capabilities, …) always pass
+    if text.startswith("/"):
         return None
 
     lower = text.lower()
@@ -156,6 +155,31 @@ def _check_off_topic(text: str) -> GuardResult | None:
     # Then substring tokens
     if any(token in lower for token in _RESUME_TOKENS_SUBSTR):
         return None
+
+    # Allow very short follow-up phrases that lack resume keywords but make
+    # sense in multi-turn context: "tell me more", "what else", "ok thanks" etc.
+    words = text.split()
+    if len(words) <= _SHORT_MSG_WORD_THRESHOLD:
+        _FOLLOWUP_RE = re.compile(
+            r"\b(more|else|what|why|how|who|when|which|tell|show|explain|describe"
+            r"|continue|go on|next|thanks|ok|sure|got it|yes|no|和|什么|怎么|为什么|继续)\b",
+            re.IGNORECASE,
+        )
+        if _FOLLOWUP_RE.search(lower):
+            return None
+        # Pure noise (abc, xyz, random chars) — treat as off-topic
+        return GuardResult(
+            ok=False,
+            reason="off_topic",
+            reply_en=(
+                "This agent is focused on Lu Wang's resume. "
+                "Try asking about projects, skills, or experience."
+            ),
+            reply_zh=(
+                "这个 Agent 专注于汪露的简历内容。"
+                "可以询问项目、技能或工作经验。"
+            ),
+        )
 
     return GuardResult(
         ok=False,

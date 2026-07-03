@@ -64,11 +64,22 @@ def test_off_topic_blocked(message: str) -> None:
 @pytest.mark.parametrize("message", [
     "ok thanks",
     "sure",
-    "got it",
+    "tell me more",
+    "what else",
+    "继续",
 ])
-def test_short_messages_pass(message: str) -> None:
+def test_short_followups_pass(message: str) -> None:
     result = guard(message)
     assert result.ok
+
+
+@pytest.mark.parametrize("message", [
+    "abc", "xyz", "test", "你好吗", "hello world",
+])
+def test_noise_blocked(message: str) -> None:
+    result = guard(message)
+    assert not result.ok
+    assert result.reason == "off_topic"
 
 
 # ── Greetings are intercepted ─────────────────────────────────────────────────
