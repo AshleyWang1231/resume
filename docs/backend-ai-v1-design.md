@@ -315,27 +315,162 @@ Track at least:
 
 ## Evaluation
 
-Create a small regression suite under `backend/tests/eval_cases.json`.
+The backend uses a three-layer evaluation strategy.  Each layer has a
+different cost profile and failure signal:
 
-Each case should include:
+```
+Layer 1 — Retrieval Eval   (no LLM, always runs in CI)
+Layer 2 — Agent Regression (LLM, always runs in CI, answers must contain key facts)
+Layer 3 — LLM-as-Judge     (LLM, gated by JUDGE_EVAL=1, scores quality)
+```
+
+---
+
+### Layer 1 — Retrieval Evaluation (`test_retrieval_eval.py`)
+
+**What it tests:** BM25 + FAISS hybrid search quality.  No LLM calls.
+Safe to run in every CI job.
+
+**How it works:**
+
+Maintains a `GOLD` set of (query, language, expected_doc_ids) tuples.
+For each query it checks that at least one expected document appears in the
+top-K results, then reports aggregate P@K, R@K, and MRR.
+
+```python
+# example GOLD entry
+("TTFT latency optimization streaming", "en", {"agent-runtime"})
+```
+
+**Synthetic question augmentation (RAGAS-inspired):**
+
+Run `scripts/generate_synthetic_questions.py` once to produce
+`tests/synthetic_gold.json`.  The script reads every `RESUME_FACT`,
+calls an LLM to reverse-engineer realistic recruiter questions for each
+fact (4 EN + 4 ZH per fact), and saves them as structured test cases.
+
+```bash
+cd backend
+AI_PROVIDER=qwen QWEN_API_KEY=sk-... \
+    uv run python scripts/generate_synthetic_questions.py
+```
+
+`test_retrieval_eval.py` auto-loads `synthetic_gold.json` when present,
+adding ~60 generated queries on top of the ~20 hand-curated ones.
+The synthetic tests are skipped in CI if the file has not been generated.
+
+This mirrors RAGAS's core insight: **start from the answer (document
+content), have an LLM reverse-engineer what questions that content
+would answer**, giving you ground-truth (query → expected doc) pairs
+without manual labelling.
+
+**Metrics reported:**
+
+| Metric | Description |
+|---|---|
+| P@K | Fraction of top-K results that are relevant |
+| R@K | Fraction of relevant docs found in top-K |
+| MRR | Mean Reciprocal Rank (position of first hit) |
+| Hit rate | % of queries where at least one expected doc appears |
+
+---
+
+### Layer 2 — Agent Regression (`test_agent_eval.py`)
+
+**What it tests:** End-to-end agent behavior — does the full pipeline
+(intent routing → retrieval → LLM answer → evidence) produce the right
+output for known questions?
+
+**How it works:**
+
+Each case in `tests/eval_cases.json` specifies:
 
 ```json
 {
   "id": "streaming_tool_calling_en",
   "message": "Show Lu's Streaming and Tool Calling experience.",
   "language": "en",
-  "must_include": ["Agent Runtime", "Tool Calling", "Streaming", "25%"],
-  "must_not_include": ["LangChain", "Pinecone", "Kubernetes"],
+  "must_include": ["Agent Runtime Upgrade", "Tool Calling", "Streaming", "25%"],
   "expected_project_ids": ["agent-runtime"]
 }
 ```
 
-V1 target:
+The test asserts that `expected_project_ids` appear in the evidence and
+that `must_include` keywords appear in the answer or evidence text.
 
-- 20-30 eval cases.
-- Cover English and Chinese.
-- Cover each major project.
-- Fail the build if required evidence disappears.
+These are deterministic keyword assertions — fast, cheap, and reliable
+as CI gates.  They catch regressions when retrieval or prompts change.
+
+**V1 target:** 20–30 cases covering EN + ZH and each major project.
+
+---
+
+### Layer 3 — LLM-as-Judge (`test_llm_judge_eval.py`)
+
+**What it tests:** Answer quality on two axes borrowed from RAGAS:
+
+| Metric | Question | Score |
+|---|---|---|
+| **Faithfulness** | Does the answer stay grounded in the evidence? Does it invent facts? | 0.0 / 0.5 / 1.0 |
+| **Answer relevance** | Does the answer actually address the question asked? | 0.0 / 0.5 / 1.0 |
+
+**How it works:**
+
+For each eval case the test:
+1. Runs the full `ResumeAgent` to get `(answer, evidence)`.
+2. Calls a judge LLM with two separate scoring prompts.
+3. Asserts both scores meet the per-case thresholds.
+
+```
+faithfulness judge prompt:
+  Given the evidence provided to the AI and the AI's answer,
+  score whether every factual claim is supported by evidence.
+  Return {"score": <0.0|0.5|1.0>, "reason": "..."}
+
+relevance judge prompt:
+  Given the user's question and the AI's answer,
+  score whether the answer actually addresses the question.
+  Return {"score": <0.0|0.5|1.0>, "reason": "..."}
+```
+
+The `hallucination_probe` case specifically asks about Kubernetes and
+LangChain (absent from the resume) to verify the agent does not fabricate
+experience with technologies Lu has not used.
+
+**Gate:** Only runs when `JUDGE_EVAL=1` is set.  Not part of standard CI.
+Run manually or in a periodic eval workflow:
+
+```bash
+cd backend
+JUDGE_EVAL=1 AI_PROVIDER=qwen QWEN_API_KEY=sk-... \
+    uv run pytest tests/test_llm_judge_eval.py -v
+
+# Full report (all cases, printed table):
+JUDGE_EVAL=1 AI_PROVIDER=qwen QWEN_API_KEY=sk-... \
+    uv run python tests/test_llm_judge_eval.py
+```
+
+**Why not use RAGAS directly?**
+
+- RAGAS's `TestsetGenerator` uses a Knowledge Graph pipeline designed for
+  large document corpora (hundreds of pages).  This backend has 8 highly
+  structured resume facts — the graph overhead adds no value.
+- RAGAS's library depends on `tiktoken` and other packages incompatible
+  with the Cloudflare Python Workers environment.
+- The approach here borrows RAGAS's two core ideas (reverse question
+  generation + LLM-as-judge scoring) and implements them in ~250 lines
+  that integrate directly with the existing harness.
+
+---
+
+### Summary
+
+| Layer | File | LLM calls | Runs in CI | Purpose |
+|---|---|---|---|---|
+| Retrieval | `test_retrieval_eval.py` | No | Always | Catch search regressions |
+| Agent regression | `test_agent_eval.py` | Yes (agent) | Always | Catch answer regressions |
+| LLM-as-judge | `test_llm_judge_eval.py` | Yes (agent + judge) | `JUDGE_EVAL=1` | Score answer quality |
+| Question generator | `scripts/generate_synthetic_questions.py` | Yes (one-time) | Manual | Expand GOLD set |
 
 ## Suggested File Structure
 
