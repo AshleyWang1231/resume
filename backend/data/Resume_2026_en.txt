@@ -1,0 +1,57 @@
+Lu Wang                              
+wanglu_ashley@126.com | Homepage: https://ashleywang1231.github.io/resume/
+ AI Software Engineer
+AI Software Engineer focused on building LLM applications and AI Agent systems for real business scenarios. Experienced in Python/Java backend development, Agent Workflows, Tool Calling, Streaming, personalization, product decision support, Text2SQL, and observability-driven performance diagnostics. Led AI product capabilities across e-commerce and financial services, including personalized shopping assistance, real-time response optimization, and enterprise data analysis agents, with end-to-end experience from system design to production rollout.
+Work Experience
+2025.08 - Present AI Software Engineer Zalando Technology Development (Shenzhen) Co., Ltd.
+2021.04 - 2025.08 AI Software Engineer Thoughtworks Software Technologies (Shenzhen) Co., Ltd.
+Zalando Experience
+Personalization and Guided Shopping Capabilities
+Worked on personalization and guided-shopping capabilities for Zalando Assistant Conversation Starters. The system combines user profiles, behavioral history, conversation context, and product information to generate personalized recommendation content. The main challenge was improving recommendation relevance while maintaining compliance with business rules and ensuring performance and stability under high traffic.
+Key Contributions
+Built a personalization input pipeline combining user behavior, conversation context, and profile signals, addressing the previous reliance on static behavioral data and increasing Conversation Starter engagement by 15%+.
+Designed a cache layer for downstream user profile data with TTL control, field-level invalidation, failure-safe handling, and null-value filtering, reducing profile-service calls by 70%+ and lowering P99 latency by about 60% under high concurrency.
+Implemented an asynchronous Warm-Up architecture using Redis registry and in-memory fallback, decoupling first-screen Conversation Starter generation from user requests and reducing cold-start time by 60%+.
+Redesigned the product-detail-page recommendation strategy with a multi-layer decision flow covering behavior-signal recognition, recommendation routing, and fallback generation, improving recommendation stability across different user and product scenarios.
+Built an evaluation process based on about 800 real product-detail-page scenarios, identified coverage gaps and repeated recommendation angles, and translated findings into recommendation rules and safety controls.
+Agent Runtime Upgrade and Real-Time Response Optimization
+Upgraded the main Zalando Assistant Agent Runtime by integrating product-detail tools, improving Streaming response handling, and migrating to OpenAI Responses API. The work focused on coordinating tool results, intermediate states, and model output in one real-time response flow.
+Key Contributions
+Integrated product-detail Tool Calling into the Agent Runtime, enabling the Agent to retrieve real-time product information based on user intent and generate more grounded shopping responses.
+Designed Streaming processing for multi-step Agent flows, separating process states, business events, and final response text to prevent duplicated display and event-ordering issues in multi-tool scenarios.
+Reduced Suggestions API average TTFT by about 25% in benchmark tests compared with the previous synchronous interface.
+Migrated the main Agent Runtime from Chat Completions to OpenAI Responses API, unifying Tool Calling and Streaming handling and reducing P95 TTFT by about 25% in validated flows.
+Product Comparison Skill
+Designed and launched Product Comparison Skill for Zalando Assistant, enabling users to compare multiple products through natural language and make purchase decisions more efficiently. The core challenge was resolving product references across multi-turn conversations while producing structured comparison output that could be reliably rendered by the frontend.
+Key Contributions
+Designed and launched Product Comparison Skill, turning open-ended natural-language comparison requests into a reusable shopping decision capability and increasing comparison-scenario engagement by 20%+.
+Built context-aware product reference parsing to resolve product selections across multi-turn conversations, including position-based, range-based, and follow-up comparison requests.
+Developed dynamic comparison-dimension selection based on user intent, product attributes, and category characteristics, making comparison results more focused and easier to scan.
+Separated model reasoning from table generation, using the model for intent understanding and summary recommendations while deterministic code handled field parsing, discount calculation, layout, and rendering markers.
+Thoughtworks Experience
+AI Agent Module for Pricing Management System
+To empower internal business users with self-service data access, the bank initiated a GenAI project supporting natural language queries for complex data analytics and internal policy Q&A. As a core engineer for the data analysis module, I was responsible for architecting the agent-based workflow, optimizing query generation accuracy, and delivering the solution to production.
+Key Contributions
+Designed and implemented an intelligent agent workflow with three stages: intent clarification, Text2SQL generation, and result summarization with visualizations.
+Created and optimized prompt templates for complex business queries, improving model accuracy by ~20% and enhancing its ability to handle nested conditions and multi-field constraints.
+Developed a test suite with 1,000+ real-world business cases,  engineered a dual-layer reranking mechanism (field + value) using vector search, and integrated SQL validation, exception handling, and automatic retry logic to enhance robustness.
+RAG Enterprise Chatbot – Knowledge Q&A System
+Core Developer
+Built a reusable RAG pipeline with LlamaIndex and FAISS, covering document chunking, vectorization, retrieval, and answer generation; introduced RAGAS to evaluate answer relevance and context coverage.
+Pricing Management System: Access Control and Reporting
+Module Owner
+Led access-control module design based on Hexagonal Architecture and DDD, built a Tablesaw-based in-memory reporting solution, improved reporting development efficiency by about 40%, and supported a zero-impact database migration for millions of daily pricing requests.
+After-Sales Management System
+Module Owner & Core Backend Engineer
+Owned backend architecture and API integration for the after-sales module across headquarters systems, platform services, and WMS; delivered the module 100% on time, resolved 98% of integration blockers, and supported tens of thousands of daily spare-part transactions after launch.
+Skills & Technologies
+AI / LLM Application Development: LLM Agent, Agent Workflow, Pydantic-AI, Tool Calling, OpenAI Responses API, Streaming, RAG, Text2SQL, Prompt Engineering, RAGAS
+Retrieval and Vector Technologies: FAISS, LlamaIndex, Embedding, Reranking, BGE-Reranker, pgvector
+Programming and Backend: Python, Java, FastAPI, Spring Cloud, Redis
+Engineering Tools: Docker, Git, Pytest
+Education
+MSc in Computing, Cardiff University, UK  
+2019 – 2021
+
+BA in Marketing, Shanghai University of Engineering Science, China  
+2015 – 2019

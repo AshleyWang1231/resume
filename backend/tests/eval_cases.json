@@ -10,7 +10,7 @@
     "id": "personalization_zh",
     "message": "介绍一下个性化推荐和 Conversation Starters",
     "language": "zh",
-    "must_include": ["Personalized Conversation Starters", "15%", "60%"],
+    "must_include": ["Conversation Starters", "15%", "60%"],
     "expected_project_ids": ["personalization"]
   },
   {
@@ -24,7 +24,7 @@
     "id": "text2sql_zh",
     "message": "介绍 Text2SQL 项目经验",
     "language": "zh",
-    "must_include": ["Text2SQL AI Agent", "20%", "1,000"],
+    "must_include": ["Text2SQL", "20%", "1,000"],
     "expected_project_ids": ["text2sql"]
   }
 ]
