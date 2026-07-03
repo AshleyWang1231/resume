@@ -58,6 +58,37 @@ def route_intent(message: str) -> IntentResult:
             ),
         )
 
+    # Work history / career timeline — before project_detail to take priority over "经历"
+    if any(t in query for t in (
+        "work history", "employment", "career", "employer", "where have you worked",
+        "worked at", "work at", "how long have you", "years of experience",
+        "工作经历", "职业", "工作过", "任职", "工作了多久",
+    )):
+        return IntentResult(
+            intent="work_history",
+            retrieval_hint=["profile"],
+            retrieval_limit=3,
+            prompt_focus=(
+                "The user is asking about work history or career timeline. "
+                "List ALL employers with their dates from the evidence — do not omit any."
+            ),
+        )
+
+    # Skills / tech stack — before project_detail to avoid falling to experience_lookup
+    if any(t in query for t in (
+        "skill", "tech stack", "proficient", "expertise",
+        "技能", "技术栈", "擅长", "会什么", "会哪些",
+    )):
+        return IntentResult(
+            intent="skills_lookup",
+            retrieval_hint=["profile"],
+            retrieval_limit=3,
+            prompt_focus=(
+                "The user is asking about technical skills or capabilities. "
+                "Cover the full breadth of skills mentioned in the evidence."
+            ),
+        )
+
     # Project deep-dive
     if any(t in query for t in ("project", "detail", "项目", "经历", "experience", "built", "designed", "implemented")):
         return IntentResult(
