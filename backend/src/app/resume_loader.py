@@ -58,7 +58,9 @@ def build_resume_facts() -> list[dict]:
         "evidence": ["Zalando 2025–present", "Thoughtworks 2021–2025",
                      "Cardiff University MSc Computing", "e-commerce", "financial services"],
         "skills": ["LLM Agent", "Agent Workflow", "Tool Calling", "Streaming",
-                   "Python", "Java", "FastAPI", "Text2SQL", "RAG"],
+                   "Python", "Java", "FastAPI", "Text2SQL", "RAG",
+                   "Pydantic-AI", "OpenAI Responses API", "RAGAS",
+                   "FAISS", "BGE-Reranker", "pgvector"],
     })
 
     # ── Zalando: Personalization ──────────────────────────────────────────────
@@ -67,23 +69,25 @@ def build_resume_facts() -> list[dict]:
         "company": "Zalando",
         "title": "Personalization and Guided Shopping Capabilities",
         "summary_en": _strip(
-            "Built personalization and guided-shopping capabilities for Zalando Assistant Conversation Starters. "
+            "Built personalization and guided-shopping capabilities for Zalando Assistant Conversation Starters "
+            "and product-detail-page recommendations. "
             "Built a personalization input pipeline combining user behavior, conversation context, and profile signals, "
             "increasing Conversation Starter engagement by 15%+. "
             "Designed a cache layer for downstream user profile data with TTL control and field-level invalidation, "
             "reducing profile-service calls by 70%+ and lowering P99 latency by ~60% under high concurrency. "
             "Implemented an async Warm-Up architecture using Redis registry and in-memory fallback, "
             "decoupling first-screen generation from user requests and reducing cold-start time by 60%+. "
-            "Redesigned the product-detail-page recommendation strategy with a multi-layer decision flow. "
+            "Redesigned the product-detail-page recommendation strategy with a multi-layer decision flow "
+            "(behavior-signal recognition → recommendation routing → fallback generation). "
             "Built an evaluation process based on ~800 real product-detail-page scenarios."
         ),
         "summary_zh": _strip(
-            "面向 Zalando Assistant 构建个性化推荐与导购能力。"
+            "面向 Zalando Assistant 构建个性化推荐与导购能力，覆盖首屏 Conversation Starters 和商品详情页推荐。"
             "构建「历史行为 + 对话上下文 + 用户画像」个性化输入链路，推动推荐入口互动率提升 15%+。"
             "为下游用户画像服务增加缓存层，支持 TTL、字段级失效、异常隔离和空值过滤，"
             "使画像服务调用量减少 70%+，高并发场景下 P99 延迟下降约 60%。"
             "设计并落地基于 Redis 注册表 + 内存回退机制的异步 Warm-Up 架构，首屏冷启动时间降低 60%+。"
-            "主导商品详情页推荐策略重构，设计多层决策框架。"
+            "主导商品详情页推荐策略重构，设计「行为信号识别 + 推荐方向决策 + 兜底生成」多层决策框架。"
             "基于约 800 个真实商品详情页场景建立推荐效果分析体系。"
         ),
         "evidence": ["+15% engagement", "-60% cold-start", "-70% profile calls",
@@ -99,19 +103,18 @@ def build_resume_facts() -> list[dict]:
         "summary_en": _strip(
             "Upgraded the main Zalando Assistant Agent Runtime: integrated product-detail Tool Calling, "
             "redesigned Streaming response handling, and migrated to OpenAI Responses API. "
-            "Designed Streaming processing for multi-step Agent flows using a state machine to separate "
-            "process states, business events, and final response text, preventing duplicated display and "
-            "event-ordering issues. "
-            "Reduced Suggestions API average TTFT by ~25% vs the prior synchronous interface. "
+            "Designed Streaming processing for multi-step Agent flows, separating process states, "
+            "business events, and final response text to prevent duplicated display and event-ordering issues. "
+            "Reduced Suggestions API average TTFT by ~25% in benchmark tests vs the prior synchronous interface. "
             "Migrated from Chat Completions to OpenAI Responses API, unifying Tool Calling and Streaming, "
             "reducing P95 TTFT by ~25% in validated flows."
         ),
         "summary_zh": _strip(
             "负责 Zalando Assistant Agent 主链路升级：商品详情 Tool 接入、Streaming 架构优化及 OpenAI Responses API 迁移。"
-            "设计基于状态机的 Streaming 处理与分发机制，区分过程状态、业务事件和最终回复文本，"
+            "设计多步 Agent 链路下的 Streaming 处理与分发机制，区分过程状态、业务事件和最终回复文本，"
             "解决多工具调用场景下的重复展示与时序错乱问题。"
             "基准测试中 Suggestions API 流式输出 TTFT 平均降低约 25%。"
-            "完成 Agent 主链路从 Chat Completions 向 Responses API 的迁移，P95 TTFT 降低约 25%。"
+            "完成 Agent 主链路从 Chat Completions 向 Responses API 的迁移，在已验证链路中 P95 TTFT 降低约 25%。"
         ),
         "evidence": ["-25% avg TTFT", "-25% P95 TTFT", "Streaming state machine",
                      "OpenAI Responses API", "Tool Calling"],
@@ -129,6 +132,8 @@ def build_resume_facts() -> list[dict]:
             "multiple products through natural language, increasing comparison-scenario engagement by 20%+. "
             "Built context-aware product reference parsing to resolve product selections across multi-turn "
             "conversations, including position-based, range-based, and follow-up requests. "
+            "Developed dynamic comparison-dimension selection based on user intent, product attributes, and "
+            "category characteristics, making comparison results more focused and easier to scan. "
             "Separated model reasoning from table generation: model handles intent and summary recommendations; "
             "deterministic code handles field parsing, discount calculation, layout, and rendering markers, "
             "eliminating LLM table formatting instability."
@@ -137,6 +142,7 @@ def build_resume_facts() -> list[dict]:
             "设计并上线 Product Comparison Skill，帮助用户通过自然语言完成多商品比较与决策，"
             "上线后对比场景用户互动率提升 20%+。"
             "构建上下文商品解析机制，解决用户通过序号、范围或追加表达引用商品时的对象定位问题。"
+            "结合用户关注点、商品属性和品类特征动态选择比较维度，使比较结果更聚焦可读。"
             "拆分模型推理与表格生成职责，由代码负责字段解析、折扣计算、布局和渲染标记，"
             "解决纯 LLM 生成表格格式不稳定、字段缺失和前端难以渲染的问题。"
         ),
