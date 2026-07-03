@@ -51,6 +51,9 @@ _RESUME_TOKENS_SUBSTR = {
     "工程", "项目", "经验", "技能", "简历", "后端", "系统", "架构", "模型",
     "工具", "检索", "向量", "嵌入", "流式", "推荐", "个性化", "优化", "延迟",
     "评估", "准确", "指标", "银行", "购物", "导购", "汪露",
+    # Work / career context
+    "工作", "职位", "职业", "公司", "就职", "入职", "在职", "任职",
+    "career", "company", "position", "employer", "employment",
 }
 
 _RESUME_EXACT_RE = re.compile(
@@ -58,7 +61,15 @@ _RESUME_EXACT_RE = re.compile(
     re.IGNORECASE,
 )
 
-# ── Greeting detection ───────────────────────────────────────────────────────
+# ── Education / background questions not in resume ───────────────────────────
+_EDUCATION_RE = re.compile(
+    r"学校|大学|毕业|学历|本科|硕士|博士|学位|专业|院校"
+    r"|university|college|degree|education|graduated|major|school",
+    re.IGNORECASE,
+)
+
+
+
 _GREETINGS = {
     "hello", "hi", "hey", "hiya", "yo", "sup",
     "你好", "嗨", "哈喽", "您好", "hello!", "hi!",
@@ -90,6 +101,10 @@ def guard(message: str) -> GuardResult:
     if result is not None:
         return result
 
+    result = _check_education(text)
+    if result is not None:
+        return result
+
     result = _check_injection(text)
     if result is not None:
         return result
@@ -117,6 +132,17 @@ def _check_length(text: str) -> GuardResult | None:
             reason="message_too_long",
             reply_en="Your message is too long. Please keep it under 500 characters.",
             reply_zh="消息过长，请控制在 500 字以内。",
+        )
+    return None
+
+
+def _check_education(text: str) -> GuardResult | None:
+    if _EDUCATION_RE.search(text):
+        return GuardResult(
+            ok=False,
+            reason="education_not_available",
+            reply_en="Lu Wang's resume focuses on professional experience rather than education background. Feel free to ask about her AI engineering work at Zalando or Thoughtworks.",
+            reply_zh="汪露的简历以工作经验为主，未包含学历信息。欢迎询问她在 Zalando 或 Thoughtworks 的 AI 工程经历。",
         )
     return None
 

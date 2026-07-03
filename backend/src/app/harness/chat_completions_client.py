@@ -59,11 +59,18 @@ class ChatCompletionsClient:
         messages: list[dict[str, Any]] = [{"role": "system", "content": sys_prompt}]
         if history:
             messages.extend({"role": h["role"], "content": h["content"]} for h in history[-6:])
-        messages.append({"role": "user", "content": message})
+        # Inject seed evidence directly so LLM can answer even if it skips tool calls
+        user_content = message
+        if seed_evidence:
+            evidence_text = "\n\n".join(
+                f"[{e.title} @ {e.company}]\n{e.summary}" for e in seed_evidence
+            )
+            user_content = f"{message}\n\nResume evidence:\n{evidence_text}"
+        messages.append({"role": "user", "content": user_content})
 
         _log("llm_http_start", provider=self.provider, model=self._model(), step="first_pass")
         first_response = await self._post_chat_completions(
-            {"model": self._model(), "messages": messages, "tools": chat_completion_tool_schemas(), "tool_choice": "required"}
+            {"model": self._model(), "messages": messages, "tools": chat_completion_tool_schemas(), "tool_choice": "auto"}
         )
         assistant_message = _extract_assistant_message(first_response)
         tool_calls = assistant_message.get("tool_calls") or []
@@ -124,7 +131,7 @@ class ChatCompletionsClient:
         if not self.is_configured():
             return
 
-        messages = self._build_messages(message, language, history, focus=focus)
+        messages = self._build_messages(message, language, history, focus=focus, seed_evidence=seed_evidence)
         url = f"{self._base_url()}/chat/completions"
         headers = {
             "authorization": f"Bearer {self._api_key()}",
@@ -134,7 +141,7 @@ class ChatCompletionsClient:
             "model": self._model(),
             "messages": messages,
             "tools": chat_completion_tool_schemas(),
-            "tool_choice": "required",
+            "tool_choice": "auto",
         }
 
         _log("llm_stream_start", provider=self.provider, model=self._model(), step="first_pass")
@@ -246,6 +253,7 @@ class ChatCompletionsClient:
         language: Language,
         history: list[dict[str, str]] | None,
         focus: str = "",
+        seed_evidence: list[EvidenceCard] | None = None,
     ) -> list[dict[str, Any]]:
         sys_prompt = (
             system_prompt_with_history(language, focus=focus)
@@ -255,7 +263,13 @@ class ChatCompletionsClient:
         messages: list[dict[str, Any]] = [{"role": "system", "content": sys_prompt}]
         if history:
             messages.extend({"role": h["role"], "content": h["content"]} for h in history[-6:])
-        messages.append({"role": "user", "content": message})
+        user_content = message
+        if seed_evidence:
+            evidence_text = "\n\n".join(
+                f"[{e.title} @ {e.company}]\n{e.summary}" for e in seed_evidence
+            )
+            user_content = f"{message}\n\nResume evidence:\n{evidence_text}"
+        messages.append({"role": "user", "content": user_content})
         return messages
 
     async def _post_chat_completions(self, payload: dict[str, Any]) -> dict[str, Any]:
