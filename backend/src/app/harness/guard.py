@@ -58,6 +58,12 @@ _RESUME_EXACT_RE = re.compile(
     re.IGNORECASE,
 )
 
+# ── Greeting detection ───────────────────────────────────────────────────────
+_GREETINGS = {
+    "hello", "hi", "hey", "hiya", "yo", "sup",
+    "你好", "嗨", "哈喽", "您好", "hello!", "hi!",
+}
+
 # Very short questions (≤ 3 words) are usually navigation commands — allow them through
 _SHORT_MSG_WORD_THRESHOLD = 3
 
@@ -77,6 +83,10 @@ def guard(message: str) -> GuardResult:
     text = message.strip()
 
     result = _check_length(text)
+    if result is not None:
+        return result
+
+    result = _check_greeting(text)
     if result is not None:
         return result
 
@@ -107,6 +117,17 @@ def _check_length(text: str) -> GuardResult | None:
             reason="message_too_long",
             reply_en="Your message is too long. Please keep it under 500 characters.",
             reply_zh="消息过长，请控制在 500 字以内。",
+        )
+    return None
+
+
+def _check_greeting(text: str) -> GuardResult | None:
+    if text.lower().strip("!? ") in _GREETINGS:
+        return GuardResult(
+            ok=False,
+            reason="greeting",
+            reply_en="Hi! I'm Lu Wang's resume agent. Ask me about her Agent Runtime work at Zalando, Text2SQL pipeline, or Streaming architecture.",
+            reply_zh="你好！我是汪露的简历 Agent。可以问我她在 Zalando 的 Agent Runtime 工作、Text2SQL 流水线或 Streaming 架构。",
         )
     return None
 
