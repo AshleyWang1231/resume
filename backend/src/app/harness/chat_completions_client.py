@@ -59,14 +59,14 @@ class ChatCompletionsClient:
         messages: list[dict[str, Any]] = [{"role": "system", "content": sys_prompt}]
         if history:
             messages.extend({"role": h["role"], "content": h["content"]} for h in history[-6:])
-        # Inject seed evidence directly so LLM can answer even if it skips tool calls
-        user_content = message
+        # Inject seed evidence as a system context message so the LLM treats it as
+        # background knowledge, not as something the user typed.
         if seed_evidence:
             evidence_text = "\n\n".join(
                 f"[{e.title} @ {e.company}]\n{e.summary}" for e in seed_evidence
             )
-            user_content = f"{message}\n\nResume evidence:\n{evidence_text}"
-        messages.append({"role": "user", "content": user_content})
+            messages.append({"role": "system", "content": f"Retrieved resume facts for this query:\n{evidence_text}"})
+        messages.append({"role": "user", "content": message})
 
         _log("llm_http_start", provider=self.provider, model=self._model(), step="first_pass")
         first_response = await self._post_chat_completions(
@@ -263,13 +263,12 @@ class ChatCompletionsClient:
         messages: list[dict[str, Any]] = [{"role": "system", "content": sys_prompt}]
         if history:
             messages.extend({"role": h["role"], "content": h["content"]} for h in history[-6:])
-        user_content = message
         if seed_evidence:
             evidence_text = "\n\n".join(
                 f"[{e.title} @ {e.company}]\n{e.summary}" for e in seed_evidence
             )
-            user_content = f"{message}\n\nResume evidence:\n{evidence_text}"
-        messages.append({"role": "user", "content": user_content})
+            messages.append({"role": "system", "content": f"Retrieved resume facts for this query:\n{evidence_text}"})
+        messages.append({"role": "user", "content": message})
         return messages
 
     async def _post_chat_completions(self, payload: dict[str, Any]) -> dict[str, Any]:

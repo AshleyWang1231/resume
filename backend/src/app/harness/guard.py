@@ -17,6 +17,9 @@ from dataclasses import dataclass
 _MAX_CHARS = 500          # Pydantic model already enforces this; belt-and-suspenders
 _MIN_CHARS = 1
 
+# Inputs that are too short to be a real question (digits, single letters, punctuation only)
+_MEANINGLESS_RE = re.compile(r"^[\d\s\W]{1,3}$")
+
 # ── Prompt-injection / jailbreak patterns ────────────────────────────────────
 _INJECTION_RE = re.compile(
     r"ignore\s+(all\s+)?(previous|above|prior)\s+(instructions?|prompts?|context)"
@@ -55,6 +58,10 @@ def guard(message: str) -> GuardResult:
     if result is not None:
         return result
 
+    result = _check_meaningless(text)
+    if result is not None:
+        return result
+
     result = _check_greeting(text)
     if result is not None:
         return result
@@ -82,6 +89,17 @@ def _check_length(text: str) -> GuardResult | None:
             reason="message_too_long",
             reply_en="Your message is too long. Please keep it under 500 characters.",
             reply_zh="消息过长，请控制在 500 字以内。",
+        )
+    return None
+
+
+def _check_meaningless(text: str) -> GuardResult | None:
+    if _MEANINGLESS_RE.match(text):
+        return GuardResult(
+            ok=False,
+            reason="meaningless_input",
+            reply_en="I'm Lu Wang's resume agent — ask me about her experience, projects, or skills.",
+            reply_zh="我是汪露的简历 Agent，可以问我她的工作经历、项目或技能。",
         )
     return None
 

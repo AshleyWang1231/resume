@@ -486,18 +486,19 @@ function addToolMsg(toolName) {
 function addEvidence(parent, evidence) {
   parent.querySelector(".evidence-list")?.remove();
   if (!evidence?.length) return;
-  const item = evidence[0];
   const list = document.createElement("div");
   list.className = "evidence-list";
-  const card = document.createElement("div");
-  card.className = "evidence-card";
-  card.innerHTML = `
-    <strong>${escapeHtml(item.title)}</strong>
-    <span class="ev-company">${escapeHtml(item.company)}</span>
-    <div class="ev-chips">
-      ${(item.evidence || []).slice(0, 4).map((chip) => `<span>${escapeHtml(chip)}</span>`).join("")}
-    </div>`;
-  list.append(card);
+  evidence.forEach((item) => {
+    const card = document.createElement("div");
+    card.className = "evidence-card";
+    card.innerHTML = `
+      <strong>${escapeHtml(item.title)}</strong>
+      <span class="ev-company">${escapeHtml(item.company)}</span>
+      <div class="ev-chips">
+        ${(item.evidence || []).slice(0, 4).map((chip) => `<span>${escapeHtml(chip)}</span>`).join("")}
+      </div>`;
+    list.append(card);
+  });
   parent.append(list);
   const feed = $("[data-command-feed]");
   if (feed) feed.scrollTop = feed.scrollHeight;

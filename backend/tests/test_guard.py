@@ -56,6 +56,19 @@ def test_injection_blocked(message: str) -> None:
     assert result.reason == "prompt_injection"
 
 
+# ── Meaningless inputs are intercepted ───────────────────────────────────────
+
+@pytest.mark.parametrize("message", [
+    "1", "2", "12", "1.", "?",
+])
+def test_meaningless_blocked(message: str) -> None:
+    result = guard(message)
+    assert not result.ok
+    assert result.reason == "meaningless_input"
+    assert result.reply_en
+    assert result.reply_zh
+
+
 # ── Greetings are intercepted ─────────────────────────────────────────────────
 
 @pytest.mark.parametrize("message", [
