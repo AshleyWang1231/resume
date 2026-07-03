@@ -70,6 +70,25 @@ def route_intent(message: str) -> IntentResult:
             ),
         )
 
+    # Education / graduation / degree questions
+    if any(t in query for t in (
+        "graduate", "graduation", "degree", "education", "university", "college",
+        "study", "studied", "school", "bachelor", "master", "msc", "ba ",
+        "cardiff", "engineering science", "computing",
+        "毕业", "学历", "学校", "大学", "学位", "硕士", "本科", "读书", "专业",
+        "卡迪夫", "工程技术大学",
+    )):
+        return IntentResult(
+            intent="education",
+            retrieval_hint=["profile"],
+            retrieval_limit=2,
+            prompt_focus=(
+                "The user is asking about education. "
+                "List ALL degrees from the evidence — do not omit any. "
+                "Include degree name, institution, and graduation year for each."
+            ),
+        )
+
     # Broad overview / "who is Lu Wang" — must be about the person, not a specific topic
     if any(t in query for t in (
         "who is lu", "who is wang", "介绍汪露", "介绍一下汪露", "汪露是谁",
