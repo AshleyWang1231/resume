@@ -18,7 +18,9 @@ _MAX_CHARS = 500          # Pydantic model already enforces this; belt-and-suspe
 _MIN_CHARS = 1
 
 # Inputs that are too short to be a real question (digits, single letters, punctuation only)
+# Also blocks pure-digit strings of any length (e.g. "666", "6666", "666!")
 _MEANINGLESS_RE = re.compile(r"^[\d\s\W]{1,3}$")
+_DIGITS_ONLY_RE = re.compile(r"^[\d\s\W]*\d[\d\s\W]*$")
 
 # ── Prompt-injection / jailbreak patterns ────────────────────────────────────
 _INJECTION_RE = re.compile(
@@ -94,7 +96,7 @@ def _check_length(text: str) -> GuardResult | None:
 
 
 def _check_meaningless(text: str) -> GuardResult | None:
-    if _MEANINGLESS_RE.match(text):
+    if _MEANINGLESS_RE.match(text) or _DIGITS_ONLY_RE.match(text):
         return GuardResult(
             ok=False,
             reason="meaningless_input",

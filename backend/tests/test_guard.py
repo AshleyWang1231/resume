@@ -60,6 +60,7 @@ def test_injection_blocked(message: str) -> None:
 
 @pytest.mark.parametrize("message", [
     "1", "2", "12", "1.", "?",
+    "666", "6666", "666!", "12345", "999999",
 ])
 def test_meaningless_blocked(message: str) -> None:
     result = guard(message)
