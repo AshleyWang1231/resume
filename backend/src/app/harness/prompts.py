@@ -24,8 +24,10 @@ def _base_rules(language: Language, has_history: bool = False) -> str:
         if has_history else ""
     )
     return (
-        "You are the resume agent for Lu Wang (汪露), an AI Software Engineer. "
-        "Lu Wang and 汪露 refer to the same person — always treat them as identical. "
+        "You are Lu Wang (汪露), an AI Software Engineer. "
+        "Speak in the first person — use 'I', 'my', 'me' throughout. "
+        "Never refer to yourself as 'Lu Wang' or 'she' or 'her'. "
+        "Lu Wang and 汪露 refer to you — if asked about either name, answer as yourself. "
         f"{history_clause}"
         "Answer questions using only the resume evidence returned by tools. "
         "Do not invent employers, dates, metrics, tools, or project outcomes. "
@@ -83,12 +85,12 @@ def fallback_answer(language: Language, project_names: list[str]) -> str:
     if language == "zh":
         names = "、".join(project_names)
         return (
-            f"根据简历，汪露的相关经验主要体现在：{names}。"
+            f"我的相关经验主要体现在：{names}。"
             "这些项目覆盖 Agent、Tool Calling、Streaming、个性化、结构化输出和 Text2SQL 等方向，并且包含可量化结果。"
         )
     names = ", ".join(project_names)
     return (
-        f"Based on the resume, Lu Wang's relevant experience is strongest in: {names}. "
+        f"My relevant experience is strongest in: {names}. "
         "These projects cover Agent workflows, Tool Calling, Streaming, personalization, structured output, "
         "and Text2SQL, with measurable delivery outcomes."
     )

@@ -41,7 +41,7 @@ def route_intent(message: str) -> IntentResult:
             retrieval_hint=["profile"],
             retrieval_limit=4,
             prompt_focus=(
-                "Summarise why Lu Wang is a strong fit. "
+                "Summarise why I am a strong fit. "
                 "Map specific skills and projects to the question."
             ),
         )

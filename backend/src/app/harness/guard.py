@@ -100,8 +100,8 @@ def _check_meaningless(text: str) -> GuardResult | None:
         return GuardResult(
             ok=False,
             reason="meaningless_input",
-            reply_en="I'm Lu Wang's resume agent — ask me about her experience, projects, or skills.",
-            reply_zh="我是汪露的简历 Agent，可以问我她的工作经历、项目或技能。",
+            reply_en="I'm Lu Wang — ask me about my experience, projects, or skills.",
+            reply_zh="你好，我是汪露，可以问我工作经历、项目或技能。",
         )
     return None
 
@@ -111,8 +111,8 @@ def _check_greeting(text: str) -> GuardResult | None:
         return GuardResult(
             ok=False,
             reason="greeting",
-            reply_en="Hi! I'm Lu Wang's resume agent. Ask me about her Agent Runtime work at Zalando, Text2SQL pipeline, or Streaming architecture.",
-            reply_zh="你好！我是汪露的简历 Agent。可以问我她在 Zalando 的 Agent Runtime 工作、Text2SQL 流水线或 Streaming 架构。",
+            reply_en="Hi! I'm Lu Wang, an AI Software Engineer. Ask me about my Agent Runtime work at Zalando, Text2SQL pipeline, or Streaming architecture.",
+            reply_zh="你好！我是汪露，AI 软件工程师。可以问我在 Zalando 的 Agent Runtime 工作、Text2SQL 流水线或 Streaming 架构。",
         )
     return None
 
@@ -122,7 +122,7 @@ def _check_injection(text: str) -> GuardResult | None:
         return GuardResult(
             ok=False,
             reason="prompt_injection",
-            reply_en="I can only answer questions about Lu Wang's resume and experience.",
-            reply_zh="我只能回答关于汪露简历和工作经验的问题。",
+            reply_en="I can only answer questions about my own resume and experience.",
+            reply_zh="我只能回答关于我自己简历和工作经验的问题。",
         )
     return None
