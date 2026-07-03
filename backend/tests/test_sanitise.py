@@ -18,10 +18,11 @@ from app.harness.utils import sanitise_answer
     ("**bold** text", "bold text"),
     ("*italic* word", "italic word"),
     ("__bold__ text", "bold text"),
-    # List markers stripped
+    # List markers stripped (unordered only; numbered sentences are kept)
     ("- item one\n- item two", "item one\nitem two"),
     ("* item\n* other", "item\nother"),
-    ("1. first\n2. second", "first\nsecond"),
+    # Numbered sentences preserved (structured prose, not stripped)
+    ("1. first\n2. second", "1. first\n2. second"),
     # Plain text unchanged
     ("Lu Wang built an agent system.", "Lu Wang built an agent system."),
     # Combined

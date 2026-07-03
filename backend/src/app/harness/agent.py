@@ -281,7 +281,7 @@ class ResumeAgent:
 
     async def _run_self_check(self, llm_client, answer: str, context) -> str | None:
         """Ask the LLM to review the answer quality. Returns 'OK' or 'IMPROVE: ...'."""
-        check_msg = self_check_prompt(context.language, answer)
+        check_msg = self_check_prompt(context.language, answer, original_question=context.message)
         try:
             check_result = await llm_client.answer(
                 check_msg, context.language, [],

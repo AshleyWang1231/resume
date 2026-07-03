@@ -53,8 +53,9 @@ def route_intent(message: str) -> IntentResult:
             retrieval_hint=["agent-runtime", "personalization", "text2sql", "product-comparison"],
             retrieval_limit=4,
             prompt_focus=(
-                "Lead with specific numbers and percentages. "
-                "Always state the project context before the metric."
+                "The user wants specific numbers. "
+                "State each metric in a separate sentence: project name first, then the number and what it measures. "
+                "Do not group metrics into a single run-on sentence."
             ),
         )
 
@@ -89,6 +90,24 @@ def route_intent(message: str) -> IntentResult:
             ),
         )
 
+    # Evaluation / testing / quality measurement
+    if any(t in query for t in (
+        "evaluat", "eval case", "eval suite", "assessment", "test suite", "test case", "benchmark", "measure",
+        "ragas", "faithfulness", "recall", "precision", "mrr", "judge",
+        "评估", "测试集", "基准", "质量", "准确率", "召回", "检索评估",
+    )):
+        return IntentResult(
+            intent="evaluation",
+            retrieval_hint=["rag-chatbot", "text2sql", "personalization"],
+            retrieval_limit=3,
+            prompt_focus=(
+                "The user is asking about evaluation methodology or test suites. "
+                "Cover both the RAG evaluation work (RAGAS, faithfulness, context recall) "
+                "and the Text2SQL evaluation suite (1,000+ cases, accuracy improvement). "
+                "Mention concrete metrics where available."
+            ),
+        )
+
     # Project deep-dive
     if any(t in query for t in ("project", "detail", "项目", "经历", "experience", "built", "designed", "implemented")):
         return IntentResult(
@@ -96,8 +115,9 @@ def route_intent(message: str) -> IntentResult:
             retrieval_hint=[],          # let retrieval decide
             retrieval_limit=3,
             prompt_focus=(
-                "Give a concise problem → approach → result narrative. "
-                "Mention the specific challenge and measurable outcome."
+                "Structure the answer as three prose sentences: "
+                "one for the problem, one for the approach, one for the measurable result. "
+                "Do not use headers or bullet points."
             ),
         )
 

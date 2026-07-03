@@ -315,39 +315,145 @@ Track at least:
 
 ## Evaluation
 
-The backend uses a three-layer evaluation strategy.  Each layer has a
-different cost profile and failure signal:
+整体评估思路来自 RAGAS 的核心设计：**先有答案（文档内容），再用 LLM 逆推问题，
+最后用 LLM 评判答案质量**。本站对这套思路做了裁剪适配，分三层落地。
 
 ```
-Layer 1 — Retrieval Eval   (no LLM, always runs in CI)
-Layer 2 — Agent Regression (LLM, always runs in CI, answers must contain key facts)
-Layer 3 — LLM-as-Judge     (LLM, gated by JUDGE_EVAL=1, scores quality)
+Phase 0  构建 Knowledge Graph（一次性离线）
+              ↓
+Phase 1  从图逆向生成问题集（一次性离线，生成 synthetic_gold.json）
+              ↓
+Phase 2  用问题集跑检索评估（Layer 1，无 LLM，每次 CI 跑）
+Phase 3  用问题集跑 Agent 端到端测试（Layer 2，每次 CI 跑）
+Phase 4  LLM-as-Judge 打答案质量分（Layer 3，JUDGE_EVAL=1 手动跑）
 ```
 
 ---
 
-### Layer 1 — Retrieval Evaluation (`test_retrieval_eval.py`)
+### Phase 0 — 构建 Knowledge Graph
 
-**What it tests:** BM25 + FAISS hybrid search quality.  No LLM calls.
-Safe to run in every CI job.
+RAGAS 原版是为大规模文档设计的：先把上千页文本切 chunk，用 NER 提取实体，
+再用实体重叠度建边，形成一个真实的图结构。
 
-**How it works:**
+本站的数据规模是 8 条高度结构化的 `RESUME_FACTS`，每条已经包含了
+`id`、`skills`、`evidence` 这些结构化字段，直接用字段作为节点和边，
+不需要再跑 NER。
 
-Maintains a `GOLD` set of (query, language, expected_doc_ids) tuples.
-For each query it checks that at least one expected document appears in the
-top-K results, then reports aggregate P@K, R@K, and MRR.
+**节点（Node）**：每条 RESUME_FACT 是一个文档节点，属性包括：
 
 ```python
-# example GOLD entry
-("TTFT latency optimization streaming", "en", {"agent-runtime"})
+# 来自 resume_loader.py — build_resume_facts()
+{
+  "id":          "agent-runtime",          # 节点 ID
+  "title":       "Agent Runtime Upgrade",  # 节点标签
+  "company":     "Zalando",
+  "summary_en":  "...",                    # 检索文本（EN）
+  "summary_zh":  "...",                    # 检索文本（ZH）
+  "skills":      ["Tool Calling", "Streaming", "OpenAI Responses API", ...],
+  "evidence":    ["-25% avg TTFT", "-25% P95 TTFT", ...],
+}
 ```
 
-**Synthetic question augmentation (RAGAS-inspired):**
+**边（Edge）**：两个节点如果共享同一个 skill，则建立一条关系边。
+例如 `agent-runtime` 和 `product-comparison` 都有 `Tool Calling`，
+二者之间就有一条 `shares_skill: Tool Calling` 的边。
 
-Run `scripts/generate_synthetic_questions.py` once to produce
-`tests/synthetic_gold.json`.  The script reads every `RESUME_FACT`,
-calls an LLM to reverse-engineer realistic recruiter questions for each
-fact (4 EN + 4 ZH per fact), and saves them as structured test cases.
+```python
+# 伪代码：边构建逻辑（在 generate_synthetic_questions.py 中实现）
+edges = {}
+for fact in RESUME_FACTS:
+    for skill in fact["skills"]:
+        edges.setdefault(skill, []).append(fact["id"])
+# → {"Tool Calling": ["agent-runtime", "product-comparison", "profile"], ...}
+# → {"Evaluation": ["personalization", "text2sql", "profile"], ...}
+```
+
+这样就得到了一个以 RESUME_FACT 为节点、以共享技能为边的 Knowledge Graph：
+
+```
+profile ──── Tool Calling ──── agent-runtime
+                │
+           product-comparison
+                │
+             Streaming ──── agent-runtime
+
+text2sql ──── Evaluation ──── personalization
+                │
+            rag-chatbot
+```
+
+---
+
+### Phase 1 — 从图逆向生成问题集
+
+**RAGAS 的逻辑**：遍历图，挑出节点或节点对，用 LLM 根据内容逆推问题，
+同时把"正确答案来自哪个节点"记录下来，得到带 ground truth 的测试集。
+
+本站的实现在 `scripts/generate_synthetic_questions.py`，分两类问题：
+
+**单节点问题（Single-hop）**：只看一个 fact，生成具体问题。
+对应 RAGAS 的 `SingleHopSpecificQuerySynthesizer`。
+
+```python
+# 每个 fact 生成 4 EN + 4 ZH 问题
+prompt = """
+Resume fact:
+  Title: Agent Runtime Upgrade and Real-Time Response Optimization
+  Company: Zalando
+  Summary: Upgraded the main Zalando Assistant Agent Runtime...
+  Key evidence: -25% avg TTFT, -25% P95 TTFT, Streaming state machine
+
+Generate 4 questions:
+- 2 specific (ask about a concrete metric, technology, or decision)
+- 1 multi-topic (reference 2 skills or outcomes from this fact)
+- 1 follow-up (something a recruiter would naturally ask next)
+"""
+# → ["What specific latency improvement did Lu achieve for Streaming?",
+#    "How did Lu handle event ordering in multi-step Agent flows?",
+#    "How does Lu's Streaming work relate to Tool Calling?",
+#    "What drove the decision to migrate to OpenAI Responses API?"]
+```
+
+**跨节点问题（Multi-hop）**：沿图中的边，把两个共享技能的 fact 合并，
+生成需要同时引用两个 fact 的问题。对应 RAGAS 的 `MultiHopSpecificQuerySynthesizer`。
+
+```python
+# 找到通过 "Evaluation" 连接的 text2sql 和 personalization
+# → 生成跨项目问题
+prompt = """
+Fact A: Text2SQL agent — developed 1,000+ eval cases from real business queries
+Fact B: Personalization — built evaluation process based on ~800 real scenarios
+
+Generate a question that requires knowledge from BOTH facts.
+"""
+# → "How has Lu approached building evaluation datasets across different AI projects?"
+```
+
+生成结果写入 `tests/synthetic_gold.json`，每条记录格式：
+
+```json
+{
+  "id": "agent-runtime_en_0",
+  "source_fact_id": "agent-runtime",        // single-hop: 一个来源
+  "query": "What latency improvement did Lu achieve for Streaming TTFT?",
+  "language": "en",
+  "expected_doc_ids": ["agent-runtime"]     // 检索时应命中的节点
+}
+```
+
+跨节点问题的 `expected_doc_ids` 会包含两个 fact：
+
+```json
+{
+  "id": "multihop_evaluation_en_0",
+  "source_fact_id": "text2sql+personalization",
+  "query": "How has Lu approached building evaluation datasets across projects?",
+  "language": "en",
+  "expected_doc_ids": ["text2sql", "personalization"]
+}
+```
+
+运行一次生成约 **64–80 条**问题（8 个 fact × 4 EN + 4 ZH，加若干跨节点问题）：
 
 ```bash
 cd backend
@@ -355,35 +461,41 @@ AI_PROVIDER=qwen QWEN_API_KEY=sk-... \
     uv run python scripts/generate_synthetic_questions.py
 ```
 
-`test_retrieval_eval.py` auto-loads `synthetic_gold.json` when present,
-adding ~60 generated queries on top of the ~20 hand-curated ones.
-The synthetic tests are skipped in CI if the file has not been generated.
+---
 
-This mirrors RAGAS's core insight: **start from the answer (document
-content), have an LLM reverse-engineer what questions that content
-would answer**, giving you ground-truth (query → expected doc) pairs
-without manual labelling.
+### Phase 2 — 检索评估（Layer 1，`test_retrieval_eval.py`）
 
-**Metrics reported:**
+用生成的问题集测试 BM25 + FAISS 混合检索质量。**不需要 LLM，每次 CI 都跑。**
 
-| Metric | Description |
-|---|---|
-| P@K | Fraction of top-K results that are relevant |
-| R@K | Fraction of relevant docs found in top-K |
-| MRR | Mean Reciprocal Rank (position of first hit) |
-| Hit rate | % of queries where at least one expected doc appears |
+`synthetic_gold.json` 存在时自动加载，合并到 GOLD 集：
+
+```python
+# test_retrieval_eval.py
+GOLD = [  # 手写的 19 条基准
+    ("TTFT latency optimization streaming", "en", {"agent-runtime"}),
+    ...
+]
+SYNTHETIC = _load_synthetic()   # 从 synthetic_gold.json 加载，不存在则 []
+ALL_GOLD = GOLD + SYNTHETIC     # CI 跑 GOLD，本地可跑 ALL_GOLD
+```
+
+每条问题检索 top-3，断言 `expected_doc_ids` 中至少有一个命中：
+
+```
+✓ What latency improvement did Lu achieve... | expected: agent-runtime | got: [agent-runtime, profile, ...]
+✓ 汪露怎么解决首屏冷启动问题？           | expected: personalization  | got: [personalization, ...]
+✗ How has Lu approached eval datasets...    | expected: text2sql+perso | got: [rag-chatbot, ...]  ← 跨节点难
+```
+
+报告 P@K / R@K / MRR / Hit Rate，发现检索薄弱点后可以回头调整 BM25 权重
+或补充 FAISS embedding。
 
 ---
 
-### Layer 2 — Agent Regression (`test_agent_eval.py`)
+### Phase 3 — Agent 端到端回归（Layer 2，`test_agent_eval.py`）
 
-**What it tests:** End-to-end agent behavior — does the full pipeline
-(intent routing → retrieval → LLM answer → evidence) produce the right
-output for known questions?
-
-**How it works:**
-
-Each case in `tests/eval_cases.json` specifies:
+用手写的关键问题跑完整 Agent 链路（intent routing → retrieval → LLM → evidence），
+做关键词级别的确定性断言。**每次 CI 跑，答案里缺关键词就报错。**
 
 ```json
 {
@@ -395,82 +507,94 @@ Each case in `tests/eval_cases.json` specifies:
 }
 ```
 
-The test asserts that `expected_project_ids` appear in the evidence and
-that `must_include` keywords appear in the answer or evidence text.
-
-These are deterministic keyword assertions — fast, cheap, and reliable
-as CI gates.  They catch regressions when retrieval or prompts change.
-
-**V1 target:** 20–30 cases covering EN + ZH and each major project.
+这一层不评价"答案好不好"，只检查"答案有没有漏掉关键事实"。
+改了 prompt 或调了检索权重之后，这层是第一道保护网。
 
 ---
 
-### Layer 3 — LLM-as-Judge (`test_llm_judge_eval.py`)
+### Phase 4 — LLM-as-Judge 质量评分（Layer 3，`test_llm_judge_eval.py`）
 
-**What it tests:** Answer quality on two axes borrowed from RAGAS:
+用另一个 LLM 评判 Agent 答案的质量，借鉴 RAGAS 的两个核心指标：
 
-| Metric | Question | Score |
+| 指标 | 问的问题 | 评分 |
 |---|---|---|
-| **Faithfulness** | Does the answer stay grounded in the evidence? Does it invent facts? | 0.0 / 0.5 / 1.0 |
-| **Answer relevance** | Does the answer actually address the question asked? | 0.0 / 0.5 / 1.0 |
+| **Faithfulness（忠实度）** | 答案里的每个事实声明，在 evidence 里都能找到依据吗？ | 0.0 / 0.5 / 1.0 |
+| **Answer Relevance（相关性）** | 答案有没有回答用户的问题？有没有跑题？ | 0.0 / 0.5 / 1.0 |
 
-**How it works:**
-
-For each eval case the test:
-1. Runs the full `ResumeAgent` to get `(answer, evidence)`.
-2. Calls a judge LLM with two separate scoring prompts.
-3. Asserts both scores meet the per-case thresholds.
+**工作流程**：
 
 ```
-faithfulness judge prompt:
-  Given the evidence provided to the AI and the AI's answer,
-  score whether every factual claim is supported by evidence.
-  Return {"score": <0.0|0.5|1.0>, "reason": "..."}
-
-relevance judge prompt:
-  Given the user's question and the AI's answer,
-  score whether the answer actually addresses the question.
-  Return {"score": <0.0|0.5|1.0>, "reason": "..."}
+用户问题
+    ↓
+ResumeAgent.answer()  →  (answer_text, evidence_cards)
+    ↓                              ↓
+relevance judge                faithfulness judge
+  prompt:                        prompt:
+  "Does this answer              "Does every claim in
+   address the question?"         this answer appear
+                                  in the evidence?"
+    ↓                              ↓
+  score 0/0.5/1.0              score 0/0.5/1.0
+    ↓                              ↓
+assert >= min_relevance      assert >= min_faithfulness
 ```
 
-The `hallucination_probe` case specifically asks about Kubernetes and
-LangChain (absent from the resume) to verify the agent does not fabricate
-experience with technologies Lu has not used.
+其中 `hallucination_probe` case 专门问 Kubernetes 和 LangChain（简历里没有），
+期望 faithfulness=1.0（Agent 没有编造这些经历）、relevance=0.5（只能如实说没有）。
 
-**Gate:** Only runs when `JUDGE_EVAL=1` is set.  Not part of standard CI.
-Run manually or in a periodic eval workflow:
+**只在手动跑时触发**，不进 CI：
 
 ```bash
 cd backend
 JUDGE_EVAL=1 AI_PROVIDER=qwen QWEN_API_KEY=sk-... \
     uv run pytest tests/test_llm_judge_eval.py -v
 
-# Full report (all cases, printed table):
+# 或打印完整报告表格：
 JUDGE_EVAL=1 AI_PROVIDER=qwen QWEN_API_KEY=sk-... \
     uv run python tests/test_llm_judge_eval.py
 ```
 
-**Why not use RAGAS directly?**
+---
 
-- RAGAS's `TestsetGenerator` uses a Knowledge Graph pipeline designed for
-  large document corpora (hundreds of pages).  This backend has 8 highly
-  structured resume facts — the graph overhead adds no value.
-- RAGAS's library depends on `tiktoken` and other packages incompatible
-  with the Cloudflare Python Workers environment.
-- The approach here borrows RAGAS's two core ideas (reverse question
-  generation + LLM-as-judge scoring) and implements them in ~250 lines
-  that integrate directly with the existing harness.
+### 完整流程图
+
+```
+RESUME_FACTS (8 个结构化 fact)
+      │
+      ▼
+  [Phase 0] 构建 Knowledge Graph
+      │  节点 = fact，边 = 共享 skill
+      │
+      ▼
+  [Phase 1] LLM 逆向生成问题
+      │  单节点问题（4 EN + 4 ZH / fact）
+      │  跨节点问题（沿 skill 边，合并两个 fact）
+      │  → synthetic_gold.json（~70 条，带 ground truth）
+      │
+      ├──▶ [Layer 1] 检索评估（test_retrieval_eval.py）
+      │       BM25+FAISS 检索，断言 top-3 命中
+      │       P@K / R@K / MRR / Hit Rate
+      │       无 LLM，CI 每次跑
+      │
+      ├──▶ [Layer 2] Agent 回归（test_agent_eval.py）
+      │       完整 Agent 链路，关键词断言
+      │       每次 CI 跑
+      │
+      └──▶ [Layer 3] LLM-as-Judge（test_llm_judge_eval.py）
+              Faithfulness + Answer Relevance
+              手动跑（JUDGE_EVAL=1）
+```
 
 ---
 
-### Summary
+### 三层对比
 
-| Layer | File | LLM calls | Runs in CI | Purpose |
+| 层 | 文件 | LLM 调用 | CI 运行 | 发现的问题 |
 |---|---|---|---|---|
-| Retrieval | `test_retrieval_eval.py` | No | Always | Catch search regressions |
-| Agent regression | `test_agent_eval.py` | Yes (agent) | Always | Catch answer regressions |
-| LLM-as-judge | `test_llm_judge_eval.py` | Yes (agent + judge) | `JUDGE_EVAL=1` | Score answer quality |
-| Question generator | `scripts/generate_synthetic_questions.py` | Yes (one-time) | Manual | Expand GOLD set |
+| 检索 | `test_retrieval_eval.py` | 无 | 每次 | 检索漏召回、BM25 权重不对 |
+| Agent 回归 | `test_agent_eval.py` | Agent | 每次 | Prompt 变更导致关键信息丢失 |
+| LLM Judge | `test_llm_judge_eval.py` | Agent + Judge | 手动 | 答案编造事实、跑题、质量退化 |
+| 问题生成 | `scripts/generate_synthetic_questions.py` | 一次性 | 手动 | 扩充测试集覆盖度 |
 
 ## Suggested File Structure
 

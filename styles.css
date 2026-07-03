@@ -755,6 +755,39 @@ h3 { margin-bottom: 10px; font-size: 17px; }
 }
 
 /* ─── Eval section ─── */
+.section-lead {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+  max-width: 680px;
+  margin: 8px 0 0;
+}
+.eval-flow {
+  position: relative;
+  font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted);
+  background: linear-gradient(160deg, rgba(13, 22, 35, 0.92), rgba(7, 12, 20, 0.88));
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--cyan);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  margin-bottom: 20px;
+  white-space: pre;
+  overflow-x: auto;
+  box-shadow: inset 0 1px 0 rgba(103, 232, 249, 0.06), 0 4px 24px rgba(0,0,0,0.28);
+}
+/* Syntax-coloring spans inside .eval-flow */
+.ef-src   { color: var(--cyan);   font-weight: 700; letter-spacing: 0.03em; }
+.ef-phase { color: var(--amber);  font-weight: 600; }
+.ef-file  { color: var(--green);  }
+.ef-note  { color: var(--faint);  }
+.ef-tree  { color: rgba(103, 232, 249, 0.35); }
+.ef-arrow { color: var(--cyan);   }
+.ef-layer1 { color: var(--cyan);   font-weight: 600; }
+.ef-layer2 { color: var(--violet); font-weight: 600; }
+.ef-layer3 { color: var(--green);  font-weight: 600; }
 .eval-layers {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -804,19 +837,24 @@ h3 { margin-bottom: 10px; font-size: 17px; }
 }
 .eval-metric-card {
   border: 1px solid rgba(125, 211, 169, .2);
+  border-top: 2px solid var(--cyan);
   border-radius: var(--radius);
-  padding: 16px 20px;
+  padding: 18px 22px;
   background: rgba(125, 211, 169, .04);
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
+.eval-metric-card:nth-child(2) { border-top-color: var(--violet); }
+.eval-metric-card:nth-child(3) { border-top-color: var(--green); }
 .eval-metric-card strong {
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 800;
   color: var(--green);
   line-height: 1;
 }
+.eval-metric-card:nth-child(1) strong { color: var(--cyan); }
+.eval-metric-card:nth-child(2) strong { color: var(--violet); }
 .eval-metric-card span {
   font-size: 12px;
   color: var(--muted);

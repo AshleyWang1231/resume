@@ -55,22 +55,34 @@ const T = {
     systemTitle: "Agent Runtime · Agent Workflow · Tool Calling · Streaming",
     systemSummary: "A multi-turn agent built to demonstrate the same patterns I use professionally: a typed event stream that separates tool calls from answer text, Pydantic-validated tool schemas, a four-stage workflow loop, and multi-provider LLM fallback.",
     evalKicker: "How this backend is evaluated",
-    evalTitle: "Three test layers, zero manual checking.",
-    evalLayer1Title: "Retrieval quality",
-    evalLayer1Desc: "19 gold-standard queries with expected doc IDs. BM25 + FAISS scores are measured at every change. Current: 100% hit rate, MRR 0.947.",
-    evalLayer1Code: "test_retrieval_eval.py · Precision@3 / Recall@3 / MRR",
-    evalLayer2Title: "Agent end-to-end",
-    evalLayer2Desc: "4 full-pipeline cases. Each asserts the correct evidence card is retrieved AND the answer contains required keywords (project names, metrics). No LLM mocking — runs against the real agent.",
-    evalLayer2Code: "test_agent_eval.py · evidence hit + keyword match",
-    evalLayer3Title: "Component contracts",
-    evalLayer3Desc: "Guard (39 cases): injection patterns, length limits. Output sanitiser (13 cases): XML tags, markdown headers, bold, lists. Provider factory and Pydantic tool schemas.",
-    evalLayer3Code: "test_guard.py · test_sanitise.py · 82 cases total",
+    evalTitle: "RAGAS-inspired: graph → questions → test.",
+    evalDesc: "Each resume fact is a node; shared skills are edges. An LLM reverse-engineers questions from the graph — single-hop and multi-hop — producing a labelled test set that drives retrieval eval, agent regression, and LLM-as-Judge scoring.",
+    evalFlow: `<span class="ef-src">RESUME_FACTS</span>  <span class="ef-note">(8 structured facts)</span>
+      <span class="ef-tree">│</span>
+      <span class="ef-tree">▼</span>
+  <span class="ef-phase">[Graph]</span>  <span class="ef-note">node = fact,  edge = shared skill</span>
+      <span class="ef-tree">│</span>    <span class="ef-note">e.g. "Tool Calling" links agent-runtime ↔ product-comparison</span>
+      <span class="ef-tree">│</span>
+      <span class="ef-tree">▼</span>
+  <span class="ef-phase">[LLM reverse-engineering]</span>
+      <span class="ef-tree">│</span>    <span class="ef-note">single-hop: 4 EN + 4 ZH questions per fact</span>
+      <span class="ef-tree">│</span>    <span class="ef-note">multi-hop:  questions spanning 2 linked facts</span>
+      <span class="ef-tree">│</span>    <span class="ef-arrow">→</span> <span class="ef-file">synthetic_gold.json</span>  <span class="ef-note">(~70 questions, with ground-truth doc IDs)</span>
+      <span class="ef-tree">│</span>
+      <span class="ef-tree">├──▶</span> <span class="ef-layer1">[Layer 1]</span>  Retrieval eval  <span class="ef-file">(test_retrieval_eval.py)</span>
+      <span class="ef-tree">│</span>               <span class="ef-note">BM25+FAISS · assert top-3 hit · P@K / R@K / MRR · no LLM · CI every push</span>
+      <span class="ef-tree">│</span>
+      <span class="ef-tree">├──▶</span> <span class="ef-layer2">[Layer 2]</span>  Agent regression  <span class="ef-file">(test_agent_eval.py)</span>
+      <span class="ef-tree">│</span>               <span class="ef-note">full pipeline · keyword + evidence-ID assertions · CI every push</span>
+      <span class="ef-tree">│</span>
+      <span class="ef-tree">└──▶</span> <span class="ef-layer3">[Layer 3]</span>  LLM-as-Judge  <span class="ef-file">(test_llm_judge_eval.py)</span>
+                      <span class="ef-note">faithfulness + answer relevance · JUDGE_EVAL=1</span>`,
     evalMetric1: "19/19",
     evalMetric1Label: "retrieval hit rate",
     evalMetric2: "0.947",
-    evalMetric2Label: "MRR across 19 queries",
+    evalMetric2Label: "MRR (gold queries)",
     evalMetric3: "82",
-    evalMetric3Label: "automated test cases",
+    evalMetric3Label: "CI tests passing",
 
     contactKicker: "Contact",
     contactTitle: "Open to AI software engineering roles.",
@@ -132,22 +144,34 @@ const T = {
     systemTitle: "Agent Runtime · Agent Workflow · Tool Calling · Streaming",
     systemSummary: "一个多轮有状态 Agent，展示了我在工作中使用的相同模式：类型化事件流区分工具调用与回答文本，Pydantic 校验工具 Schema，四阶段工作流循环，多 Provider LLM 降级。",
     evalKicker: "本站后端如何评估",
-    evalTitle: "三层测试，零人工检查。",
-    evalLayer1Title: "检索质量",
-    evalLayer1Desc: "19 条 gold-standard 查询，每条预设期望文档 ID。每次变更后自动计算 BM25 + FAISS 评分。当前：命中率 100%，MRR 0.947。",
-    evalLayer1Code: "test_retrieval_eval.py · Precision@3 / Recall@3 / MRR",
-    evalLayer2Title: "Agent 端到端",
-    evalLayer2Desc: "4 条完整链路用例，每条断言：正确的 evidence card 被检索到，且回答中包含必要关键词（项目名、指标数字）。不 mock LLM，直接跑真实 agent。",
-    evalLayer2Code: "test_agent_eval.py · evidence 命中 + 关键词断言",
-    evalLayer3Title: "组件契约",
-    evalLayer3Desc: "Guard（39 条）：注入模式、长度限制。输出清洗（13 条）：XML 标签、Markdown 标题、加粗、列表。Provider factory 和 Pydantic 工具 Schema。",
-    evalLayer3Code: "test_guard.py · test_sanitise.py · 共 82 条",
+    evalTitle: "RAGAS 思路：构建知识图谱，逆推问题，再来测试。",
+    evalDesc: "每条简历 fact 是一个节点，共享技能是边。LLM 从图中逆向生成问题——单跳和多跳——产出带 ground-truth 的测试集，驱动检索评估、Agent 回归和 LLM-as-Judge 三层测试。",
+    evalFlow: `<span class="ef-src">RESUME_FACTS</span>  <span class="ef-note">（8 条结构化 fact）</span>
+      <span class="ef-tree">│</span>
+      <span class="ef-tree">▼</span>
+  <span class="ef-phase">[Graph]</span>  <span class="ef-note">节点 = fact，边 = 共享技能</span>
+      <span class="ef-tree">│</span>    <span class="ef-note">例：「Tool Calling」连接 agent-runtime ↔ product-comparison</span>
+      <span class="ef-tree">│</span>
+      <span class="ef-tree">▼</span>
+  <span class="ef-phase">[LLM 逆向生成问题]</span>
+      <span class="ef-tree">│</span>    <span class="ef-note">单跳：每个 fact 生成 4 EN + 4 ZH 问题</span>
+      <span class="ef-tree">│</span>    <span class="ef-note">多跳：跨两个相连 fact 的综合问题</span>
+      <span class="ef-tree">│</span>    <span class="ef-arrow">→</span> <span class="ef-file">synthetic_gold.json</span>  <span class="ef-note">（约 70 条，含 ground-truth 文档 ID）</span>
+      <span class="ef-tree">│</span>
+      <span class="ef-tree">├──▶</span> <span class="ef-layer1">[Layer 1]</span>  检索评估  <span class="ef-file">(test_retrieval_eval.py)</span>
+      <span class="ef-tree">│</span>               <span class="ef-note">BM25+FAISS · 断言 top-3 命中 · P@K / R@K / MRR · 无 LLM · CI 每次跑</span>
+      <span class="ef-tree">│</span>
+      <span class="ef-tree">├──▶</span> <span class="ef-layer2">[Layer 2]</span>  Agent 回归  <span class="ef-file">(test_agent_eval.py)</span>
+      <span class="ef-tree">│</span>               <span class="ef-note">完整链路 · 关键词 + evidence ID 断言 · CI 每次跑</span>
+      <span class="ef-tree">│</span>
+      <span class="ef-tree">└──▶</span> <span class="ef-layer3">[Layer 3]</span>  LLM-as-Judge  <span class="ef-file">(test_llm_judge_eval.py)</span>
+                      <span class="ef-note">忠实度 + 相关性 · JUDGE_EVAL=1 手动跑</span>`,
     evalMetric1: "19/19",
     evalMetric1Label: "检索命中率",
     evalMetric2: "0.947",
-    evalMetric2Label: "19 条查询的 MRR",
+    evalMetric2Label: "MRR（gold 查询集）",
     evalMetric3: "82",
-    evalMetric3Label: "自动化测试用例",
+    evalMetric3Label: "CI 通过测试数",
 
     contactKicker: "联系",
     contactTitle: "正在寻找 AI 软件工程相关机会。",
@@ -193,8 +217,8 @@ function sanitiseAnswer(text) {
   text = text.replace(/<\/?[a-z][a-z0-9]*(?:\s[^>]*)?>/gi, "");  // XML tags
   text = text.replace(/^#{1,6}\s+/gm, "");                        // ### headers
   text = text.replace(/(\*{1,3}|_{1,3})(.+?)\1/gs, "$2");         // **bold** / *italic*
-  text = text.replace(/^[\-\*]\s+/gm, "");                        // - list items
-  text = text.replace(/^\d+\.\s+/gm, "");                         // 1. numbered lists
+  text = text.replace(/^[\-\*]\s+/gm, "");                        // - list items (unordered only)
+  // numbered sentences like "1. The problem was..." are kept as structured prose
   text = text.replace(/\n{3,}/g, "\n\n");                         // collapse blank lines
   return text.trim();
 }
@@ -205,6 +229,10 @@ function applyLang() {
   $$("[data-i18n]").forEach((el) => {
     const key = el.dataset.i18n;
     if (dictionary[key]) el.textContent = dictionary[key];
+  });
+  $$("[data-i18n-html]").forEach((el) => {
+    const key = el.dataset.i18nHtml;
+    if (dictionary[key]) el.innerHTML = dictionary[key];
   });
   $$("[data-i18n-placeholder]").forEach((el) => {
     const key = el.dataset.i18nPlaceholder;

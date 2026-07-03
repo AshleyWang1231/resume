@@ -52,8 +52,9 @@ _TAG_RE = re.compile(r"</?[a-z][a-z0-9]*(?:\s[^>]*)?>", re.IGNORECASE)
 _HEADER_RE = re.compile(r"^#{1,6}\s+", re.MULTILINE)
 _BOLD_ITALIC_RE = re.compile(r"(\*{1,3}|_{1,3})(.+?)\1")
 
-# Strip leading list markers (- item / * item / 1. item) that the model emits
-_LIST_RE = re.compile(r"^[\-\*]\s+|^\d+\.\s+", re.MULTILINE)
+# Strip leading unordered list markers (- item / * item) but NOT numbered sentences (1. ...)
+# Numbered sentences like "1. The problem was..." are allowed as structured prose.
+_LIST_RE = re.compile(r"^[\-\*]\s+", re.MULTILINE)
 
 
 def sanitise_answer(text: str) -> str:
