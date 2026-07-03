@@ -12,8 +12,8 @@ from app.harness.guard import guard
     "What AI Agent systems has Lu built?",
     "Tell me about the Streaming architecture.",
     "What is Lu's experience with Text2SQL?",
-    "Show me the projects",           # short navigation command
-    "/projects",                      # CLI-style command
+    "Show me the projects",
+    "/projects",
     "How does Tool Calling work in the agent?",
     "Explain the FAISS retrieval setup.",
     "汪露做过哪些 AI Agent 系统？",
@@ -21,6 +21,18 @@ from app.harness.guard import guard
     "Tell me about personalization at Zalando",
     "What measurable impact has Lu had?",
     "Text2SQL evaluation approach?",
+    # Previously blocked by off-topic check — now allowed through to LLM
+    "What is the capital of France and who wrote Hamlet?",
+    "Tell me a joke about mathematicians please",
+    "abc",
+    "xyz",
+    "ok thanks",
+    "sure",
+    "tell me more",
+    "what else",
+    "继续",
+    "你好吗",
+    "hello world",
 ])
 def test_allowed(message: str) -> None:
     result = guard(message)
@@ -42,44 +54,6 @@ def test_injection_blocked(message: str) -> None:
     result = guard(message)
     assert not result.ok
     assert result.reason == "prompt_injection"
-
-
-# ── Blocked: off-topic ────────────────────────────────────────────────────────
-
-@pytest.mark.parametrize("message", [
-    "What is the capital of France and who wrote Hamlet?",
-    "Write me a poem about the ocean and sailing ships",
-    "How do I make pasta carbonara at home tonight?",
-    "Tell me a joke about mathematicians please",
-    "What are the best movies from the 1990s cinema",
-])
-def test_off_topic_blocked(message: str) -> None:
-    result = guard(message)
-    assert not result.ok
-    assert result.reason == "off_topic"
-
-
-# ── Short messages always pass ────────────────────────────────────────────────
-
-@pytest.mark.parametrize("message", [
-    "ok thanks",
-    "sure",
-    "tell me more",
-    "what else",
-    "继续",
-])
-def test_short_followups_pass(message: str) -> None:
-    result = guard(message)
-    assert result.ok
-
-
-@pytest.mark.parametrize("message", [
-    "abc", "xyz", "test", "你好吗", "hello world",
-])
-def test_noise_blocked(message: str) -> None:
-    result = guard(message)
-    assert not result.ok
-    assert result.reason == "off_topic"
 
 
 # ── Greetings are intercepted ─────────────────────────────────────────────────
@@ -111,7 +85,6 @@ def test_too_long_blocked() -> None:
 
 def test_max_length_ok() -> None:
     result = guard("a" * 500)
-    # 500 chars of "a" will be off-topic, but that's fine — we just check length passes
     assert result.reason != "message_too_long"
 
 
@@ -122,3 +95,4 @@ def test_blocked_reply_strings_populated() -> None:
     assert not result.ok
     assert result.reply_en
     assert result.reply_zh
+
