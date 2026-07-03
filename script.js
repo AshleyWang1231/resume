@@ -1,5 +1,5 @@
 const API = "https://resume-gent-api-vtugquposb.cn-hangzhou.fcapp.run";
-const STREAM_TIMEOUT_MS = 15000;
+const STREAM_TIMEOUT_MS = 30000;
 const TERMINAL_RENDER_DELAY_MS = 35;
 const TERMINAL_RENDER_CHARS = 5;
 
@@ -585,8 +585,9 @@ async function sendMessage(message) {
         if (event === "evidence") {
           toolMessages.forEach((msg) => msg.remove());
           pendingEvidence = payload;
-          // Sanitise the fully-streamed text before closing (replaces any leaked tags/markdown)
           textEl.textContent = sanitiseAnswer(textEl.textContent);
+          // Only show evidence if there's actual answer text
+          if (!textEl.textContent.trim()) pendingEvidence = null;
           streamer.close();
         }
         if (event === "done" && payload.session_id) sessionId = payload.session_id;
@@ -609,7 +610,12 @@ async function sendMessage(message) {
       const data = await res.json();
       if (data.session_id) sessionId = data.session_id;
       const answer = addTerminalMessage("assistant", "");
-      revealText(answer.querySelector("p"), data.answer, () => addEvidence(answer, data.evidence));
+      const answerText = sanitiseAnswer(data.answer || "");
+      if (answerText) {
+        revealText(answer.querySelector("p"), answerText, () => addEvidence(answer, data.evidence));
+      } else {
+        answer.querySelector("p").textContent = t("agentError");
+      }
     } catch {
       addTerminalMessage("assistant", t("agentError"));
     }
