@@ -68,7 +68,7 @@
           <article class="capability-card">
             <span>01</span>
             <h3 data-i18n="cap1Title">Agent Runtime &amp; Tool Orchestration</h3>
-            <p data-i18n="cap1">I design the runtime loop that makes agents reliable: tool dispatch with Pydantic-validated schemas, state-machine Streaming that separates process events from user-visible text, and multi-turn session management. Built at Zalando for a live shopping assistant handling real user traffic.</p>
+            <p data-i18n="cap1">I design the runtime loop that makes agents reliable: tool dispatch with Pydantic-validated schemas, a Streaming layer that separates intermediate tool events from user-visible text, and multi-turn session management. Built at Zalando for a live shopping assistant handling real user traffic.</p>
           </article>
           <article class="capability-card">
             <span>02</span>
@@ -170,8 +170,8 @@
           <div class="eval-layer-card">
             <div class="eval-layer-num">03</div>
             <strong data-i18n="evalLayer3Title">Component contracts</strong>
-            <p data-i18n="evalLayer3Desc">Guard (32 cases): injection patterns, off-topic, length limits. Output sanitiser (13 cases): XML tags, markdown headers, bold, lists. Provider factory and Pydantic tool schemas.</p>
-            <code class="eval-layer-code" data-i18n="evalLayer3Code">test_guard.py · test_sanitise.py · 78 cases total</code>
+            <p data-i18n="evalLayer3Desc">Guard (39 cases): injection patterns, length limits. Output sanitiser (13 cases): XML tags, markdown headers, bold, lists. Provider factory and Pydantic tool schemas.</p>
+            <code class="eval-layer-code" data-i18n="evalLayer3Code">test_guard.py · test_sanitise.py · 82 cases total</code>
           </div>
         </div>
 
@@ -186,7 +186,7 @@
             <span data-i18n="evalMetric2Label">MRR across 19 queries</span>
           </div>
           <div class="eval-metric-card">
-            <strong data-i18n="evalMetric3">78</strong>
+            <strong data-i18n="evalMetric3">82</strong>
             <span data-i18n="evalMetric3Label">automated test cases</span>
           </div>
         </div>
@@ -246,10 +246,10 @@
           </div>
           <p class="pills-label" data-i18n="pillsQuestions">Questions</p>
           <div class="pills-q-grid">
-            <button type="button" class="pill-q suggestion-btn" data-q-en="How did Lu cut TTFT by 25% at Zalando?" data-q-zh="Zalando 的 TTFT 是怎么降了 25% 的？" data-i18n="agentQ1">How did Lu cut TTFT by 25% at Zalando?</button>
-            <button type="button" class="pill-q suggestion-btn" data-q-en="What's the Agent Runtime architecture Lu built?" data-q-zh="汪露设计的 Agent Runtime 架构是什么样的？" data-i18n="agentQ2">What's the Agent Runtime architecture Lu built?</button>
-            <button type="button" class="pill-q suggestion-btn" data-q-en="How does Lu prevent LLM output from being unreliable in production?" data-q-zh="汪露如何确保 LLM 输出在生产环境可靠？" data-i18n="agentQ3">How does Lu prevent LLM output from being unreliable in production?</button>
-            <button type="button" class="pill-q suggestion-btn" data-q-en="What made Lu's Text2SQL agent accurate enough for a real bank?" data-q-zh="Text2SQL Agent 是怎么做到银行级准确率的？" data-i18n="agentQ4">What made Lu's Text2SQL agent accurate enough for a real bank?</button>
+            <button type="button" class="pill-q suggestion-btn" data-q-en="What are Lu's strongest technical areas?" data-q-zh="汪露最擅长哪些技术方向？" data-i18n="agentQ1">What are Lu's strongest technical areas?</button>
+            <button type="button" class="pill-q suggestion-btn" data-q-en="What's the biggest performance win Lu has shipped to production?" data-q-zh="汪露交付过最大的性能优化是什么？" data-i18n="agentQ2">What's the biggest performance win Lu has shipped to production?</button>
+            <button type="button" class="pill-q suggestion-btn" data-q-en="How did Lu build an LLM agent reliable enough for a real bank?" data-q-zh="汪露是怎么让 LLM Agent 在银行生产环境可靠运行的？" data-i18n="agentQ3">How did Lu build an LLM agent reliable enough for a real bank?</button>
+            <button type="button" class="pill-q suggestion-btn" data-q-en="How has Lu's work spanned both e-commerce and financial AI?" data-q-zh="汪露的经验是怎么覆盖电商和金融两个领域的？" data-i18n="agentQ4">How has Lu's work spanned both e-commerce and financial AI?</button>
           </div>
         </div>
       </div>
