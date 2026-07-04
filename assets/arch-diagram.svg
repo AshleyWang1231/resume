@@ -1,0 +1,237 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1316" height="777" viewBox="0 0 1316 777" role="img" aria-labelledby="title desc">
+  <title id="title">Resume Agent Backend Architecture</title>
+  <desc id="desc">Combined architecture diagram for the Resume Agent backend. It shows the end-to-end request flow, guard, intent routing, session and prompt context, hybrid retrieval, seed evidence, workflow loop with prompt orchestration, LLM provider chain, tool executors, self-correction, fallback, observability, sanitisation, and SSE stream output.</desc>
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="0%" r="90%">
+      <stop offset="0%" stop-color="#17334c"/>
+      <stop offset="45%" stop-color="#0b1725"/>
+      <stop offset="100%" stop-color="#050910"/>
+    </radialGradient>
+    <linearGradient id="blueBox" x1="0" x2="1">
+      <stop offset="0%" stop-color="#123b68"/>
+      <stop offset="100%" stop-color="#0c2547"/>
+    </linearGradient>
+    <linearGradient id="tealBox" x1="0" x2="1">
+      <stop offset="0%" stop-color="#0d4854"/>
+      <stop offset="100%" stop-color="#0a303b"/>
+    </linearGradient>
+    <linearGradient id="purpleBox" x1="0" x2="1">
+      <stop offset="0%" stop-color="#342662"/>
+      <stop offset="100%" stop-color="#20183f"/>
+    </linearGradient>
+    <linearGradient id="amberBox" x1="0" x2="1">
+      <stop offset="0%" stop-color="#583516"/>
+      <stop offset="100%" stop-color="#331e10"/>
+    </linearGradient>
+    <filter id="shadow" x="-18%" y="-18%" width="136%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#000" flood-opacity=".38"/>
+    </filter>
+    <filter id="glow" x="-120" y="-120" width="1600" height="1020" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#67e8f9" flood-opacity=".34"/>
+    </filter>
+    <marker id="cyanArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 10 5 0 10z" fill="#b8f3ff"/>
+    </marker>
+    <marker id="tealArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 10 5 0 10z" fill="#5eead4"/>
+    </marker>
+    <marker id="amberArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 10 5 0 10z" fill="#fbbf24"/>
+    </marker>
+    <style>
+      .bg { fill: url(#bg); }
+      .grid1 { stroke: #10283b; stroke-width: 1; opacity: .62; }
+      .grid2 { stroke: #1d3f58; stroke-width: 1; opacity: .56; }
+      .title { font: 800 31px Arial, Helvetica, sans-serif; fill: #d9f8ff; letter-spacing: .2px; }
+      .subtitle { font: 600 12px Arial, Helvetica, sans-serif; fill: #92b8ca; }
+      .section { font: 800 12px Arial, Helvetica, sans-serif; fill: #bdefff; letter-spacing: 1.4px; }
+      .box { stroke-width: 1.35; filter: url(#shadow); }
+      .blue { fill: url(#blueBox); stroke: #48b7ff; }
+      .teal { fill: url(#tealBox); stroke: #55e6e6; }
+      .purple { fill: url(#purpleBox); stroke: #a78bfa; }
+      .amber { fill: url(#amberBox); stroke: #f59e0b; }
+      .dark { fill: #091522; stroke: #3e647c; }
+      .loop { fill: rgba(5,12,22,.48); stroke: #47708a; stroke-width: 1.4; filter: url(#shadow); }
+      .label { font: 800 15px Arial, Helvetica, sans-serif; fill: #e8fbff; }
+      .smallLabel { font: 800 13px Arial, Helvetica, sans-serif; fill: #e8fbff; }
+      .body { font: 700 11px Arial, Helvetica, sans-serif; fill: #bed7e2; }
+      .dim { font: 700 10.5px Arial, Helvetica, sans-serif; fill: #8dadbd; }
+      .mono { font: 700 10.5px Menlo, Consolas, monospace; fill: #dafbff; }
+      .edge { font: 800 10px Arial, Helvetica, sans-serif; fill: #dff9ff; }
+      .chip { font: 800 9.7px Arial, Helvetica, sans-serif; fill: #06101c; }
+      .line { fill: none; stroke: #b8f3ff; stroke-width: 2; marker-end: url(#cyanArrow); filter: url(#glow); }
+      .tealLine { fill: none; stroke: #5eead4; stroke-width: 2; marker-end: url(#tealArrow); filter: url(#glow); }
+      .amberLine { fill: none; stroke: #fbbf24; stroke-width: 2; marker-end: url(#amberArrow); }
+      .thin { fill: none; stroke: #7da2b5; stroke-width: 1.35; stroke-dasharray: 6 6; }
+      .thinArrow { fill: none; stroke: #7da2b5; stroke-width: 1.35; stroke-dasharray: 6 6; marker-end: url(#cyanArrow); }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1316" height="777"/>
+  <g>
+    <path class="grid1" d="M0 32H1316M0 64H1316M0 128H1316M0 160H1316M0 224H1316M0 256H1316M0 320H1316M0 352H1316M0 416H1316M0 448H1316M0 512H1316M0 544H1316M0 608H1316M0 640H1316M0 704H1316M0 736H1316"/>
+    <path class="grid1" d="M32 0V777M64 0V777M128 0V777M160 0V777M224 0V777M256 0V777M320 0V777M352 0V777M416 0V777M448 0V777M512 0V777M544 0V777M608 0V777M640 0V777M704 0V777M736 0V777M800 0V777M832 0V777M896 0V777M928 0V777M992 0V777M1024 0V777M1088 0V777M1120 0V777M1184 0V777M1216 0V777M1280 0V777"/>
+    <path class="grid2" d="M0 96H1316M0 192H1316M0 288H1316M0 384H1316M0 480H1316M0 576H1316M0 672H1316"/>
+    <path class="grid2" d="M96 0V777M192 0V777M288 0V777M384 0V777M480 0V777M576 0V777M672 0V777M768 0V777M864 0V777M960 0V777M1056 0V777M1152 0V777M1248 0V777"/>
+  </g>
+
+  <text x="404" y="38" class="title">RESUME AGENT BACKEND FLOW</text>
+  <text x="337" y="61" class="subtitle">guard -> route/context -> retrieval -> prompt + tool/LLM loop -> self-correction/fallback -> sanitised typed stream</text>
+
+  <g transform="translate(548 78)">
+    <rect width="220" height="56" rx="12" class="box blue"/>
+    <text x="34" y="23" class="label">POST /api/chat/stream</text>
+    <text x="50" y="43" class="mono">msg · lang · session</text>
+  </g>
+
+  <g transform="translate(548 164)">
+    <rect width="220" height="82" rx="12" class="box teal"/>
+    <text x="56" y="24" class="label">Input Guard</text>
+    <text x="26" y="47" class="body">length check · injection regex</text>
+    <text x="26" y="66" class="body">scope boundary via prompt rules</text>
+  </g>
+
+  <g transform="translate(812 165)">
+    <rect width="164" height="66" rx="12" class="box amber"/>
+    <text x="43" y="25" class="smallLabel">Blocked</text>
+    <text x="24" y="47" class="body">fixed reply · no LLM call</text>
+  </g>
+
+  <path class="amberLine" d="M768 205H810"/>
+  <text x="777" y="193" class="edge">fail</text>
+
+  <text x="78" y="282" class="section">ROUTE + CONTEXT</text>
+  <g transform="translate(94 292)">
+    <rect width="256" height="84" rx="12" class="box blue"/>
+    <text x="69" y="24" class="label">Intent Router</text>
+    <text x="27" y="48" class="body">experience · project · metrics · role fit</text>
+    <text x="27" y="67" class="body">hint docs routing · limit constraints</text>
+  </g>
+
+  <g transform="translate(530 292)">
+    <rect width="256" height="84" rx="12" class="box purple"/>
+    <text x="70" y="24" class="label">Session Store</text>
+    <text x="27" y="48" class="body">session_id -> multi-turn history</text>
+    <text x="27" y="67" class="body">append after final answer</text>
+  </g>
+
+  <g transform="translate(966 292)">
+    <rect width="256" height="84" rx="12" class="box blue"/>
+    <text x="72" y="24" class="label">System Prompt</text>
+    <text x="27" y="48" class="body">role + evidence rules + intent focus</text>
+    <text x="27" y="67" class="body">history[-6:] when available</text>
+  </g>
+
+  <text x="669" y="259" class="edge">pass</text>
+
+  <text x="78" y="409" class="section">RETRIEVAL</text>
+  <g transform="translate(94 418)">
+    <rect width="256" height="104" rx="12" class="box teal"/>
+    <text x="59" y="27" class="label">Hybrid Retrieval</text>
+    <text x="27" y="52" class="body">BM25 keyword ranking</text>
+    <text x="27" y="72" class="body">optional FAISS vector ranking</text>
+    <text x="27" y="92" class="body">RRF fusion + intent_hint boost</text>
+  </g>
+
+  <g transform="translate(394 446)">
+    <rect width="152" height="48" rx="24" class="box dark"/>
+    <text x="32" y="30" class="smallLabel">seed_evidence</text>
+  </g>
+
+  <path class="line" d="M222 376V416"/>
+  <path class="tealLine" d="M350 470H392"/>
+  <text x="356" y="457" class="edge">RRF fusion</text>
+
+  <rect x="578" y="400" width="644" height="188" rx="16" class="loop"/>
+  <text x="812" y="425" class="label">Workflow Loop</text>
+
+  <g transform="translate(602 452)">
+    <rect width="184" height="104" rx="11" class="box blue"/>
+    <text x="30" y="24" class="smallLabel">Prompt Orchestrator</text>
+    <text x="20" y="47" class="body">system prompt + focus</text>
+    <text x="20" y="66" class="body">seed evidence + schemas</text>
+    <text x="20" y="85" class="body">history injection</text>
+  </g>
+
+  <g transform="translate(826 452)">
+    <rect width="176" height="104" rx="11" class="box purple"/>
+    <text x="48" y="24" class="smallLabel">LLM Providers</text>
+    <text x="20" y="47" class="body">Workers AI / Qwen</text>
+    <text x="20" y="66" class="body">DeepSeek / OpenAI</text>
+    <text x="20" y="85" class="body">first pass + final pass</text>
+  </g>
+
+  <g transform="translate(1038 452)">
+    <rect width="160" height="104" rx="11" class="box teal"/>
+    <text x="34" y="24" class="smallLabel">Tool Executors</text>
+    <text x="18" y="47" class="mono">search_facts</text>
+    <text x="18" y="66" class="mono">get_project</text>
+    <text x="18" y="85" class="mono">list_caps</text>
+  </g>
+
+  <path class="line" d="M546 470H600"/>
+  <text x="556" y="456" class="edge">evidence</text>
+  <path class="line" d="M786 504H824"/>
+  <text x="792" y="490" class="edge">messages</text>
+  <path class="amberLine" d="M1002 486H1036"/>
+  <text x="1008" y="474" class="edge">tool_call</text>
+  <path class="amberLine" d="M1038 526H1004"/>
+  <text x="1005" y="544" class="edge">tool_result</text>
+
+  <path class="thinArrow" d="M658 376C658 396 666 422 692 450"/>
+  <path class="thinArrow" d="M1094 376C1068 406 1000 426 942 450"/>
+
+  <g transform="translate(756 606)">
+    <rect width="210" height="72" rx="12" class="box amber"/>
+    <text x="35" y="27" class="smallLabel">Self-Correction</text>
+    <text x="25" y="51" class="body">reviewer eval · IMPROVE?</text>
+  </g>
+
+  <g transform="translate(1004 606)">
+    <rect width="194" height="72" rx="12" class="box amber"/>
+    <text x="45" y="27" class="smallLabel">Fallback Logic</text>
+    <text x="23" y="51" class="body">LLM fail -> evidence template</text>
+  </g>
+
+  <path class="amberLine" d="M914 556C914 584 874 582 862 604"/>
+  <text x="920" y="582" class="edge">review</text>
+  <path class="amberLine" d="M966 642C1000 642 990 556 1004 556"/>
+  <text x="972" y="630" class="edge">retry max 2x</text>
+  <path class="amberLine" d="M1118 556V604"/>
+  <text x="1130" y="585" class="edge">error</text>
+
+  <text x="78" y="599" class="section">OUTPUT + TELEMETRY</text>
+  <g transform="translate(94 610)">
+    <rect width="230" height="68" rx="12" class="box teal"/>
+    <text x="48" y="25" class="label">Sanitise Answer</text>
+    <text x="26" y="49" class="body">strip tags · markdown cleanup</text>
+  </g>
+
+  <g transform="translate(370 610)">
+    <rect width="296" height="68" rx="12" class="box dark"/>
+    <text x="93" y="25" class="label">Structured Logs</text>
+    <text x="26" y="49" class="body">request_id · intent · provider · tool_count · latency_ms</text>
+  </g>
+
+  <path class="line" d="M862 678C842 728 702 724 668 724"/>
+  <path class="line" d="M1118 678C1074 728 842 724 810 724"/>
+  <path class="line" d="M208 678C230 728 460 724 506 724"/>
+  <path class="thinArrow" d="M518 678V704"/>
+
+  <g transform="translate(508 704)">
+    <rect width="300" height="54" rx="12" class="box blue"/>
+    <text x="108" y="22" class="label">SSE Stream</text>
+    <text x="25" y="42" class="mono">metadata · tool_call · answer_delta · evidence · done</text>
+  </g>
+
+  <g transform="translate(1026 724)">
+    <rect width="190" height="28" rx="14" fill="#d7f6ff"/>
+    <text x="95" y="19" text-anchor="middle" class="chip">FastAPI kept as thin transport</text>
+  </g>
+
+  <path class="line" d="M658 128V171"/>
+  <path class="line" d="M658 238V288"/>
+  <path class="line" d="M658 268H222V290"/>
+  <path class="line" d="M658 268V290"/>
+  <path class="line" d="M658 268H1094V290"/>
+</svg>
