@@ -19,3 +19,8 @@ node_modules/
 backend/vendor/
 backend/.venv-workers/
 backend/.wrangler/
+.claude
+
+# Interview coach — personal data, never commit
+coaching_state.md
+materials/

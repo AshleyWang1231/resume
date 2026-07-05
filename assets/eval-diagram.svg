@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1316" height="860" viewBox="0 0 1316 860" role="img" aria-labelledby="title desc">
+  <title id="title">Resume Agent Evaluation Flow</title>
+  <desc id="desc">Vertical evaluation flow from structured resume facts to graph construction, LLM-generated gold questions, and three evaluation layers.</desc>
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="0%" r="92%">
+      <stop offset="0%" stop-color="#17334c"/>
+      <stop offset="48%" stop-color="#0b1725"/>
+      <stop offset="100%" stop-color="#050910"/>
+    </radialGradient>
+    <linearGradient id="panel" x1="0" x2="1">
+      <stop offset="0%" stop-color="#091522"/>
+      <stop offset="100%" stop-color="#0d1b2b"/>
+    </linearGradient>
+    <linearGradient id="tealBox" x1="0" x2="1">
+      <stop offset="0%" stop-color="#0d4854"/>
+      <stop offset="100%" stop-color="#0a303b"/>
+    </linearGradient>
+    <linearGradient id="blueBox" x1="0" x2="1">
+      <stop offset="0%" stop-color="#123b68"/>
+      <stop offset="100%" stop-color="#0c2547"/>
+    </linearGradient>
+    <linearGradient id="purpleBox" x1="0" x2="1">
+      <stop offset="0%" stop-color="#342662"/>
+      <stop offset="100%" stop-color="#20183f"/>
+    </linearGradient>
+    <filter id="shadow" x="-18%" y="-18%" width="136%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#000" flood-opacity=".38"/>
+    </filter>
+    <filter id="glow" x="-120" y="-120" width="1600" height="1100" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#67e8f9" flood-opacity=".34"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 10 5 0 10z" fill="#b8f3ff"/>
+    </marker>
+    <style>
+      .bg { fill: url(#bg); }
+      .grid1 { stroke: #10283b; stroke-width: 1; opacity: .62; }
+      .grid2 { stroke: #1d3f58; stroke-width: 1; opacity: .56; }
+      .panel { fill: url(#panel); stroke: #3e647c; stroke-width: 1.35; filter: url(#shadow); }
+      .box { stroke-width: 1.35; filter: url(#shadow); }
+      .teal { fill: url(#tealBox); stroke: #55e6e6; }
+      .blue { fill: url(#blueBox); stroke: #48b7ff; }
+      .purple { fill: url(#purpleBox); stroke: #a78bfa; }
+      .title { font: 800 30px Arial, Helvetica, sans-serif; fill: #d9f8ff; letter-spacing: .2px; }
+      .subtitle { font: 600 12px Arial, Helvetica, sans-serif; fill: #92b8ca; }
+      .label { font: 800 16px Arial, Helvetica, sans-serif; fill: #e8fbff; }
+      .body { font: 700 13px Arial, Helvetica, sans-serif; fill: #bed7e2; }
+      .dim { font: 700 12px Arial, Helvetica, sans-serif; fill: #8dadbd; }
+      .mono { font: 700 12px Menlo, Consolas, monospace; fill: #dafbff; }
+      .file { font: 700 12px Menlo, Consolas, monospace; fill: #7dd3a9; }
+      .line { fill: none; stroke: #b8f3ff; stroke-width: 2; marker-end: url(#arrow); filter: url(#glow); }
+      .branch { fill: none; stroke: #b8f3ff; stroke-width: 2; marker-end: url(#arrow); filter: url(#glow); }
+      .trunk { fill: none; stroke: #7da2b5; stroke-width: 1.5; stroke-dasharray: 7 6; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1316" height="860"/>
+  <g>
+    <path class="grid1" d="M0 32H1316M0 64H1316M0 128H1316M0 160H1316M0 224H1316M0 256H1316M0 320H1316M0 352H1316M0 416H1316M0 448H1316M0 512H1316M0 544H1316M0 608H1316M0 640H1316M0 704H1316M0 736H1316M0 800H1316M0 832H1316"/>
+    <path class="grid1" d="M32 0V860M64 0V860M128 0V860M160 0V860M224 0V860M256 0V860M320 0V860M352 0V860M416 0V860M448 0V860M512 0V860M544 0V860M608 0V860M640 0V860M704 0V860M736 0V860M800 0V860M832 0V860M896 0V860M928 0V860M992 0V860M1024 0V860M1088 0V860M1120 0V860M1184 0V860M1216 0V860M1280 0V860"/>
+    <path class="grid2" d="M0 96H1316M0 192H1316M0 288H1316M0 384H1316M0 480H1316M0 576H1316M0 672H1316M0 768H1316"/>
+    <path class="grid2" d="M96 0V860M192 0V860M288 0V860M384 0V860M480 0V860M576 0V860M672 0V860M768 0V860M864 0V860M960 0V860M1056 0V860M1152 0V860M1248 0V860"/>
+  </g>
+
+  <text x="416" y="42" class="title">RESUME AGENT EVALUATION FLOW</text>
+  <text x="360" y="66" class="subtitle">vertical graph -> question generation -> retrieval / agent / judge evaluation layers</text>
+
+  <rect x="76" y="96" width="1164" height="706" rx="18" class="panel"/>
+
+  <g transform="translate(144 128)">
+    <rect x="72" y="0" width="900" height="70" rx="13" class="box teal"/>
+    <text x="104" y="28" class="label">RESUME_FACTS</text>
+    <text x="104" y="51" class="body">8 structured facts</text>
+  </g>
+
+  <path class="line" d="M666 198V214"/>
+
+  <g transform="translate(144 216)">
+    <rect x="72" y="0" width="900" height="88" rx="13" class="box blue"/>
+    <text x="104" y="29" class="label">Graph</text>
+    <text x="104" y="54" class="body">node = fact, edge = shared skill</text>
+    <text x="104" y="75" class="dim">Example: "Tool Calling" links agent-runtime to product-comparison</text>
+  </g>
+
+  <path class="line" d="M666 304V344"/>
+
+  <g transform="translate(144 346)">
+    <rect x="72" y="0" width="900" height="126" rx="13" class="box purple"/>
+    <text x="104" y="29" class="label">LLM reverse-engineers questions</text>
+    <text x="104" y="56" class="body">single-hop: 4 EN + 4 ZH questions per fact</text>
+    <text x="104" y="80" class="body">multi-hop: questions spanning two connected facts</text>
+    <text x="104" y="104" class="body">output: <tspan class="mono">synthetic_gold.json</tspan> with around 70 questions and ground-truth document IDs</text>
+  </g>
+
+  <path class="line" d="M666 472V516"/>
+
+  <g transform="translate(144 518)">
+    <rect x="112" y="0" width="860" height="78" rx="13" class="box teal"/>
+    <text x="144" y="27" class="label">Layer 1 · Retrieval Eval <tspan class="file">(test_retrieval_eval.py)</tspan></text>
+    <text x="144" y="53" class="body">BM25 + FAISS · assert top-3 hit · P@K / R@K / MRR · no LLM · runs in CI on every push</text>
+  </g>
+
+  <g transform="translate(144 620)">
+    <rect x="112" y="0" width="860" height="78" rx="13" class="box blue"/>
+    <text x="144" y="27" class="label">Layer 2 · Agent Regression <tspan class="file">(test_agent_eval.py)</tspan></text>
+    <text x="144" y="53" class="body">full pipeline · keyword assertions + evidence ID assertions · runs in CI on every push</text>
+  </g>
+
+  <g transform="translate(144 722)">
+    <rect x="112" y="0" width="860" height="78" rx="13" class="box purple"/>
+    <text x="144" y="27" class="label">Layer 3 · LLM-as-Judge <tspan class="file">(test_llm_judge_eval.py)</tspan></text>
+    <text x="144" y="53" class="body">faithfulness + answer relevance · manual run with <tspan class="mono">JUDGE_EVAL=1</tspan></text>
+  </g>
+
+  <path class="line" d="M666 596V620"/>
+  <path class="line" d="M666 698V722"/>
+</svg>
