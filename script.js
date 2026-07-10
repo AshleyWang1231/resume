@@ -1,4 +1,4 @@
-const API = "https://resume-gent-api-vtugquposb.cn-hangzhou.fcapp.run";
+const API = "https://resume-agent-api.wanglu-ashley.workers.dev";
 const STREAM_TIMEOUT_MS = 30000;
 const TERMINAL_RENDER_DELAY_MS = 35;
 const TERMINAL_RENDER_CHARS = 5;
