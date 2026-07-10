@@ -15,10 +15,15 @@ from app.models import (
     ArchitectureEdge,
     ArchitectureNode,
     ArchitectureResponse,
+    CapabilitiesResponse,
+    CapabilitySignal,
     ChatRequest,
     ChatResponse,
+    MarketSignal,
+    MarketSignalsResponse,
     ProjectCard,
 )
+from app.resume_data import JD_SIGNALS, SENIOR_CAPABILITIES
 
 
 load_local_env()
@@ -57,6 +62,42 @@ async def health() -> dict:
         "version": "2.0.0",
         "capabilities": ["multi-turn", "streaming", "tool-calling", "evidence-cards"],
     }
+
+
+@app.get("/api/market-signals", response_model=MarketSignalsResponse)
+async def market_signals() -> MarketSignalsResponse:
+    return MarketSignalsResponse(
+        title_en="What AI Agent roles are screening for",
+        title_zh="AI Agent 岗位正在筛选什么能力",
+        summary_en=(
+            "Current AI Agent / AI Engineer roles screen for production LLM systems, "
+            "tool orchestration, grounding, evaluation, reliability, and senior ownership. "
+            "This map connects those signals to concrete resume evidence."
+        ),
+        summary_zh=(
+            "当前 AI Agent / AI Engineer 岗位重点筛选生产级 LLM 系统、工具编排、可信检索、"
+            "评估体系、可靠性以及 senior ownership。这里把这些要求映射到具体项目证据。"
+        ),
+        signals=[MarketSignal(**item) for item in JD_SIGNALS],
+    )
+
+
+@app.get("/api/capabilities", response_model=CapabilitiesResponse)
+async def capabilities() -> CapabilitiesResponse:
+    return CapabilitiesResponse(
+        title_en="Senior AI engineering capability map",
+        title_zh="Senior AI 工程能力地图",
+        summary_en=(
+            "A senior AI engineer is evaluated by architecture judgment, production reliability, "
+            "eval discipline, product ownership, and the ability to draw a clean boundary between "
+            "model reasoning and deterministic systems."
+        ),
+        summary_zh=(
+            "Senior AI Engineer 的核心不只是会调用模型，而是架构判断、生产可靠性、评估纪律、"
+            "产品 ownership，以及能清晰划分模型推理与确定性系统边界。"
+        ),
+        capabilities=[CapabilitySignal(**item) for item in SENIOR_CAPABILITIES],
+    )
 
 
 @app.get("/api/projects", response_model=list[ProjectCard])

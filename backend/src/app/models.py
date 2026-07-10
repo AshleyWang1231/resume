@@ -78,3 +78,42 @@ class ArchitectureResponse(BaseModel):
     edges: list[ArchitectureEdge]
     summary_en: str
     summary_zh: str
+
+
+class MarketSignal(BaseModel):
+    id: str
+    requirement_en: str
+    requirement_zh: str
+    evidence_en: str
+    evidence_zh: str
+    senior_signal_en: str
+    senior_signal_zh: str
+    proof_project_ids: list[str]
+
+
+class MarketSignalsResponse(BaseModel):
+    title_en: str
+    title_zh: str
+    summary_en: str
+    summary_zh: str
+    signals: list[MarketSignal]
+
+
+class CapabilitySignal(BaseModel):
+    id: str
+    title_en: str
+    title_zh: str
+    narrative_en: str
+    narrative_zh: str
+    evidence_en: str
+    evidence_zh: str
+    proof_project_ids: list[str]
+    keywords: list[str]
+
+
+class CapabilitiesResponse(BaseModel):
+    title_en: str
+    title_zh: str
+    summary_en: str
+    summary_zh: str
+    capabilities: list[CapabilitySignal]
