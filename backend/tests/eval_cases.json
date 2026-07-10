@@ -26,5 +26,19 @@
     "language": "zh",
     "must_include": ["Text2SQL", "20%", "1,000"],
     "expected_project_ids": ["text2sql"]
+  },
+  {
+    "id": "senior_ai_fit_en",
+    "message": "How does Lu match Senior AI Agent Engineer job requirements?",
+    "language": "en",
+    "must_include": ["Agent Runtime", "evaluation", "production"],
+    "expected_project_ids": ["senior-ai-fit"]
+  },
+  {
+    "id": "resume_agent_site_zh",
+    "message": "这个简历网站本身如何体现 AI Agent 工程能力？",
+    "language": "zh",
+    "must_include": ["本站", "Streaming", "评估"],
+    "expected_project_ids": ["resume-agent-site"]
   }
 ]

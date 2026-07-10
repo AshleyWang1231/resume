@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 import json
 import time
 
@@ -26,7 +27,8 @@ from app.models import (
 from app.resume_data import JD_SIGNALS, SENIOR_CAPABILITIES
 
 
-load_local_env()
+if "pytest" not in sys.modules:
+    load_local_env()
 app = FastAPI(title="Lu Wang Resume Agent API", version="2.0.0")
 app.state.ai_binding = None
 agent = ResumeAgent()

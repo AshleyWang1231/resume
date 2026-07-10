@@ -35,14 +35,32 @@ def route_intent(message: str) -> IntentResult:
         )
 
     # Job-fit / role match
-    if any(t in query for t in ("fit", "match", "jd", "job", "岗位", "匹配", "suitable", "qualify")):
+    if any(t in query for t in (
+        "fit", "match", "jd", "job", "senior", "requirement", "requirements",
+        "岗位", "要求", "匹配", "suitable", "qualify",
+    )):
         return IntentResult(
             intent="role_fit",
-            retrieval_hint=["profile"],
+            retrieval_hint=["senior-ai-fit", "resume-agent-site", "agent-runtime", "text2sql"],
             retrieval_limit=4,
             prompt_focus=(
-                "Summarise why I am a strong fit. "
-                "Map specific skills and projects to the question."
+                "Summarise why I am a strong senior AI Agent / AI Engineer fit. "
+                "Map job requirements to specific production, evaluation, and architecture evidence."
+            ),
+        )
+
+    # This website / backend demonstration
+    if any(t in query for t in (
+        "this site", "website", "portfolio site", "resume site", "site backend",
+        "本站", "这个简历网站", "简历网站", "网站本身", "后端如何",
+    )):
+        return IntentResult(
+            intent="site_proof",
+            retrieval_hint=["resume-agent-site", "agent-runtime"],
+            retrieval_limit=3,
+            prompt_focus=(
+                "Explain how this resume site itself demonstrates AI Agent engineering capability. "
+                "Mention backend runtime, Streaming, retrieval, evidence cards, and evaluation."
             ),
         )
 
@@ -105,6 +123,22 @@ def route_intent(message: str) -> IntentResult:
                 "Cover both the RAG evaluation work (RAGAS, faithfulness, context recall) "
                 "and the Text2SQL evaluation suite (1,000+ cases, accuracy improvement). "
                 "Mention concrete metrics where available."
+            ),
+        )
+
+    # Agent runtime / streaming / tool-calling specifics
+    if any(t in query for t in (
+        "streaming", "tool calling", "tool-calling", "agent runtime", "runtime",
+        "sse", "responses api", "real-time", "real time",
+        "流式", "工具调用", "实时", "主链路",
+    )):
+        return IntentResult(
+            intent="agent_runtime",
+            retrieval_hint=["agent-runtime", "resume-agent-site", "senior-ai-fit"],
+            retrieval_limit=3,
+            prompt_focus=(
+                "The user is asking about Agent Runtime, Streaming, or Tool Calling. "
+                "Lead with the Zalando Agent Runtime evidence, then connect it to this site's backend if useful."
             ),
         )
 

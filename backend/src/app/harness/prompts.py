@@ -31,7 +31,7 @@ def _base_rules(language: Language, has_history: bool = False) -> str:
         f"{history_clause}"
         "Answer questions using only the resume evidence returned by tools. "
         "Do not invent employers, dates, metrics, tools, or project outcomes. "
-        "Prefer concise, hiring-manager-friendly answers with concrete evidence. "
+        "Prefer concise, hiring-manager-friendly answers with concrete evidence and senior-level framing when the question asks about role fit, job requirements, architecture, ownership, or production impact. "
         "For focused questions (a specific skill, project, or outcome), keep answers to 2-3 sentences and lead with the most relevant evidence. "
         "For questions that ask for a complete set (all employers, full tech stack, all skills), enumerate every item from the evidence — completeness matters more than brevity. "
         "For education questions, mention only the highest degree (MSc Computing, Cardiff University) unless the question explicitly asks about undergraduate or bachelor's degree. "

@@ -243,4 +243,41 @@ def build_resume_facts() -> list[dict]:
         "skills": ["Java", "Spring Cloud", "API Integration", "Backend Architecture"],
     })
 
+    facts.append({
+        "id": "senior-ai-fit",
+        "company": "Lu Wang · 汪露",
+        "title": "Senior AI Agent Engineer Fit",
+        "summary_en": _strip(
+            "Lu's experience maps directly to senior AI Agent Engineer requirements: production Agent Runtime, "
+            "Tool Calling, Streaming UX, RAG/Text2SQL grounding, evaluation systems, latency optimization, "
+            "provider fallback, and enterprise data integration. The strongest evidence comes from Zalando's "
+            "user-facing shopping assistant and Thoughtworks' bank Text2SQL/RAG systems."
+        ),
+        "summary_zh": _strip(
+            "汪露的经验直接对应 Senior AI Agent Engineer 要求：生产级 Agent Runtime、Tool Calling、Streaming 体验、"
+            "RAG/Text2SQL 可信检索、评估体系、延迟优化、多 Provider 降级以及企业数据集成。最强证据来自 "
+            "Zalando 面向真实用户的购物助手，以及 Thoughtworks 银行 Text2SQL/RAG 系统。"
+        ),
+        "evidence": ["Agent Runtime", "Tool Calling", "Streaming", "evaluation", "production", "Text2SQL", "RAG"],
+        "skills": ["Senior AI Engineer", "LLM Agent", "Evaluation", "Production Reliability", "Full-stack AI"],
+    })
+
+    facts.append({
+        "id": "resume-agent-site",
+        "company": "Lu Wang · 汪露",
+        "title": "This Resume Site as an AI Agent System",
+        "summary_en": _strip(
+            "This resume site demonstrates the same engineering patterns it describes: FastAPI agent backend, "
+            "Pydantic-validated tool schemas, hybrid retrieval over structured resume facts, multi-provider fallback, "
+            "typed SSE Streaming, evidence cards, session state, and RAGAS-inspired retrieval and judge evaluations."
+        ),
+        "summary_zh": _strip(
+            "本站本身展示了简历中描述的工程模式：FastAPI Agent 后端、Pydantic 校验工具 Schema、"
+            "结构化简历事实的混合检索、多 Provider 降级、类型化 SSE Streaming、证据卡片、会话状态，"
+            "以及 RAGAS 思路的检索与 Judge 评估。"
+        ),
+        "evidence": ["FastAPI", "Pydantic tool schemas", "Hybrid retrieval", "SSE Streaming", "evidence cards", "RAGAS-inspired evaluation"],
+        "skills": ["Agent Runtime", "RAG", "Streaming", "Pydantic", "Evaluation", "Full-stack AI"],
+    })
+
     return facts
