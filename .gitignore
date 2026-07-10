@@ -19,7 +19,18 @@ node_modules/
 backend/vendor/
 backend/.venv-workers/
 backend/.wrangler/
-.claude
+
+# Claude Code local settings stay private, but project skills may be tracked
+.claude/*
+!.claude/skills/
+!.claude/skills/career-pipeline/
+!.claude/skills/career-pipeline/**
+
+# Career pipeline — personal job-search data, never commit
+.career/
+
+# Superpowers SDD scratch state
+.superpowers/
 
 # Interview coach — personal data, never commit
 coaching_state.md
