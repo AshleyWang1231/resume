@@ -26,8 +26,9 @@
         </span>
       </a>
       <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#market" data-command="/market" data-i18n="navMarket">Market fit</a>
         <a href="#capabilities" data-command="/capabilities" data-i18n="navCapabilities">Capabilities</a>
-        <a href="#projects" data-command="/projects" data-i18n="navProjects">Projects</a>
+        <a href="#proof" data-command="/proof" data-i18n="navProof">Proof</a>
         <a href="#system" data-command="/system" data-i18n="navSystem">System</a>
       </nav>
       <div class="header-actions">
@@ -40,10 +41,10 @@
       <!-- ── Hero ── -->
       <section class="hero-section" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <p class="kicker" data-i18n="heroKicker">AI Software Engineer</p>
-          <h1 id="hero-title" data-i18n="heroTitle">I ship AI Agent systems from design to production.</h1>
+          <p class="kicker" data-i18n="heroKicker">Senior AI Agent Engineer</p>
+          <h1 id="hero-title" data-i18n="heroTitle">I build production AI agents that hiring teams can trust.</h1>
           <p class="hero-lead" data-i18n="heroLead">
-            4 years building LLM agents across e-commerce (Zalando) and financial services (Thoughtworks). Specialising in Agent Runtime, Streaming UX, Tool Calling, Personalization, and Text2SQL — with a focus on measurable, production-ready outcomes.
+            Senior AI engineering is no longer just prompt craft. It is runtime architecture, tool orchestration, grounded retrieval, evaluation systems, latency discipline, and product ownership. My work spans live e-commerce agents at Zalando and enterprise data agents at Thoughtworks.
           </p>
           <div class="hero-actions">
             <button class="btn btn-primary" type="button" data-focus-terminal data-i18n="heroAsk">Ask the resume agent</button>
@@ -58,32 +59,55 @@
         </div>
       </section>
 
+      <!-- ── Market fit ── -->
+      <section id="market" class="section-block market-section">
+        <div class="section-head">
+          <p class="kicker" data-i18n="marketKicker">Role fit</p>
+          <h2 data-i18n="marketTitle">What AI Agent roles screen for — mapped to evidence.</h2>
+          <p class="section-lead" data-i18n="marketDesc">Current AI Agent / AI Engineer roles evaluate production LLM systems, orchestration, grounding, evals, reliability, and senior ownership. This section maps those requirements to concrete work.</p>
+        </div>
+        <div class="market-grid" data-market-grid>
+          <article class="project-skeleton"></article>
+          <article class="project-skeleton"></article>
+          <article class="project-skeleton"></article>
+        </div>
+      </section>
+
       <!-- ── Capabilities ── -->
       <section id="capabilities" class="section-block">
         <div class="section-head">
-          <p class="kicker" data-i18n="capKicker">What I bring</p>
-          <h2 data-i18n="capTitle">Production AI engineering across the full stack.</h2>
+          <p class="kicker" data-i18n="capKicker">Senior capability map</p>
+          <h2 data-i18n="capTitle">A senior AI engineer owns the system around the model.</h2>
+          <p class="section-lead" data-i18n="capDesc">The strongest signal is not a list of model APIs; it is how the runtime, retrieval, evaluation, product UX, and business constraints work together.</p>
         </div>
-        <div class="capability-grid">
-          <article class="capability-card">
-            <span>01</span>
-            <h3 data-i18n="cap1Title">Agent Runtime &amp; Tool Orchestration</h3>
-            <p data-i18n="cap1">I design the runtime loop that makes agents reliable: tool dispatch with Pydantic-validated schemas, a Streaming layer that separates intermediate tool events from user-visible text, and multi-turn session management. Built at Zalando for a live shopping assistant handling real user traffic.</p>
+        <div class="senior-capability-grid" data-capability-grid>
+          <article class="project-skeleton"></article>
+          <article class="project-skeleton"></article>
+          <article class="project-skeleton"></article>
+        </div>
+      </section>
+
+      <!-- ── Proof ── -->
+      <section id="proof" class="section-block proof-section">
+        <div class="section-head">
+          <p class="kicker" data-i18n="proofKicker">Proof of seniority</p>
+          <h2 data-i18n="proofTitle">Three signals beyond a normal resume.</h2>
+        </div>
+        <div class="proof-grid">
+          <article class="proof-card">
+            <span>Runtime</span>
+            <h3 data-i18n="proof1Title">Architecture, not wrappers</h3>
+            <p data-i18n="proof1">Designed the agent loop: intent routing, tool dispatch, typed Streaming events, session state, provider fallback, and evidence grounding.</p>
           </article>
-          <article class="capability-card">
-            <span>02</span>
-            <h3 data-i18n="cap2Title">Streaming UX &amp; Real-Time Performance</h3>
-            <p data-i18n="cap2">Typed SSE event streams that give users instant feedback: tool progress, intermediate states, and final text each arrive as distinct events. Reduced TTFT by ~25% on Zalando's Suggestions API. Solved FC-specific streaming termination bugs in production.</p>
+          <article class="proof-card">
+            <span>Evaluation</span>
+            <h3 data-i18n="proof2Title">Quality gates, not vibes</h3>
+            <p data-i18n="proof2">Built 1,000+ Text2SQL cases, 800+ recommendation scenarios, retrieval metrics, and LLM-as-Judge checks.</p>
           </article>
-          <article class="capability-card">
-            <span>03</span>
-            <h3 data-i18n="cap3Title">Personalization &amp; Recommendation Systems</h3>
-            <p data-i18n="cap3">End-to-end personalization pipelines combining conversation context, user profiles, and behavioural signals. Designed async Warm-Up (Redis registry + in-memory fallback) to decouple LLM generation from request latency. Evaluation-driven iteration across 800+ real product scenarios.</p>
-          </article>
-          <article class="capability-card">
-            <span>04</span>
-            <h3 data-i18n="cap4Title">Text2SQL &amp; Enterprise RAG</h3>
-            <p data-i18n="cap4">Multi-stage agent workflows for structured data access: intent clarification → SQL generation → validation + retry → result summarisation. Dual-layer vector reranking (field + value) to reduce schema hallucination. Built 1,000+ case eval suites as regression baselines.</p>
+          <article class="proof-card">
+            <span>Impact</span>
+            <h3 data-i18n="proof3Title">Measured production outcomes</h3>
+            <p data-i18n="proof3">Shipped improvements users and systems felt: -25% TTFT, -60% cold-start, -70% profile calls, and +20% Text2SQL accuracy.</p>
           </article>
         </div>
       </section>
@@ -147,7 +171,7 @@
       </section>
 
       <!-- ── Evaluation ── -->
-      <section id="skills" class="section-block">
+      <section id="evaluation" class="section-block">
         <div class="section-head">
           <p class="kicker" data-i18n="evalKicker">How this backend is evaluated</p>
           <h2 data-i18n="evalTitle">RAGAS-inspired: graph → questions → test.</h2>
@@ -221,7 +245,9 @@
         <div class="command-pills" aria-label="Suggested inputs">
           <p class="pills-label" data-i18n="pillsCommands">Commands</p>
           <div class="pills-cmd-row">
+            <button type="button" class="pill-cmd" data-run-command="/market">/market</button>
             <button type="button" class="pill-cmd" data-run-command="/capabilities">/capabilities</button>
+            <button type="button" class="pill-cmd" data-run-command="/proof">/proof</button>
             <button type="button" class="pill-cmd" data-run-command="/projects">/projects</button>
             <button type="button" class="pill-cmd" data-run-command="/system">/system</button>
           </div>
