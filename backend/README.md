@@ -108,6 +108,13 @@ curl -N -X POST http://localhost:8787/api/chat/stream \
   -d '{"message":"Show Streaming and Tool Calling experience.","language":"en"}'
 ```
 
+Additional content endpoints:
+
+- `GET /api/market-signals` — maps current AI Agent / AI Engineer JD themes to resume evidence.
+- `GET /api/capabilities` — senior AI engineering capability map used by the frontend.
+- `GET /api/projects` — structured project cards.
+- `GET /api/architecture` — architecture proof for the resume agent backend.
+
 ## GitHub Actions Deployment
 
 Backend deployment is automated by `.github/workflows/deploy-backend.yml`.
