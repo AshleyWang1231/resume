@@ -35,3 +35,6 @@ backend/.wrangler/
 # Interview coach — personal data, never commit
 coaching_state.md
 materials/
+
+.dev.vars*
+!.dev.vars.example
