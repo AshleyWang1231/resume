@@ -6,7 +6,6 @@ const T = {
     navCapabilities: "Capabilities",
     navVisitorBoard: "Visitor Board",
     navProjects: "Projects",
-    navSystem: "System",
     downloadResume: "PDF",
     heroKicker: "AI Software Engineer",
     heroTitle: "I ship AI Agent systems from design to production.",
@@ -28,38 +27,6 @@ const T = {
     projectsKicker: "Related experience",
     projectsTitle: "Each case: problem → approach → outcome.",
 
-    systemKicker: "This site's backend",
-    systemTitle: "Agent Runtime · Agent Workflow · Tool Calling · Streaming",
-    systemSummary: "A multi-turn agent built to demonstrate the same patterns I use professionally: a typed event stream that separates tool calls from answer text, Pydantic-validated tool schemas, a four-stage workflow loop, and multi-provider LLM fallback.",
-    evalKicker: "How this backend is evaluated",
-    evalTitle: "RAGAS-inspired: graph → questions → test.",
-    evalDesc: "Each resume fact is a node; shared skills are edges. An LLM reverse-engineers questions from the graph — single-hop and multi-hop — producing a labelled test set that drives retrieval eval, agent regression, and LLM-as-Judge scoring.",
-    evalFlow: `<span class="ef-src">RESUME_FACTS</span>  <span class="ef-note">(8 structured facts)</span>
-      <span class="ef-tree">│</span>
-      <span class="ef-tree">▼</span>
-  <span class="ef-phase">[Graph]</span>  <span class="ef-note">node = fact,  edge = shared skill</span>
-      <span class="ef-tree">│</span>    <span class="ef-note">e.g. "Tool Calling" links agent-runtime ↔ product-comparison</span>
-      <span class="ef-tree">│</span>
-      <span class="ef-tree">▼</span>
-  <span class="ef-phase">[LLM reverse-engineering]</span>
-      <span class="ef-tree">│</span>    <span class="ef-note">single-hop: 4 EN + 4 ZH questions per fact</span>
-      <span class="ef-tree">│</span>    <span class="ef-note">multi-hop:  questions spanning 2 linked facts</span>
-      <span class="ef-tree">│</span>    <span class="ef-arrow">→</span> <span class="ef-file">synthetic_gold.json</span>  <span class="ef-note">(~70 questions, with ground-truth doc IDs)</span>
-      <span class="ef-tree">│</span>
-      <span class="ef-tree">├──▶</span> <span class="ef-layer1">[Layer 1]</span>  Retrieval eval  <span class="ef-file">(test_retrieval_eval.py)</span>
-      <span class="ef-tree">│</span>               <span class="ef-note">BM25+FAISS · assert top-3 hit · P@K / R@K / MRR · no LLM · CI every push</span>
-      <span class="ef-tree">│</span>
-      <span class="ef-tree">├──▶</span> <span class="ef-layer2">[Layer 2]</span>  Agent regression  <span class="ef-file">(test_agent_eval.py)</span>
-      <span class="ef-tree">│</span>               <span class="ef-note">full pipeline · keyword + evidence-ID assertions · CI every push</span>
-      <span class="ef-tree">│</span>
-      <span class="ef-tree">└──▶</span> <span class="ef-layer3">[Layer 3]</span>  LLM-as-Judge  <span class="ef-file">(test_llm_judge_eval.py)</span>
-                      <span class="ef-note">faithfulness + answer relevance · JUDGE_EVAL=1</span>`,
-    evalMetric1: "19/19",
-    evalMetric1Label: "retrieval hit rate",
-    evalMetric2: "0.947",
-    evalMetric2Label: "MRR (gold queries)",
-    evalMetric3: "82",
-    evalMetric3Label: "CI tests passing",
 
     visitorKicker: "Visitor Board",
     visitorTitle: "Ask me about my experience",
@@ -82,7 +49,6 @@ const T = {
     navCapabilities: "核心能力",
     navVisitorBoard: "访客留言板",
     navProjects: "项目",
-    navSystem: "系统",
     downloadResume: "简历 PDF",
     heroKicker: "AI 软件工程师",
     heroTitle: "从设计到上线，我构建生产级 AI Agent 系统。",
@@ -104,38 +70,6 @@ const T = {
     projectsKicker: "相关项目经验",
     projectsTitle: "每个案例：问题 → 方案 → 结果。",
 
-    systemKicker: "本站后端",
-    systemTitle: "Agent Runtime · Agent Workflow · Tool Calling · Streaming",
-    systemSummary: "一个多轮有状态 Agent，展示了我在工作中使用的相同模式：类型化事件流区分工具调用与回答文本，Pydantic 校验工具 Schema，四阶段工作流循环，多 Provider LLM 降级。",
-    evalKicker: "本站后端如何评估",
-    evalTitle: "RAGAS 思路：构建知识图谱，逆推问题，再来测试。",
-    evalDesc: "每条简历 fact 是一个节点，共享技能是边。LLM 从图中逆向生成问题——单跳和多跳——产出带 ground-truth 的测试集，驱动检索评估、Agent 回归和 LLM-as-Judge 三层测试。",
-    evalFlow: `<span class="ef-src">RESUME_FACTS</span>  <span class="ef-note">（8 条结构化 fact）</span>
-      <span class="ef-tree">│</span>
-      <span class="ef-tree">▼</span>
-  <span class="ef-phase">[Graph]</span>  <span class="ef-note">节点 = fact，边 = 共享技能</span>
-      <span class="ef-tree">│</span>    <span class="ef-note">例：「Tool Calling」连接 agent-runtime ↔ product-comparison</span>
-      <span class="ef-tree">│</span>
-      <span class="ef-tree">▼</span>
-  <span class="ef-phase">[LLM 逆向生成问题]</span>
-      <span class="ef-tree">│</span>    <span class="ef-note">单跳：每个 fact 生成 4 EN + 4 ZH 问题</span>
-      <span class="ef-tree">│</span>    <span class="ef-note">多跳：跨两个相连 fact 的综合问题</span>
-      <span class="ef-tree">│</span>    <span class="ef-arrow">→</span> <span class="ef-file">synthetic_gold.json</span>  <span class="ef-note">（约 70 条，含 ground-truth 文档 ID）</span>
-      <span class="ef-tree">│</span>
-      <span class="ef-tree">├──▶</span> <span class="ef-layer1">[Layer 1]</span>  检索评估  <span class="ef-file">(test_retrieval_eval.py)</span>
-      <span class="ef-tree">│</span>               <span class="ef-note">BM25+FAISS · 断言 top-3 命中 · P@K / R@K / MRR · 无 LLM · CI 每次跑</span>
-      <span class="ef-tree">│</span>
-      <span class="ef-tree">├──▶</span> <span class="ef-layer2">[Layer 2]</span>  Agent 回归  <span class="ef-file">(test_agent_eval.py)</span>
-      <span class="ef-tree">│</span>               <span class="ef-note">完整链路 · 关键词 + evidence ID 断言 · CI 每次跑</span>
-      <span class="ef-tree">│</span>
-      <span class="ef-tree">└──▶</span> <span class="ef-layer3">[Layer 3]</span>  LLM-as-Judge  <span class="ef-file">(test_llm_judge_eval.py)</span>
-                      <span class="ef-note">忠实度 + 相关性 · JUDGE_EVAL=1 手动跑</span>`,
-    evalMetric1: "19/19",
-    evalMetric1Label: "检索命中率",
-    evalMetric2: "0.947",
-    evalMetric2Label: "MRR（gold 查询集）",
-    evalMetric3: "82",
-    evalMetric3Label: "CI 通过测试数",
 
     visitorKicker: "访客留言板",
     visitorTitle: "想了解我的经历？",

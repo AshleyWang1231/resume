@@ -29,8 +29,7 @@
         <a href="#capabilities" data-command="/capabilities" data-i18n="navCapabilities">Capabilities</a>
         <a href="#visitor-board" data-command="/visitor-board" data-i18n="navVisitorBoard">Visitor Board</a>
         <a href="#projects" data-command="/projects" data-i18n="navProjects">Projects</a>
-        <a href="#system" data-command="/system" data-i18n="navSystem">System</a>
-      </nav>
+              </nav>
       <div class="header-actions">
         <button class="btn btn-secondary" type="button" data-lang-toggle aria-label="Switch language">中文</button>
         <a class="btn btn-secondary" href="assets/lu-wang-resume-cn-en.pdf" download data-i18n="downloadResume">PDF</a>
@@ -47,7 +46,7 @@
             4 years building LLM agents across e-commerce (Zalando) and financial services (Thoughtworks). Specialising in Agent Runtime, Streaming UX, Tool Calling, Personalization, and Text2SQL — with a focus on measurable, production-ready outcomes.
           </p>
           <div class="hero-actions">
-            <a class="btn btn-secondary" href="#visitor-board" data-command="/visitor-board" data-i18n="heroWork">Leave a public note</a>
+            <a class="btn btn-primary" href="#visitor-board" data-command="/visitor-board" data-i18n="heroWork">Leave a public note</a>
           </div>
           <div class="signal-row" aria-label="Selected experience signals">
             <span>Zalando · <strong>Agent Runtime</strong></span>
@@ -131,47 +130,6 @@
         </div>
       </section>
 
-
-      <!-- ── System ── -->
-      <section id="system" class="section-block system-section">
-        <div class="section-head">
-          <p class="kicker" data-i18n="systemKicker">This site's backend</p>
-          <h2 data-i18n="systemTitle">Agent Runtime · Agent Workflow · Tool Calling · Streaming</h2>
-        </div>
-        <p class="system-intro" data-i18n="systemSummary">A multi-turn agent built to demonstrate the same patterns I use professionally: a typed event stream that separates tool calls from answer text, Pydantic-validated tool schemas, a four-stage workflow loop, and multi-provider LLM fallback.</p>
-
-        <div class="arch-img-card">
-          <img src="assets/arch-diagram.png" alt="Detailed Resume Agent Architecture diagram" class="arch-img" />
-        </div>
-
-      </section>
-
-      <!-- ── Evaluation ── -->
-      <section id="skills" class="section-block">
-        <div class="section-head">
-          <p class="kicker" data-i18n="evalKicker">How this backend is evaluated</p>
-          <h2 data-i18n="evalTitle">RAGAS-inspired: graph → questions → test.</h2>
-          <p class="section-lead" data-i18n="evalDesc">Each resume fact is a node; shared skills are edges. An LLM reverse-engineers questions from the graph — single-hop and multi-hop — producing a labelled test set that drives retrieval eval, agent regression, and LLM-as-Judge scoring.</p>
-        </div>
-
-        <pre class="eval-flow" data-i18n-html="evalFlow">loading…</pre>
-
-        <!-- Metrics row -->
-        <div class="eval-metrics">
-          <div class="eval-metric-card">
-            <strong data-i18n="evalMetric1">19/19</strong>
-            <span data-i18n="evalMetric1Label">retrieval hit rate</span>
-          </div>
-          <div class="eval-metric-card">
-            <strong data-i18n="evalMetric2">0.947</strong>
-            <span data-i18n="evalMetric2Label">MRR (gold queries)</span>
-          </div>
-          <div class="eval-metric-card">
-            <strong data-i18n="evalMetric3">82</strong>
-            <span data-i18n="evalMetric3Label">CI tests passing</span>
-          </div>
-        </div>
-      </section>
 
 
     </main>
