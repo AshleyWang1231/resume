@@ -128,19 +128,6 @@ function applyLang() {
 }
 
 
-function bindSectionLinks() {
-  $$('[data-command]').forEach((el) => {
-    el.addEventListener('click', (event) => {
-      const href = el.getAttribute('href');
-      if (!href?.startsWith('#')) return;
-      const id = href.slice(1);
-      if (!document.getElementById(id)) return;
-      event.preventDefault();
-      scrollToSection(id);
-    });
-  });
-}
-
 function bindBackground() {
   const root = document.documentElement;
   window.addEventListener("pointermove", (event) => {
@@ -317,7 +304,6 @@ function init() {
     applyLang();
   });
   bindBackground();
-  bindSectionLinks();
   bindVisitorBoard();
   applyLang();
   loadProjects();
