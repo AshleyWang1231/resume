@@ -93,6 +93,21 @@ const T = {
     cmdAsking: "Forwarding to Resume Agent",
     pillsCommands: "Commands",
     pillsQuestions: "Questions",
+    visitorKicker: "Visitor Board",
+    visitorTitle: "Ask me about my experience",
+    visitorLead: "Leave a public note or question. Messages are stored in DynamoDB and shown below.",
+    visitorPrivacy: "Messages are public. Please do not submit private contact information.",
+    visitorNamePlaceholder: "Your name or organization",
+    visitorMessagePlaceholder: "Your question or note",
+    visitorSubmit: "Submit public note",
+    visitorApiMissing: "Visitor Board API is not configured yet.",
+    visitorEmpty: "No public notes yet.",
+    visitorLoading: "Loading public notes…",
+    visitorLoadError: "Could not load public notes. Please try again later.",
+    visitorSubmitting: "Submitting public note…",
+    visitorRequired: "Name and message are required.",
+    visitorSubmitted: "Public note submitted.",
+    visitorSubmitError: "Could not submit public note. Please try again later.",
   },
   zh: {
     eyebrow: "AI 软件工程师",
@@ -182,6 +197,21 @@ const T = {
     cmdAsking: "正在转交给简历 Agent",
     pillsCommands: "命令",
     pillsQuestions: "问题",
+    visitorKicker: "访客留言板",
+    visitorTitle: "想了解我的经历？",
+    visitorLead: "留下公开问题或留言。内容会存储在 DynamoDB 中，并显示在下方。",
+    visitorPrivacy: "留言是公开的，请不要提交私人联系方式。",
+    visitorNamePlaceholder: "你的姓名或机构",
+    visitorMessagePlaceholder: "你的问题或留言",
+    visitorSubmit: "提交公开留言",
+    visitorApiMissing: "访客留言板 API 尚未配置。",
+    visitorEmpty: "还没有公开留言。",
+    visitorLoading: "正在加载公开留言…",
+    visitorLoadError: "暂时无法加载公开留言，请稍后再试。",
+    visitorSubmitting: "正在提交公开留言…",
+    visitorRequired: "姓名和留言内容均为必填。",
+    visitorSubmitted: "公开留言已提交。",
+    visitorSubmitError: "暂时无法提交公开留言，请稍后再试。",
   },
 };
 
@@ -675,7 +705,7 @@ function renderVisitorMessages(items = []) {
   if (!VISITOR_BOARD_API) {
     const empty = document.createElement("p");
     empty.className = "visitor-empty";
-    empty.textContent = "Visitor Board API is not configured yet.";
+    empty.textContent = t("visitorApiMissing");
     container.append(empty);
     return;
   }
@@ -683,7 +713,7 @@ function renderVisitorMessages(items = []) {
   if (!items.length) {
     const empty = document.createElement("p");
     empty.className = "visitor-empty";
-    empty.textContent = "No public notes yet.";
+    empty.textContent = t("visitorEmpty");
     container.append(empty);
     return;
   }
@@ -711,7 +741,7 @@ function renderVisitorMessages(items = []) {
   });
 }
 
-async function loadVisitorMessages() {
+async function loadVisitorMessages({ quiet = false } = {}) {
   const container = $("#visitor-messages");
   if (!container) return;
   if (!VISITOR_BOARD_API) {
@@ -719,15 +749,15 @@ async function loadVisitorMessages() {
     return;
   }
 
-  setVisitorStatus("Loading public notes…", "loading");
+  if (!quiet) setVisitorStatus(t("visitorLoading"), "loading");
   try {
     const res = await fetch(visitorBoardUrl("/messages"));
     if (!res.ok) throw new Error("Failed to load visitor messages");
     const data = await res.json();
     renderVisitorMessages(Array.isArray(data.items) ? data.items : []);
-    setVisitorStatus("", "");
+    if (!quiet) setVisitorStatus("", "");
   } catch {
-    setVisitorStatus("Could not load public notes. Please try again later.", "error");
+    setVisitorStatus(t("visitorLoadError"), "error");
   }
 }
 
@@ -741,16 +771,16 @@ async function submitVisitorMessage(event) {
   const message = messageInput?.value.trim() || "";
 
   if (!VISITOR_BOARD_API) {
-    setVisitorStatus("Visitor Board API is not configured yet.", "error");
+    setVisitorStatus(t("visitorApiMissing"), "error");
     return;
   }
   if (!name || !message) {
-    setVisitorStatus("Name and message are required.", "error");
+    setVisitorStatus(t("visitorRequired"), "error");
     return;
   }
 
   if (button) button.disabled = true;
-  setVisitorStatus("Submitting public note…", "loading");
+  setVisitorStatus(t("visitorSubmitting"), "loading");
   try {
     const res = await fetch(visitorBoardUrl("/messages"), {
       method: "POST",
@@ -760,10 +790,10 @@ async function submitVisitorMessage(event) {
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || "Failed to submit visitor message");
     form.reset();
-    setVisitorStatus("Public note submitted.", "success");
-    await loadVisitorMessages();
+    await loadVisitorMessages({ quiet: true });
+    setVisitorStatus(t("visitorSubmitted"), "success");
   } catch (error) {
-    setVisitorStatus(error.message || "Could not submit public note. Please try again later.", "error");
+    setVisitorStatus(error.message || t("visitorSubmitError"), "error");
   } finally {
     if (button) button.disabled = false;
   }

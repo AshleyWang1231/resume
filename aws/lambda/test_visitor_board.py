@@ -74,6 +74,16 @@ def test_rejects_empty_name():
     assert json.loads(result["body"])["error"] == "Name and message are required."
 
 
+def test_rejects_non_object_json_body():
+    table = FakeTable()
+    visitor_board.dynamodb = Mock(Table=Mock(return_value=table))
+
+    result = visitor_board.lambda_handler(event("POST", ["not", "an", "object"]), None)
+
+    assert result["statusCode"] == 400
+    assert json.loads(result["body"])["error"] == "Request body must be a JSON object."
+
+
 def test_options_has_cors_headers():
     result = visitor_board.lambda_handler(event("OPTIONS"), None)
     assert result["statusCode"] == 204

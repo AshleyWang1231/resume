@@ -81,7 +81,7 @@ Resources:
     Properties:
       FunctionName: resumeVisitorApi
       Runtime: python3.12
-      Handler: visitor_board.lambda_handler
+      Handler: index.lambda_handler
       Role: !GetAtt VisitorApiRole.Arn
       Timeout: 10
       MemorySize: 128

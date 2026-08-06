@@ -176,18 +176,18 @@
       <!-- ── Visitor Board ── -->
       <section id="visitor-board" class="section-block visitor-board">
         <div class="section-head">
-          <p class="kicker">Visitor Board</p>
-          <h2>Ask me about my experience</h2>
-          <p class="section-lead">Leave a public note or question. Messages are stored in DynamoDB and shown below.</p>
-          <p class="privacy-note">Messages are public. Please do not submit private contact information.</p>
+          <p class="kicker" data-i18n="visitorKicker">Visitor Board</p>
+          <h2 data-i18n="visitorTitle">Ask me about my experience</h2>
+          <p class="section-lead" data-i18n="visitorLead">Leave a public note or question. Messages are stored in DynamoDB and shown below.</p>
+          <p class="privacy-note" data-i18n="visitorPrivacy">Messages are public. Please do not submit private contact information.</p>
         </div>
 
         <form id="visitor-message-form" class="visitor-form">
           <label for="visitor-name" class="sr-only">Your name or organization</label>
-          <input id="visitor-name" name="name" maxlength="80" required placeholder="Your name or organization" />
+          <input id="visitor-name" name="name" maxlength="80" required placeholder="Your name or organization" data-i18n-placeholder="visitorNamePlaceholder" />
           <label for="visitor-message" class="sr-only">Your question or note</label>
-          <textarea id="visitor-message" name="message" maxlength="500" required placeholder="Your question or note"></textarea>
-          <button id="visitor-submit-button" class="btn btn-primary" type="submit">Submit public note</button>
+          <textarea id="visitor-message" name="message" maxlength="500" required placeholder="Your question or note" data-i18n-placeholder="visitorMessagePlaceholder"></textarea>
+          <button id="visitor-submit-button" class="btn btn-primary" type="submit" data-i18n="visitorSubmit">Submit public note</button>
         </form>
 
         <p id="visitor-status" class="visitor-status" role="status"></p>

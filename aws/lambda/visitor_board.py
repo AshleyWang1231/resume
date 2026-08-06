@@ -40,9 +40,12 @@ def parse_body(event):
     if not raw_body:
         raise ValueError("Name and message are required.")
     try:
-        return json.loads(raw_body)
+        payload = json.loads(raw_body)
     except json.JSONDecodeError as exc:
         raise ValueError("Request body must be valid JSON.") from exc
+    if not isinstance(payload, dict):
+        raise ValueError("Request body must be a JSON object.")
+    return payload
 
 
 def validate_message(payload):
