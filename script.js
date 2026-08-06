@@ -166,7 +166,6 @@ const T = {
 
 let lang = localStorage.getItem("resume-lang") || "en";
 let cachedProjects = null;
-let cachedArch = null;
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -220,7 +219,6 @@ function applyLang() {
   if (toggle) toggle.textContent = lang === "zh" ? "EN" : "中文";
   localStorage.setItem("resume-lang", lang);
   renderProjects(cachedProjects);
-  renderArchitecture(cachedArch);
 }
 
 
@@ -284,34 +282,6 @@ function renderProjects(projects) {
       <div class="skill-chips">${project.skills.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div>
     </article>`;
   }).join("");
-}
-
-async function loadArchitecture() {
-  try {
-    const res = await fetch(`${API}/api/architecture`);
-    if (!res.ok) throw new Error("architecture failed");
-    cachedArch = await res.json();
-    renderArchitecture(cachedArch);
-  } catch {
-    const diagram = $("[data-arch-diagram]");
-    if (diagram) diagram.innerHTML = `<p>${escapeHtml(t("systemUnavailable"))}</p>`;
-  }
-}
-
-function renderArchitecture(arch) {
-  if (!arch) return;
-  const diagram = $("[data-arch-diagram]");
-  const summary = $("[data-arch-summary]");
-  if (diagram) {
-    diagram.innerHTML = `<div class="arch-nodes">${arch.nodes.map((node) => `
-      <div class="arch-node type-${escapeHtml(node.type)}">
-        <div class="arch-node-label">${escapeHtml(node.label)}</div>
-        <div class="arch-node-desc">${escapeHtml(node.description)}</div>
-        <span class="arch-node-type">${escapeHtml(node.type)}</span>
-      </div>
-    `).join("")}</div>`;
-  }
-  if (summary) summary.textContent = lang === "zh" ? arch.summary_zh : arch.summary_en;
 }
 
 
