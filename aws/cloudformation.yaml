@@ -110,6 +110,13 @@ Resources:
       Principal: '*'
       FunctionUrlAuthType: NONE
 
+  VisitorApiFunctionInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref VisitorApiFunction
+      Action: lambda:InvokeFunction
+      Principal: '*'
+
 Outputs:
   SiteWebsiteUrl:
     Description: Public S3 static website URL.
