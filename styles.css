@@ -823,6 +823,24 @@ h3 { margin-bottom: 10px; font-size: 17px; }
 .visitor-board .section-head {
   margin-bottom: 24px;
 }
+.visitor-board-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1.1fr);
+  gap: 16px;
+  align-items: start;
+}
+.visitor-panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(13, 20, 31, 0.86), rgba(9, 14, 22, 0.72));
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(22px);
+  padding: 22px;
+  min-width: 0;
+}
+.visitor-list {
+  min-height: 214px;
+}
 .privacy-note {
   color: var(--amber);
   font-size: 13px;
@@ -831,8 +849,6 @@ h3 { margin-bottom: 10px; font-size: 17px; }
 .visitor-form {
   display: grid;
   gap: 12px;
-  max-width: 680px;
-  margin-bottom: 16px;
 }
 .visitor-form input,
 .visitor-form textarea {
@@ -850,7 +866,7 @@ h3 { margin-bottom: 10px; font-size: 17px; }
   box-shadow: 0 0 0 3px rgba(103, 232, 249, .08);
 }
 .visitor-form textarea {
-  min-height: 112px;
+  min-height: 128px;
   resize: vertical;
 }
 .visitor-form button {
@@ -863,6 +879,7 @@ h3 { margin-bottom: 10px; font-size: 17px; }
 }
 .visitor-status {
   min-height: 22px;
+  margin: 12px 0 0;
   color: var(--muted);
   font-size: 13px;
 }
@@ -871,15 +888,13 @@ h3 { margin-bottom: 10px; font-size: 17px; }
 .visitor-messages {
   display: grid;
   gap: 12px;
-  max-width: 760px;
-  margin-top: 18px;
 }
 .visitor-message-card,
 .visitor-empty {
   border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: linear-gradient(180deg, rgba(13, 20, 31, 0.78), rgba(9, 14, 22, 0.64));
-  padding: 16px;
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,.035);
+  padding: 14px;
 }
 .visitor-empty {
   color: var(--muted);
@@ -901,6 +916,9 @@ h3 { margin-bottom: 10px; font-size: 17px; }
 .visitor-message-card p {
   color: var(--muted);
   margin: 0;
+}
+body.terminal-open .visitor-board-grid {
+  grid-template-columns: 1fr;
 }
 
 /* ─── Reduced motion ─── */
@@ -967,7 +985,8 @@ h3 { margin-bottom: 10px; font-size: 17px; }
   .projects-grid,
   .skills-grid,
   .eval-layers,
-  .eval-metrics { grid-template-columns: 1fr; }
+  .eval-metrics,
+  .visitor-board-grid { grid-template-columns: 1fr; }
   .split-head { display: block; }
   .site-footer { flex-direction: column; }
   .site-header {

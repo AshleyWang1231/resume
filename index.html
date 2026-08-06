@@ -68,16 +68,22 @@
           <p class="privacy-note" data-i18n="visitorPrivacy">Messages are public. Please do not submit private contact information.</p>
         </div>
 
-        <form id="visitor-message-form" class="visitor-form">
-          <label for="visitor-name" class="sr-only">Your name or organization</label>
-          <input id="visitor-name" name="name" maxlength="80" required placeholder="Your name or organization" data-i18n-placeholder="visitorNamePlaceholder" />
-          <label for="visitor-message" class="sr-only">Your question or note</label>
-          <textarea id="visitor-message" name="message" maxlength="500" required placeholder="Your question or note" data-i18n-placeholder="visitorMessagePlaceholder"></textarea>
-          <button id="visitor-submit-button" class="btn btn-primary" type="submit" data-i18n="visitorSubmit">Submit public note</button>
-        </form>
+        <div class="visitor-board-grid">
+          <div class="visitor-panel visitor-compose">
+            <form id="visitor-message-form" class="visitor-form">
+              <label for="visitor-name" class="sr-only">Your name or organization</label>
+              <input id="visitor-name" name="name" maxlength="80" required placeholder="Your name or organization" data-i18n-placeholder="visitorNamePlaceholder" />
+              <label for="visitor-message" class="sr-only">Your question or note</label>
+              <textarea id="visitor-message" name="message" maxlength="500" required placeholder="Your question or note" data-i18n-placeholder="visitorMessagePlaceholder"></textarea>
+              <button id="visitor-submit-button" class="btn btn-primary" type="submit" data-i18n="visitorSubmit">Submit public note</button>
+            </form>
+            <p id="visitor-status" class="visitor-status" role="status"></p>
+          </div>
 
-        <p id="visitor-status" class="visitor-status" role="status"></p>
-        <div id="visitor-messages" class="visitor-messages" aria-live="polite"></div>
+          <div class="visitor-panel visitor-list">
+            <div id="visitor-messages" class="visitor-messages" aria-live="polite"></div>
+          </div>
+        </div>
       </section>
 
       <!-- ── Capabilities ── -->
