@@ -205,7 +205,19 @@ h3 { margin-bottom: 10px; font-size: 17px; }
   color: var(--muted);
   font-size: 18px;
 }
-.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+.hero-agent-link {
+  margin-bottom: 24px;
+  color: var(--faint);
+  font-size: 13px;
+}
+.hero-agent-link a {
+  color: var(--cyan);
+  border-bottom: 1px solid rgba(103, 232, 249, .35);
+}
+.hero-agent-link a:hover {
+  border-color: var(--cyan);
+}
 .signal-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .signal-row span {
   padding: 7px 11px;
