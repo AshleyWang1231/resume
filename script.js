@@ -1,4 +1,5 @@
 const API = "https://resume-gent-api-vtugquposb.cn-hangzhou.fcapp.run";
+const VISITOR_BOARD_API = ""; // Set to the AWS Lambda Function URL before deploying to S3.
 const STREAM_TIMEOUT_MS = 30000;
 const TERMINAL_RENDER_DELAY_MS = 35;
 const TERMINAL_RENDER_CHARS = 5;
@@ -655,6 +656,124 @@ function bindAgent() {
   // suggestion-btn clicks handled via data-run-command in bindCommandConsole
 }
 
+function visitorBoardUrl(path) {
+  return `${VISITOR_BOARD_API.replace(/\/$/, "")}${path}`;
+}
+
+function setVisitorStatus(message = "", type = "") {
+  const status = $("#visitor-status");
+  if (!status) return;
+  status.textContent = message;
+  status.dataset.status = type;
+}
+
+function renderVisitorMessages(items = []) {
+  const container = $("#visitor-messages");
+  if (!container) return;
+  container.replaceChildren();
+
+  if (!VISITOR_BOARD_API) {
+    const empty = document.createElement("p");
+    empty.className = "visitor-empty";
+    empty.textContent = "Visitor Board API is not configured yet.";
+    container.append(empty);
+    return;
+  }
+
+  if (!items.length) {
+    const empty = document.createElement("p");
+    empty.className = "visitor-empty";
+    empty.textContent = "No public notes yet.";
+    container.append(empty);
+    return;
+  }
+
+  items.forEach((item) => {
+    const article = document.createElement("article");
+    article.className = "visitor-message-card";
+
+    const header = document.createElement("div");
+    header.className = "visitor-message-head";
+
+    const name = document.createElement("strong");
+    name.textContent = item.name || "Visitor";
+
+    const time = document.createElement("time");
+    time.dateTime = item.createdAt || "";
+    time.textContent = item.createdAt ? new Date(item.createdAt).toLocaleString() : "Just now";
+
+    const message = document.createElement("p");
+    message.textContent = item.message || "";
+
+    header.append(name, time);
+    article.append(header, message);
+    container.append(article);
+  });
+}
+
+async function loadVisitorMessages() {
+  const container = $("#visitor-messages");
+  if (!container) return;
+  if (!VISITOR_BOARD_API) {
+    renderVisitorMessages([]);
+    return;
+  }
+
+  setVisitorStatus("Loading public notes…", "loading");
+  try {
+    const res = await fetch(visitorBoardUrl("/messages"));
+    if (!res.ok) throw new Error("Failed to load visitor messages");
+    const data = await res.json();
+    renderVisitorMessages(Array.isArray(data.items) ? data.items : []);
+    setVisitorStatus("", "");
+  } catch {
+    setVisitorStatus("Could not load public notes. Please try again later.", "error");
+  }
+}
+
+async function submitVisitorMessage(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const button = $("#visitor-submit-button");
+  const nameInput = $("#visitor-name");
+  const messageInput = $("#visitor-message");
+  const name = nameInput?.value.trim() || "";
+  const message = messageInput?.value.trim() || "";
+
+  if (!VISITOR_BOARD_API) {
+    setVisitorStatus("Visitor Board API is not configured yet.", "error");
+    return;
+  }
+  if (!name || !message) {
+    setVisitorStatus("Name and message are required.", "error");
+    return;
+  }
+
+  if (button) button.disabled = true;
+  setVisitorStatus("Submitting public note…", "loading");
+  try {
+    const res = await fetch(visitorBoardUrl("/messages"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, message }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || "Failed to submit visitor message");
+    form.reset();
+    setVisitorStatus("Public note submitted.", "success");
+    await loadVisitorMessages();
+  } catch (error) {
+    setVisitorStatus(error.message || "Could not submit public note. Please try again later.", "error");
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
+
+function bindVisitorBoard() {
+  $("#visitor-message-form")?.addEventListener("submit", submitVisitorMessage);
+  loadVisitorMessages();
+}
+
 async function warmup() {
   // Mark already-cached pills as ready immediately (static cache populated above)
   const allQuestions = [
@@ -711,6 +830,7 @@ function init() {
   bindFab();
   bindMetricObserver();
   bindAgent();
+  bindVisitorBoard();
   applyLang();
   loadProjects();
   warmup();

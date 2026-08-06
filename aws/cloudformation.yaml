@@ -1,0 +1,131 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Interactive Resume Visitor Board resources for S3, Lambda Function URL, and DynamoDB.
+
+Parameters:
+  SiteBucketName:
+    Type: String
+    Description: Globally unique S3 bucket name for the static resume frontend.
+  AllowedOrigin:
+    Type: String
+    Description: Final S3 website origin used for Lambda CORS, for example http://bucket.s3-website-region.amazonaws.com.
+  MaxMessages:
+    Type: Number
+    Default: 25
+    Description: Number of visitor messages returned by the API.
+
+Resources:
+  SiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref SiteBucketName
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: false
+        RestrictPublicBuckets: false
+
+  SiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref SiteBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: PublicReadStaticSite
+            Effect: Allow
+            Principal: '*'
+            Action: s3:GetObject
+            Resource: !Sub '${SiteBucket.Arn}/*'
+
+  VisitorMessagesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ResumeVisitorMessages
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+
+  VisitorApiRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: resumeVisitorApiRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: ResumeVisitorMessagesDynamoDBAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:Scan
+                Resource: !GetAtt VisitorMessagesTable.Arn
+
+  VisitorApiFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: resumeVisitorApi
+      Runtime: python3.12
+      Handler: visitor_board.lambda_handler
+      Role: !GetAtt VisitorApiRole.Arn
+      Timeout: 10
+      MemorySize: 128
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref VisitorMessagesTable
+          ALLOWED_ORIGIN: !Ref AllowedOrigin
+          MAX_MESSAGES: !Ref MaxMessages
+      Code:
+        ZipFile: |
+          import json
+          def lambda_handler(event, context):
+              return {"statusCode": 500, "body": json.dumps({"error": "Deploy aws/lambda/visitor_board.py as the function code."})}
+
+  VisitorApiFunctionUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      TargetFunctionArn: !Ref VisitorApiFunction
+      AuthType: NONE
+      Cors:
+        AllowOrigins:
+          - !Ref AllowedOrigin
+        AllowMethods:
+          - GET
+          - POST
+        AllowHeaders:
+          - Content-Type
+        MaxAge: 86400
+
+  VisitorApiFunctionUrlPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref VisitorApiFunction
+      Action: lambda:InvokeFunctionUrl
+      Principal: '*'
+      FunctionUrlAuthType: NONE
+
+Outputs:
+  SiteWebsiteUrl:
+    Description: Public S3 static website URL.
+    Value: !Sub 'http://${SiteBucket}.s3-website-${AWS::Region}.amazonaws.com'
+  VisitorApiUrl:
+    Description: Lambda Function URL to set as VISITOR_BOARD_API in script.js.
+    Value: !GetAtt VisitorApiFunctionUrl.FunctionUrl
+  MessagesTableName:
+    Description: DynamoDB table name.
+    Value: !Ref VisitorMessagesTable

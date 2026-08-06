@@ -173,6 +173,27 @@
         </div>
       </section>
 
+      <!-- ── Visitor Board ── -->
+      <section id="visitor-board" class="section-block visitor-board">
+        <div class="section-head">
+          <p class="kicker">Visitor Board</p>
+          <h2>Ask me about my experience</h2>
+          <p class="section-lead">Leave a public note or question. Messages are stored in DynamoDB and shown below.</p>
+          <p class="privacy-note">Messages are public. Please do not submit private contact information.</p>
+        </div>
+
+        <form id="visitor-message-form" class="visitor-form">
+          <label for="visitor-name" class="sr-only">Your name or organization</label>
+          <input id="visitor-name" name="name" maxlength="80" required placeholder="Your name or organization" />
+          <label for="visitor-message" class="sr-only">Your question or note</label>
+          <textarea id="visitor-message" name="message" maxlength="500" required placeholder="Your question or note"></textarea>
+          <button id="visitor-submit-button" class="btn btn-primary" type="submit">Submit public note</button>
+        </form>
+
+        <p id="visitor-status" class="visitor-status" role="status"></p>
+        <div id="visitor-messages" class="visitor-messages" aria-live="polite"></div>
+      </section>
+
             <!-- ── Contact ── -->
       <section id="contact" class="section-block final-section">
         <p class="kicker" data-i18n="contactKicker">Contact</p>
