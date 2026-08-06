@@ -1,4 +1,3 @@
-const API = "https://resume-gent-api-vtugquposb.cn-hangzhou.fcapp.run";
 const VISITOR_BOARD_API = ""; // Set to the AWS Lambda Function URL before deploying to S3.
 
 const T = {
@@ -32,7 +31,6 @@ const T = {
     systemKicker: "This site's backend",
     systemTitle: "Agent Runtime · Agent Workflow · Tool Calling · Streaming",
     systemSummary: "A multi-turn agent built to demonstrate the same patterns I use professionally: a typed event stream that separates tool calls from answer text, Pydantic-validated tool schemas, a four-stage workflow loop, and multi-provider LLM fallback.",
-    systemUnavailable: "Architecture details are temporarily unavailable.",
     evalKicker: "How this backend is evaluated",
     evalTitle: "RAGAS-inspired: graph → questions → test.",
     evalDesc: "Each resume fact is a node; shared skills are edges. An LLM reverse-engineers questions from the graph — single-hop and multi-hop — producing a labelled test set that drives retrieval eval, agent regression, and LLM-as-Judge scoring.",
@@ -63,9 +61,6 @@ const T = {
     evalMetric3: "82",
     evalMetric3Label: "CI tests passing",
 
-    contactKicker: "Contact",
-    contactTitle: "Open to AI software engineering roles.",
-    phone: "+86 13122038365",
     visitorKicker: "Visitor Board",
     visitorTitle: "Ask me about my experience",
     visitorLead: "Leave a public note or question. Messages are stored in DynamoDB and shown below.",
@@ -112,7 +107,6 @@ const T = {
     systemKicker: "本站后端",
     systemTitle: "Agent Runtime · Agent Workflow · Tool Calling · Streaming",
     systemSummary: "一个多轮有状态 Agent，展示了我在工作中使用的相同模式：类型化事件流区分工具调用与回答文本，Pydantic 校验工具 Schema，四阶段工作流循环，多 Provider LLM 降级。",
-    systemUnavailable: "架构详情暂时不可用。",
     evalKicker: "本站后端如何评估",
     evalTitle: "RAGAS 思路：构建知识图谱，逆推问题，再来测试。",
     evalDesc: "每条简历 fact 是一个节点，共享技能是边。LLM 从图中逆向生成问题——单跳和多跳——产出带 ground-truth 的测试集，驱动检索评估、Agent 回归和 LLM-as-Judge 三层测试。",
@@ -143,9 +137,6 @@ const T = {
     evalMetric3: "82",
     evalMetric3Label: "CI 通过测试数",
 
-    contactKicker: "联系",
-    contactTitle: "正在寻找 AI 软件工程相关机会。",
-    phone: "13122038365（微信同号）",
     visitorKicker: "访客留言板",
     visitorTitle: "想了解我的经历？",
     visitorLead: "留下公开问题或留言。内容会存储在 DynamoDB 中，并显示在下方。",
