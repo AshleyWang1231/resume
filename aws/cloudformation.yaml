@@ -101,15 +101,6 @@ Resources:
     Properties:
       TargetFunctionArn: !Ref VisitorApiFunction
       AuthType: NONE
-      Cors:
-        AllowOrigins:
-          - !Ref AllowedOrigin
-        AllowMethods:
-          - GET
-          - POST
-        AllowHeaders:
-          - Content-Type
-        MaxAge: 86400
 
   VisitorApiFunctionUrlPermission:
     Type: AWS::Lambda::Permission

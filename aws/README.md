@@ -40,6 +40,10 @@ Do not use `dynamodb:*` or `Resource: *`.
 
 `cloudformation.yaml` creates the S3 bucket, DynamoDB table, Lambda role, Lambda function, and Function URL. The template uses placeholder inline Lambda code because CloudFormation cannot inline the full handler cleanly. After creating the stack, update the Lambda function code with `lambda/visitor_board.py`.
 
+## CORS
+
+`lambda/visitor_board.py` is the single source of truth for CORS response headers. Keep Lambda Function URL CORS disabled in infrastructure so headers are not configured in two places.
+
 ## Frontend configuration
 
 Set `VISITOR_BOARD_API` in `script.js` to the Lambda Function URL before uploading public static files to S3.
