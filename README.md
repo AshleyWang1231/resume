@@ -1,40 +1,25 @@
-# Lu Wang — AI Engineer Portfolio
+# Lu Wang — AI Engineer Portfolio + AWS Visitor Board
 
-**Live site:** https://ashleywang1231.github.io/resume/
+Static bilingual resume/portfolio site extended with an AWS serverless homework feature: the **Interactive Resume Visitor Board**.
 
-Bilingual (EN/ZH) portfolio and resume website with an AI chat agent powered by DeepSeek.
-
-## Stack
-
-| Layer | Tech | Deploy |
-|---|---|---|
-| Frontend | Static HTML/CSS/JS | GitHub Pages |
-| Backend API | Python FastAPI | Aliyun Function Compute (`cn-hangzhou`) |
-
-## Local Preview
-
-```bash
-python3 -m http.server 8000
-# open http://localhost:8000
-```
-
-## Homework Assignment Feature: Interactive Resume Visitor Board
-
-This repo now includes a small AWS serverless assignment feature added to the existing static resume site.
-
-Core assignment flow:
+## Current public assignment architecture
 
 ```text
 S3 static frontend → Lambda Function URL → DynamoDB
 ```
 
-The Visitor Board lets a public visitor submit a required `name` and `message`, stores the item in DynamoDB, and displays submitted messages on the S3-hosted resume page.
+The public page should be evaluated through the Visitor Board:
 
-The existing AI resume agent, Aliyun backend, DeepSeek integration, and Cloudflare-related backend are portfolio functionality, not the core homework feature.
+- visitor enters required `name` and `message`
+- frontend calls the Lambda Function URL
+- Lambda validates input and stores messages in DynamoDB
+- frontend loads submitted messages back from DynamoDB
 
-### Public static files to upload to S3
+The old floating resume-agent terminal is not part of the public page. Legacy non-AWS backend code may remain in `backend/`, but it is not the homework feature.
 
-Upload only:
+## Frontend
+
+Upload only these public static files to S3:
 
 ```text
 index.html
@@ -45,23 +30,36 @@ assets/
 
 Before uploading, set `VISITOR_BOARD_API` in `script.js` to the deployed Lambda Function URL.
 
-### AWS backend source
+## AWS backend
 
-Lambda source and deployment notes live in:
+AWS resources and Lambda code live in:
 
 ```text
 aws/
 ```
 
-## Backend Dev
+Key files:
 
-```bash
-cd backend
-cp .env.example .env  # fill in AI_PROVIDER + API key
-uv run uvicorn app.main:app --reload --port 8787
+```text
+aws/lambda/visitor_board.py       # Lambda handler
+aws/lambda/test_visitor_board.py  # local tests
+aws/cloudformation.yaml           # starter AWS resources
+aws/README.md                     # deployment notes
 ```
 
-## Deploy
+## Local preview
 
-- **Frontend**: auto-deploys to GitHub Pages on push to `main`
-- **Backend**: auto-deploys to Aliyun FC on push to `backend/**`
+```bash
+python3 -m http.server 8000
+# open http://localhost:8000
+```
+
+Without a deployed Lambda URL, the Visitor Board shows that the API is not configured yet.
+
+## Verification
+
+```bash
+node --check script.js
+python3 -m py_compile aws/lambda/visitor_board.py
+python3 -m pytest aws/lambda/test_visitor_board.py -q
+```

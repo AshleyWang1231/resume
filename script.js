@@ -105,25 +105,6 @@ function escapeHtml(value = "") {
     .replaceAll("'", "&#039;");
 }
 
-/**
- * Strip LLM formatting artifacts from a completed answer string.
- * Mirrors the server-side sanitise_answer() as a client-side safety net,
- * applied once to the full text after streaming completes.
- *   - XML/HTML tags: <error>…</error>
- *   - Markdown headers: ###, ##, #
- *   - Bold/italic: **x**, *x*, __x__, _x_
- *   - List markers: leading - or * or 1.
- */
-function sanitiseAnswer(text) {
-  if (!text) return text;
-  text = text.replace(/<\/?[a-z][a-z0-9]*(?:\s[^>]*)?>/gi, "");  // XML tags
-  text = text.replace(/^#{1,6}\s+/gm, "");                        // ### headers
-  text = text.replace(/(\*{1,3}|_{1,3})(.+?)\1/gs, "$2");         // **bold** / *italic*
-  text = text.replace(/^[\-\*]\s+/gm, "");                        // - list items (unordered only)
-  // numbered sentences like "1. The problem was..." are kept as structured prose
-  text = text.replace(/\n{3,}/g, "\n\n");                         // collapse blank lines
-  return text.trim();
-}
 
 function applyLang() {
   const dictionary = T[lang];
