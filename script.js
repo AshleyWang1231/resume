@@ -11,6 +11,8 @@ const T = {
     heroTitle: "I ship AI Agent systems from design to production.",
     heroLead: "Focused on building production-grade LLM applications and AI Agent systems. Experienced in Python/Java backend development, Agent Workflows, Tool Calling, Streaming, personalization, product decision support, and Text2SQL. Led AI product capabilities across e-commerce and financial services — including personalized shopping assistance, real-time response optimization, and enterprise data analysis agents — with end-to-end experience from system design to production rollout.",
     heroWork: "Leave a public note",
+    heroAgentPrefix: "Original resume agent experience:",
+    heroAgentLink: "open the live site",
 
     capKicker: "What I bring",
     capTitle: "Production AI engineering across the full stack.",
@@ -54,6 +56,8 @@ const T = {
     heroTitle: "从设计到上线，我构建生产级 AI Agent 系统。",
     heroLead: "专注于生产级 LLM 应用与 AI Agent 系统建设。擅长基于 Python/Java 构建高可用后端服务，在 Agent Workflow、Tool Calling、Streaming、个性化推荐、商品决策辅助及 Text2SQL 等方向具备丰富实践经验。主导电商与金融领域 AI 产品研发，负责个性化导购、实时响应优化、企业级数据分析 Agent 等核心能力建设，具备从系统设计到生产落地的完整经验。",
     heroWork: "留下公开留言",
+    heroAgentPrefix: "原始 AI 简历 Agent 体验：",
+    heroAgentLink: "打开线上版本",
 
     capKicker: "我能带来什么",
     capTitle: "覆盖全链路的生产级 AI 工程能力。",
