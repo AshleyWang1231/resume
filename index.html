@@ -47,7 +47,6 @@
             4 years building LLM agents across e-commerce (Zalando) and financial services (Thoughtworks). Specialising in Agent Runtime, Streaming UX, Tool Calling, Personalization, and Text2SQL — with a focus on measurable, production-ready outcomes.
           </p>
           <div class="hero-actions">
-            <button class="btn btn-primary" type="button" data-focus-terminal data-i18n="heroAsk">Ask the resume agent</button>
             <a class="btn btn-secondary" href="#visitor-board" data-command="/visitor-board" data-i18n="heroWork">Leave a public note</a>
           </div>
           <div class="signal-row" aria-label="Selected experience signals">
@@ -187,51 +186,6 @@
         <span>wanglu_ashley@126.com</span>
       </a>
     </footer>
-
-    <!-- ── Floating terminal ── -->
-    <div class="terminal-float open" id="terminal-float" aria-label="Resume agent terminal">
-      <div class="command-panel" id="terminal-panel">
-        <div class="window-bar">
-          <button class="window-dot window-dot-close" id="terminal-toggle" aria-label="Close terminal" type="button"></button>
-          <span class="window-dot window-dot-min" aria-hidden="true"></span>
-          <span class="window-dot window-dot-max" aria-hidden="true"></span>
-          <small>resume.agent</small>
-        </div>
-        <div class="console-feed" data-command-feed>
-          <p><span class="prompt">lu@resume</span> boot --profile ai-engineer</p>
-          <p class="console-muted" data-i18n="consoleLine1">Profile loaded: Zalando · Thoughtworks · Agent Runtime · Streaming · Text2SQL</p>
-          <p><span class="prompt">lu@resume</span> status</p>
-          <p class="console-muted" data-i18n="consoleLine2">Ready. Ask naturally, or use commands like /projects.</p>
-        </div>
-        <form class="command-form" data-command-form>
-          <label for="command-input" class="sr-only">Command input</label>
-          <span class="prompt">$</span>
-          <input id="command-input" type="text" name="command" data-command-input autocomplete="off" spellcheck="false" placeholder="Ask about Streaming, or type /projects" data-i18n-placeholder="commandPlaceholder" />
-          <button type="submit" aria-label="Run command">Run</button>
-        </form>
-        <div class="command-pills" aria-label="Suggested inputs">
-          <p class="pills-label" data-i18n="pillsCommands">Commands</p>
-          <div class="pills-cmd-row">
-            <button type="button" class="pill-cmd" data-run-command="/capabilities">/capabilities</button>
-            <button type="button" class="pill-cmd" data-run-command="/projects">/projects</button>
-            <button type="button" class="pill-cmd" data-run-command="/system">/system</button>
-          </div>
-          <p class="pills-label" data-i18n="pillsQuestions">Questions</p>
-          <div class="pills-q-grid">
-            <button type="button" class="pill-q suggestion-btn" data-q-en="What are Lu's strongest technical areas?" data-q-zh="汪露最擅长哪些技术方向？" data-i18n="agentQ1">What are Lu's strongest technical areas?</button>
-            <button type="button" class="pill-q suggestion-btn" data-q-en="What's the biggest performance win Lu has shipped to production?" data-q-zh="汪露交付过最大的性能优化是什么？" data-i18n="agentQ2">What's the biggest performance win Lu has shipped to production?</button>
-            <button type="button" class="pill-q suggestion-btn" data-q-en="How did Lu build an LLM agent reliable enough for a real bank?" data-q-zh="汪露是怎么让 LLM Agent 在银行生产环境可靠运行的？" data-i18n="agentQ3">How did Lu build an LLM agent reliable enough for a real bank?</button>
-            <button type="button" class="pill-q suggestion-btn" data-q-en="How has Lu's work spanned both e-commerce and financial AI?" data-q-zh="汪露的经验是怎么覆盖电商和金融两个领域的？" data-i18n="agentQ4">How has Lu's work spanned both e-commerce and financial AI?</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <button class="terminal-launcher" id="terminal-launcher" aria-label="Open resume agent terminal" type="button">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-        <path d="M4 5h12M4 10h8M4 15h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-      </svg>
-    </button>
 
     <script src="script.js"></script>
   </body>
