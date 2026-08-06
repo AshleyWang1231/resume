@@ -27,7 +27,7 @@
       </a>
       <nav class="nav-links" aria-label="Primary navigation">
         <a href="#capabilities" data-command="/capabilities" data-i18n="navCapabilities">Capabilities</a>
-        <a href="#projects" data-command="/projects" data-i18n="navProjects">Projects</a>
+        <a href="#visitor-board" data-command="/visitor-board" data-i18n="navVisitorBoard">Visitor Board</a>
         <a href="#system" data-command="/system" data-i18n="navSystem">System</a>
       </nav>
       <div class="header-actions">
@@ -47,15 +47,36 @@
           </p>
           <div class="hero-actions">
             <button class="btn btn-primary" type="button" data-focus-terminal data-i18n="heroAsk">Ask the resume agent</button>
-            <a class="btn btn-secondary" href="#projects" data-command="/projects" data-i18n="heroWork">View selected work</a>
+            <a class="btn btn-secondary" href="#visitor-board" data-command="/visitor-board" data-i18n="heroWork">Leave a public note</a>
           </div>
-          <div class="signal-row" aria-label="Selected outcomes">
+          <div class="signal-row" aria-label="Selected experience signals">
             <span>Zalando · <strong>Agent Runtime</strong></span>
             <span>Thoughtworks · <strong>Text2SQL</strong></span>
             <span><strong>-25%</strong> TTFT</span>
             <span><strong>1,000+</strong> eval cases</span>
           </div>
         </div>
+      </section>
+
+      <!-- ── Visitor Board ── -->
+      <section id="visitor-board" class="section-block visitor-board">
+        <div class="section-head">
+          <p class="kicker" data-i18n="visitorKicker">Visitor Board</p>
+          <h2 data-i18n="visitorTitle">Ask me about my experience</h2>
+          <p class="section-lead" data-i18n="visitorLead">Leave a public note or question. Messages are stored in DynamoDB and shown below.</p>
+          <p class="privacy-note" data-i18n="visitorPrivacy">Messages are public. Please do not submit private contact information.</p>
+        </div>
+
+        <form id="visitor-message-form" class="visitor-form">
+          <label for="visitor-name" class="sr-only">Your name or organization</label>
+          <input id="visitor-name" name="name" maxlength="80" required placeholder="Your name or organization" data-i18n-placeholder="visitorNamePlaceholder" />
+          <label for="visitor-message" class="sr-only">Your question or note</label>
+          <textarea id="visitor-message" name="message" maxlength="500" required placeholder="Your question or note" data-i18n-placeholder="visitorMessagePlaceholder"></textarea>
+          <button id="visitor-submit-button" class="btn btn-primary" type="submit" data-i18n="visitorSubmit">Submit public note</button>
+        </form>
+
+        <p id="visitor-status" class="visitor-status" role="status"></p>
+        <div id="visitor-messages" class="visitor-messages" aria-live="polite"></div>
       </section>
 
       <!-- ── Capabilities ── -->
@@ -88,49 +109,7 @@
         </div>
       </section>
 
-      <!-- ── Impact metrics with context ── -->
-      <section id="impact" class="section-block">
-        <div class="section-head">
-          <p class="kicker" data-i18n="impactKicker">Selected outcomes</p>
-          <h2 data-i18n="impactTitle">Four numbers from four different problems.</h2>
-        </div>
-        <div class="metrics-grid">
-          <article class="metric-card">
-            <strong data-count="25" data-prefix="-" data-suffix="%">-25%</strong>
-            <span class="metric-ctx" data-i18n="impactCtx1">Zalando Assistant · Streaming redesign</span>
-            <span data-i18n="metric1">TTFT reduction — Suggestions API benchmark after Streaming state-machine + OpenAI Responses API migration</span>
-          </article>
-          <article class="metric-card">
-            <strong data-count="60" data-prefix="-" data-suffix="%">-60%</strong>
-            <span class="metric-ctx" data-i18n="impactCtx2">Zalando Assistant · Personalization</span>
-            <span data-i18n="metric2">cold-start reduction — async Warm-Up architecture decoupled LLM generation from the request critical path</span>
-          </article>
-          <article class="metric-card">
-            <strong data-count="70" data-prefix="-" data-suffix="%">-70%</strong>
-            <span class="metric-ctx" data-i18n="impactCtx3">Zalando Assistant · Profile service</span>
-            <span data-i18n="metric3">profile-service calls eliminated after adding TTL cache layer with field-level invalidation</span>
-          </article>
-          <article class="metric-card">
-            <strong data-count="20" data-prefix="+" data-suffix="%">+20%</strong>
-            <span class="metric-ctx" data-i18n="impactCtx4">Thoughtworks · Text2SQL Agent</span>
-            <span data-i18n="metric4">accuracy improvement — from 1,000+ eval-case iteration cycle on real bank business queries</span>
-          </article>
-        </div>
-      </section>
 
-      <!-- ── Projects ── -->
-      <section id="projects" class="section-block">
-        <div class="section-head">
-          <p class="kicker" data-i18n="projectsKicker">Related experience</p>
-          <h2 data-i18n="projectsTitle">Each case: problem → approach → outcome.</h2>
-        </div>
-        <div class="projects-grid" data-projects-grid>
-          <article class="project-skeleton"></article>
-          <article class="project-skeleton"></article>
-          <article class="project-skeleton"></article>
-          <article class="project-skeleton"></article>
-        </div>
-      </section>
 
       <!-- ── System ── -->
       <section id="system" class="section-block system-section">
@@ -173,26 +152,6 @@
         </div>
       </section>
 
-      <!-- ── Visitor Board ── -->
-      <section id="visitor-board" class="section-block visitor-board">
-        <div class="section-head">
-          <p class="kicker" data-i18n="visitorKicker">Visitor Board</p>
-          <h2 data-i18n="visitorTitle">Ask me about my experience</h2>
-          <p class="section-lead" data-i18n="visitorLead">Leave a public note or question. Messages are stored in DynamoDB and shown below.</p>
-          <p class="privacy-note" data-i18n="visitorPrivacy">Messages are public. Please do not submit private contact information.</p>
-        </div>
-
-        <form id="visitor-message-form" class="visitor-form">
-          <label for="visitor-name" class="sr-only">Your name or organization</label>
-          <input id="visitor-name" name="name" maxlength="80" required placeholder="Your name or organization" data-i18n-placeholder="visitorNamePlaceholder" />
-          <label for="visitor-message" class="sr-only">Your question or note</label>
-          <textarea id="visitor-message" name="message" maxlength="500" required placeholder="Your question or note" data-i18n-placeholder="visitorMessagePlaceholder"></textarea>
-          <button id="visitor-submit-button" class="btn btn-primary" type="submit" data-i18n="visitorSubmit">Submit public note</button>
-        </form>
-
-        <p id="visitor-status" class="visitor-status" role="status"></p>
-        <div id="visitor-messages" class="visitor-messages" aria-live="polite"></div>
-      </section>
 
             <!-- ── Contact ── -->
       <section id="contact" class="section-block final-section">
