@@ -113,6 +113,7 @@ const T = {
 
 let lang = localStorage.getItem("resume-lang") || "en";
 let cachedProjects = null;
+let cachedVisitorMessages = null;
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -147,7 +148,7 @@ function applyLang() {
   if (toggle) toggle.textContent = lang === "zh" ? "EN" : "中文";
   localStorage.setItem("resume-lang", lang);
   renderProjects(cachedProjects);
-  loadVisitorMessages({ quiet: true });
+  if (cachedVisitorMessages) renderVisitorMessages(cachedVisitorMessages);
 }
 
 
@@ -390,7 +391,8 @@ async function loadVisitorMessages({ quiet = false } = {}) {
     const res = await fetch(visitorBoardUrl("/messages"));
     if (!res.ok) throw new Error("Failed to load visitor messages");
     const data = await res.json();
-    renderVisitorMessages(Array.isArray(data.items) ? data.items : []);
+    cachedVisitorMessages = Array.isArray(data.items) ? data.items : [];
+    renderVisitorMessages(cachedVisitorMessages);
     if (!quiet) setVisitorStatus("", "");
   } catch {
     setVisitorStatus(t("visitorLoadError"), "error");
@@ -449,9 +451,9 @@ function init() {
     applyLang();
   });
   bindBackground();
-  bindVisitorBoard();
   applyLang();
   loadProjects();
+  bindVisitorBoard();
 }
 
 init();
