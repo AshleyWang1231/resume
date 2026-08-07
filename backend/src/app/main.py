@@ -211,7 +211,11 @@ async def chat(request: ChatRequest) -> ChatResponse:
     return await with_request_logging(
         route="/api/chat",
         handler=lambda: agent.answer(request, ai),
-        base_fields={"language": request.language, "session_id": request.session_id},
+        base_fields={
+            "language": request.language,
+            "session_id": request.session_id,
+            "message": request.message,
+        },
     )
 
 

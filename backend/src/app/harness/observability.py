@@ -46,6 +46,7 @@ async def with_request_logging(
             "tools_called": getattr(result, "tools_called", []),
             "evidence_count": len(getattr(result, "evidence", [])),
             "latency_ms": round(now_ms() - start),
+            "answer": getattr(result, "answer", None),
         }
     )
     return result

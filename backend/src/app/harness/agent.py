@@ -26,6 +26,18 @@ from app.session import session_store
 MAX_SELF_CORRECTION_ATTEMPTS = 2
 
 
+def _log_chat_turn(context: AgentContext, answer: str, *, source: str) -> None:
+    # ponytail: full text; message already capped at 500 by ChatRequest
+    _log(
+        "chat_turn",
+        request_id=context.request_id,
+        session_id=context.session_id,
+        message=context.message,
+        answer=answer,
+        source=source,
+    )
+
+
 class ResumeAgent:
     def __init__(self, llm_client: LLMClient | None = None) -> None:
         self.llm_client = llm_client
@@ -54,6 +66,7 @@ class ResumeAgent:
         if not guard_result.ok:
             _log("guard_blocked", request_id=context.request_id, reason=guard_result.reason)
             reply = guard_result.reply_zh if request.language == "zh" else guard_result.reply_en
+            _log_chat_turn(context, reply, source="guard")
             return ChatResponse(
                 answer=reply, evidence=[],
                 suggested_questions=SUGGESTED_QUESTIONS[context.language],
@@ -106,6 +119,7 @@ class ResumeAgent:
         if llm_result:
             session_store.append(session_id, "user", context.message)
             session_store.append(session_id, "assistant", llm_result.answer)
+            _log_chat_turn(context, llm_result.answer, source=llm_result.provider)
             return ChatResponse(
                 answer=llm_result.answer, evidence=llm_result.evidence,
                 suggested_questions=SUGGESTED_QUESTIONS[context.language],
@@ -138,6 +152,7 @@ class ResumeAgent:
         if not guard_result.ok:
             _log("guard_blocked", request_id=context.request_id, reason=guard_result.reason)
             reply = guard_result.reply_zh if request.language == "zh" else guard_result.reply_en
+            _log_chat_turn(context, reply, source="guard")
             yield sse_event("metadata", {
                 "request_id": context.request_id, "session_id": session_id,
                 "source": "guard", "tools_called": [],
@@ -169,6 +184,7 @@ class ResumeAgent:
         if not callable(stream_fn) or not llm_client.is_configured():
             _log("stream_fallback", request_id=context.request_id, provider=llm_client.provider)
             fallback_text = fallback_answer(context.language, [e.title for e in seed_evidence])
+            _log_chat_turn(context, fallback_text, source="fallback")
             for chunk in _chunk_text(fallback_text):
                 yield sse_event("answer_delta", {"text": chunk})
             yield sse_event("evidence", [e.model_dump() for e in seed_evidence])
@@ -224,6 +240,7 @@ class ResumeAgent:
             _log("llm_stream_done", provider=llm_client.provider,
                  request_id=context.request_id, elapsed_ms=elapsed_ms,
                  answer_len=len(result.answer))
+            _log_chat_turn(context, result.answer, source=llm_client.provider)
             yield sse_event("evidence", [e.model_dump() for e in result.evidence])
             yield sse_event("done", {
                 "request_id": context.request_id, "session_id": session_id,
@@ -236,6 +253,7 @@ class ResumeAgent:
                 session_store.append(session_id, "assistant", answer)
             _log("stream_no_result", request_id=context.request_id,
                  elapsed_ms=elapsed_ms, partial_answer_len=len(answer) if answer else 0)
+            _log_chat_turn(context, answer, source=llm_client.provider)
             yield sse_event("evidence", [e.model_dump() for e in seed_evidence])
             yield sse_event("done", {
                 "request_id": context.request_id, "session_id": session_id,
@@ -294,8 +312,10 @@ class ResumeAgent:
 
     def _fallback(self, context, session_id, seed_evidence):
         _log("fallback_response", request_id=context.request_id, reason="llm_result_none")
+        answer = fallback_answer(context.language, [e.title for e in seed_evidence])
+        _log_chat_turn(context, answer, source="fallback")
         return ChatResponse(
-            answer=fallback_answer(context.language, [e.title for e in seed_evidence]),
+            answer=answer,
             evidence=seed_evidence,
             suggested_questions=SUGGESTED_QUESTIONS[context.language],
             request_id=context.request_id,
