@@ -12,6 +12,10 @@ Parameters:
     Type: Number
     Default: 25
     Description: Number of visitor messages returned by the API.
+  EditWindowSeconds:
+    Type: Number
+    Default: 180
+    Description: Number of seconds after creation when owner-token edit/delete is allowed.
 
 Resources:
   SiteBucket:
@@ -74,6 +78,9 @@ Resources:
                 Action:
                   - dynamodb:PutItem
                   - dynamodb:Scan
+                  - dynamodb:GetItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
                 Resource: !GetAtt VisitorMessagesTable.Arn
 
   VisitorApiFunction:
@@ -90,6 +97,7 @@ Resources:
           TABLE_NAME: !Ref VisitorMessagesTable
           ALLOWED_ORIGIN: !Ref AllowedOrigin
           MAX_MESSAGES: !Ref MaxMessages
+          EDIT_WINDOW_SECONDS: !Ref EditWindowSeconds
       Code:
         ZipFile: |
           import json

@@ -43,8 +43,17 @@ const T = {
     visitorLoadError: "Could not load public notes. Please try again later.",
     visitorSubmitting: "Submitting public note…",
     visitorRequired: "Name and message are required.",
-    visitorSubmitted: "Public note submitted.",
+    visitorSubmitted: "Public note submitted. You can edit or delete it for 3 minutes.",
     visitorSubmitError: "Could not submit public note. Please try again later.",
+    visitorEdit: "Edit",
+    visitorDelete: "Delete",
+    visitorSave: "Save",
+    visitorCancel: "Cancel",
+    visitorEditableUntil: "Editable for 3 minutes after posting.",
+    visitorDeleteConfirm: "Delete this public note?",
+    visitorUpdated: "Public note updated.",
+    visitorDeleted: "Public note deleted.",
+    visitorEditExpired: "The edit window has expired.",
   },
   zh: {
     eyebrow: "AI 软件工程师",
@@ -88,8 +97,17 @@ const T = {
     visitorLoadError: "暂时无法加载公开留言，请稍后再试。",
     visitorSubmitting: "正在提交公开留言…",
     visitorRequired: "姓名和留言内容均为必填。",
-    visitorSubmitted: "公开留言已提交。",
+    visitorSubmitted: "公开留言已提交。3 分钟内可以编辑或删除。",
     visitorSubmitError: "暂时无法提交公开留言，请稍后再试。",
+    visitorEdit: "编辑",
+    visitorDelete: "删除",
+    visitorSave: "保存",
+    visitorCancel: "取消",
+    visitorEditableUntil: "发布后 3 分钟内可编辑或删除。",
+    visitorDeleteConfirm: "删除这条公开留言？",
+    visitorUpdated: "公开留言已更新。",
+    visitorDeleted: "公开留言已删除。",
+    visitorEditExpired: "编辑时间已过。",
   },
 };
 
@@ -186,11 +204,59 @@ function visitorBoardUrl(path) {
   return `${VISITOR_BOARD_API.replace(/\/$/, "")}${path}`;
 }
 
+const tokenKey = (id) => `visitor-board-token-${id}`;
+
+function storeEditToken(id, editToken, editExpiresAt) {
+  if (!id || !editToken || !editExpiresAt) return;
+  sessionStorage.setItem(tokenKey(id), JSON.stringify({ editToken, editExpiresAt }));
+}
+
+function getEditToken(id) {
+  try {
+    const raw = sessionStorage.getItem(tokenKey(id));
+    if (!raw) return null;
+    const token = JSON.parse(raw);
+    if (!token.editToken || !token.editExpiresAt || new Date(token.editExpiresAt).getTime() <= Date.now()) {
+      sessionStorage.removeItem(tokenKey(id));
+      return null;
+    }
+    return token;
+  } catch {
+    sessionStorage.removeItem(tokenKey(id));
+    return null;
+  }
+}
+
+function clearEditToken(id) {
+  sessionStorage.removeItem(tokenKey(id));
+}
+
 function setVisitorStatus(message = "", type = "") {
   const status = $("#visitor-status");
   if (!status) return;
   status.textContent = message;
   status.dataset.status = type;
+}
+
+async function updateVisitorMessage(id, message, editToken) {
+  const res = await fetch(visitorBoardUrl(`/messages/${encodeURIComponent(id)}`), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message, editToken }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || t("visitorSubmitError"));
+  return data.item;
+}
+
+async function deleteVisitorMessage(id, editToken) {
+  const res = await fetch(visitorBoardUrl(`/messages/${encodeURIComponent(id)}`), {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ editToken }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || t("visitorSubmitError"));
 }
 
 function renderVisitorMessages(items = []) {
@@ -233,8 +299,81 @@ function renderVisitorMessages(items = []) {
 
     header.append(name, time);
     article.append(header, message);
+
+    const token = getEditToken(item.id);
+    if (token) {
+      const note = document.createElement("p");
+      note.className = "visitor-edit-note";
+      note.textContent = t("visitorEditableUntil");
+
+      const actions = document.createElement("div");
+      actions.className = "visitor-message-actions";
+
+      const edit = document.createElement("button");
+      edit.type = "button";
+      edit.textContent = t("visitorEdit");
+      edit.addEventListener("click", () => renderEditForm(article, item, token));
+
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.textContent = t("visitorDelete");
+      remove.addEventListener("click", async () => {
+        if (!window.confirm(t("visitorDeleteConfirm"))) return;
+        try {
+          await deleteVisitorMessage(item.id, token.editToken);
+          clearEditToken(item.id);
+          await loadVisitorMessages({ quiet: true });
+          setVisitorStatus(t("visitorDeleted"), "success");
+        } catch (error) {
+          setVisitorStatus(error.message || t("visitorSubmitError"), "error");
+        }
+      });
+
+      actions.append(edit, remove);
+      article.append(note, actions);
+    }
+
     container.append(article);
   });
+}
+
+function renderEditForm(article, item, token) {
+  article.replaceChildren();
+
+  const textarea = document.createElement("textarea");
+  textarea.className = "visitor-edit-textarea";
+  textarea.maxLength = 500;
+  textarea.value = item.message || "";
+
+  const actions = document.createElement("div");
+  actions.className = "visitor-message-actions";
+
+  const save = document.createElement("button");
+  save.type = "button";
+  save.textContent = t("visitorSave");
+  save.addEventListener("click", async () => {
+    const message = textarea.value.trim();
+    if (!message) {
+      setVisitorStatus(t("visitorRequired"), "error");
+      return;
+    }
+    try {
+      await updateVisitorMessage(item.id, message, token.editToken);
+      await loadVisitorMessages({ quiet: true });
+      setVisitorStatus(t("visitorUpdated"), "success");
+    } catch (error) {
+      setVisitorStatus(error.message || t("visitorSubmitError"), "error");
+    }
+  });
+
+  const cancel = document.createElement("button");
+  cancel.type = "button";
+  cancel.textContent = t("visitorCancel");
+  cancel.addEventListener("click", () => loadVisitorMessages({ quiet: true }));
+
+  actions.append(save, cancel);
+  article.append(textarea, actions);
+  textarea.focus();
 }
 
 async function loadVisitorMessages({ quiet = false } = {}) {
@@ -286,6 +425,7 @@ async function submitVisitorMessage(event) {
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || "Failed to submit visitor message");
     form.reset();
+    storeEditToken(data.item?.id, data.editToken, data.editExpiresAt);
     await loadVisitorMessages({ quiet: true });
     setVisitorStatus(t("visitorSubmitted"), "success");
   } catch (error) {

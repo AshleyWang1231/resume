@@ -23,10 +23,26 @@ class FakeTable:
     def scan(self, **kwargs):
         return {"Items": list(self.items)}
 
+    def get_item(self, Key):
+        for item in self.items:
+            if item["id"] == Key["id"]:
+                return {"Item": item}
+        return {}
 
-def event(method, body=None):
+    def update_item(self, Key, UpdateExpression, ExpressionAttributeValues, ReturnValues):
+        for item in self.items:
+            if item["id"] == Key["id"]:
+                item["message"] = ExpressionAttributeValues[":message"]
+                return {"Attributes": item}
+        return {}
+
+    def delete_item(self, Key):
+        self.items = [item for item in self.items if item["id"] != Key["id"]]
+
+
+def event(method, body=None, path="/messages"):
     return {
-        "rawPath": "/messages",
+        "rawPath": path,
         "requestContext": {"http": {"method": method}},
         "body": json.dumps(body) if body is not None else None,
     }
@@ -87,5 +103,77 @@ def test_rejects_non_object_json_body():
 def test_options_has_cors_headers():
     result = visitor_board.lambda_handler(event("OPTIONS"), None)
     assert result["statusCode"] == 204
-    assert result["headers"]["Access-Control-Allow-Methods"] == "GET,POST,OPTIONS"
+    assert result["headers"]["Access-Control-Allow-Methods"] == "GET,POST,PATCH,DELETE,OPTIONS"
     assert result["headers"]["Access-Control-Max-Age"] == "86400"
+
+def test_create_returns_edit_token_but_get_redacts_internal_fields():
+    table = FakeTable()
+    visitor_board.dynamodb = Mock(Table=Mock(return_value=table))
+
+    created = visitor_board.lambda_handler(event("POST", {"name": "Owner", "message": "Editable"}), None)
+    body = json.loads(created["body"])
+
+    assert created["statusCode"] == 201
+    assert body["editToken"]
+    assert body["editExpiresAt"]
+    stored = table.items[0]
+    assert "editTokenHash" in stored
+    assert "editToken" not in stored
+
+    listed = visitor_board.lambda_handler(event("GET"), None)
+    public_item = json.loads(listed["body"])["items"][0]
+    assert set(public_item) == {"id", "name", "message", "createdAt"}
+
+
+def test_patch_updates_message_with_valid_unexpired_token():
+    table = FakeTable()
+    visitor_board.dynamodb = Mock(Table=Mock(return_value=table))
+    created = visitor_board.lambda_handler(event("POST", {"name": "Owner", "message": "Original"}), None)
+    body = json.loads(created["body"])
+    message_id = body["item"]["id"]
+
+    patched = visitor_board.lambda_handler(event("PATCH", {"message": "Updated", "editToken": body["editToken"]}, f"/messages/{message_id}"), None)
+
+    assert patched["statusCode"] == 200
+    assert json.loads(patched["body"])["item"]["message"] == "Updated"
+    assert table.items[0]["message"] == "Updated"
+
+
+def test_delete_removes_message_with_valid_unexpired_token():
+    table = FakeTable()
+    visitor_board.dynamodb = Mock(Table=Mock(return_value=table))
+    created = visitor_board.lambda_handler(event("POST", {"name": "Owner", "message": "Delete me"}), None)
+    body = json.loads(created["body"])
+    message_id = body["item"]["id"]
+
+    deleted = visitor_board.lambda_handler(event("DELETE", {"editToken": body["editToken"]}, f"/messages/{message_id}"), None)
+
+    assert deleted["statusCode"] == 200
+    assert json.loads(deleted["body"])["ok"] is True
+    assert table.items == []
+
+
+def test_patch_rejects_invalid_token():
+    table = FakeTable()
+    visitor_board.dynamodb = Mock(Table=Mock(return_value=table))
+    created = visitor_board.lambda_handler(event("POST", {"name": "Owner", "message": "Original"}), None)
+    message_id = json.loads(created["body"])["item"]["id"]
+
+    patched = visitor_board.lambda_handler(event("PATCH", {"message": "Updated", "editToken": "wrong"}, f"/messages/{message_id}"), None)
+
+    assert patched["statusCode"] == 403
+    assert json.loads(patched["body"])["error"] == "Invalid edit token."
+
+
+def test_delete_rejects_expired_token():
+    table = FakeTable()
+    visitor_board.dynamodb = Mock(Table=Mock(return_value=table))
+    created = visitor_board.lambda_handler(event("POST", {"name": "Owner", "message": "Original"}), None)
+    body = json.loads(created["body"])
+    message_id = body["item"]["id"]
+    table.items[0]["editExpiresAt"] = "2000-01-01T00:00:00Z"
+
+    deleted = visitor_board.lambda_handler(event("DELETE", {"editToken": body["editToken"]}, f"/messages/{message_id}"), None)
+
+    assert deleted["statusCode"] == 403
+    assert json.loads(deleted["body"])["error"] == "Edit window has expired."

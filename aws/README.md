@@ -22,6 +22,7 @@ This folder contains the Lambda source for the homework assignment feature.
 | `TABLE_NAME` | `ResumeVisitorMessages` |
 | `ALLOWED_ORIGIN` | final S3 website origin |
 | `MAX_MESSAGES` | `25` |
+| `EDIT_WINDOW_SECONDS` | `180` |
 
 ## IAM
 
@@ -32,9 +33,18 @@ Add one inline DynamoDB policy scoped to the `ResumeVisitorMessages` table ARN w
 ```text
 dynamodb:PutItem
 dynamodb:Scan
+dynamodb:GetItem
+dynamodb:UpdateItem
+dynamodb:DeleteItem
 ```
 
 Do not use `dynamodb:*` or `Resource: *`.
+
+## Owner-token edit/delete bonus
+
+`POST /messages` returns a short-lived `editToken` and `editExpiresAt`. The raw token is shown only to the original browser session; DynamoDB stores only `editTokenHash`. `PATCH /messages/{id}` and `DELETE /messages/{id}` require the token and are rejected after `EDIT_WINDOW_SECONDS`.
+
+Do not log request bodies or put edit tokens in URLs.
 
 ## Optional CloudFormation starter
 
@@ -42,7 +52,7 @@ Do not use `dynamodb:*` or `Resource: *`.
 
 ## CORS
 
-`lambda/visitor_board.py` is the single source of truth for CORS response headers. Keep Lambda Function URL CORS disabled in infrastructure so headers are not configured in two places.
+`lambda/visitor_board.py` is the single source of truth for CORS response headers, including `GET`, `POST`, `PATCH`, `DELETE`, and `OPTIONS`. Keep Lambda Function URL CORS disabled in infrastructure so headers are not configured in two places.
 
 ## Frontend configuration
 
