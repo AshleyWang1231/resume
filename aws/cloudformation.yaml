@@ -124,6 +124,7 @@ Resources:
       FunctionName: !Ref VisitorApiFunction
       Action: lambda:InvokeFunction
       Principal: '*'
+      InvokedViaFunctionUrl: true
 
 Outputs:
   SiteWebsiteUrl:

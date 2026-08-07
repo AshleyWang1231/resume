@@ -75,8 +75,13 @@ def parse_body(event):
 
 
 def validate_message(payload, require_name=True):
-    name = str(payload.get("name", "")).strip()
-    message = str(payload.get("message", "")).strip()
+    raw_name = payload.get("name", "")
+    raw_message = payload.get("message", "")
+    if (require_name and not isinstance(raw_name, str)) or not isinstance(raw_message, str):
+        raise ValueError("Name and message must be text.")
+
+    name = raw_name.strip()
+    message = raw_message.strip()
 
     if require_name and not name:
         raise ValueError("Name and message are required.")
@@ -150,6 +155,7 @@ def update_message(table, message_id, payload):
         Key={"id": message_id},
         UpdateExpression="SET message = :message",
         ExpressionAttributeValues={":message": message},
+        ConditionExpression="attribute_exists(id)",
         ReturnValues="ALL_NEW",
     )["Attributes"]
     return public_item(updated)

@@ -48,7 +48,7 @@ Do not log request bodies or put edit tokens in URLs.
 
 ## Optional CloudFormation starter
 
-`cloudformation.yaml` creates the S3 bucket, DynamoDB table, Lambda role, Lambda function, and Function URL. The template uses placeholder inline Lambda code because CloudFormation cannot inline the full handler cleanly. After creating the stack, update the Lambda function code with `lambda/visitor_board.py`.
+`cloudformation.yaml` creates the S3 bucket, DynamoDB table, Lambda role, Lambda function, and Function URL. Package and deploy both `lambda/index.py` and `lambda/visitor_board.py`; the configured handler is `index.lambda_handler`, and `index.py` delegates to the visitor-board handler.
 
 ## CORS
 

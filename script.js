@@ -147,6 +147,7 @@ function applyLang() {
   if (toggle) toggle.textContent = lang === "zh" ? "EN" : "中文";
   localStorage.setItem("resume-lang", lang);
   renderProjects(cachedProjects);
+  loadVisitorMessages({ quiet: true });
 }
 
 

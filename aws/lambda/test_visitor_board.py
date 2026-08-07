@@ -29,7 +29,7 @@ class FakeTable:
                 return {"Item": item}
         return {}
 
-    def update_item(self, Key, UpdateExpression, ExpressionAttributeValues, ReturnValues):
+    def update_item(self, Key, UpdateExpression, ExpressionAttributeValues, ReturnValues, ConditionExpression=None):
         for item in self.items:
             if item["id"] == Key["id"]:
                 item["message"] = ExpressionAttributeValues[":message"]
@@ -98,6 +98,40 @@ def test_rejects_non_object_json_body():
 
     assert result["statusCode"] == 400
     assert json.loads(result["body"])["error"] == "Request body must be a JSON object."
+
+
+def test_rejects_non_string_name_or_message_values():
+    table = FakeTable()
+    visitor_board.dynamodb = Mock(Table=Mock(return_value=table))
+
+    bad_name = visitor_board.lambda_handler(event("POST", {"name": None, "message": "Hello"}), None)
+    bad_message = visitor_board.lambda_handler(event("POST", {"name": "Owner", "message": ["Hello"]}), None)
+
+    assert bad_name["statusCode"] == 400
+    assert json.loads(bad_name["body"])["error"] == "Name and message must be text."
+    assert bad_message["statusCode"] == 400
+    assert json.loads(bad_message["body"])["error"] == "Name and message must be text."
+
+
+def test_update_uses_condition_expression_to_avoid_resurrecting_deleted_items():
+    table = FakeTable()
+    visitor_board.dynamodb = Mock(Table=Mock(return_value=table))
+    created = visitor_board.lambda_handler(event("POST", {"name": "Owner", "message": "Original"}), None)
+    body = json.loads(created["body"])
+    message_id = body["item"]["id"]
+
+    calls = []
+    original_update = table.update_item
+
+    def capture_update(**kwargs):
+        calls.append(kwargs)
+        return original_update(**kwargs)
+
+    table.update_item = capture_update
+    visitor_board.lambda_handler(event("PATCH", {"message": "Updated", "editToken": body["editToken"]}, f"/messages/{message_id}"), None)
+
+    assert calls
+    assert calls[0]["ConditionExpression"] == "attribute_exists(id)"
 
 
 def test_options_has_cors_headers():
